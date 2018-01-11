@@ -1,0 +1,112 @@
+{
+  "variant": {
+    "label": "Debug",
+    "keywordSettings": {
+      "buildType": "debug"
+    },
+    "description": "Emit debug information without performing optimizations"
+  },
+  "activeEnvironments": [],
+  "codeModel": {
+    "configurations": [
+      {
+        "name": "Debug",
+        "projects": [
+          {
+            "buildDirectory": "/Users/michael/Dropbox/Programming/icg/build",
+            "name": "icg",
+            "sourceDirectory": "/Users/michael/Dropbox/Programming/icg",
+            "targets": [
+              {
+                "buildDirectory": "/Users/michael/Dropbox/Programming/icg/build",
+                "fileGroups": [
+                  {
+                    "isGenerated": true,
+                    "sources": [
+                      "build/CMakeFiles/update_opengp",
+                      "build/CMakeFiles/update_opengp.rule"
+                    ]
+                  }
+                ],
+                "fullName": "update_opengp",
+                "name": "update_opengp",
+                "sourceDirectory": "/Users/michael/Dropbox/Programming/icg",
+                "type": "UTILITY"
+              },
+              {
+                "buildDirectory": "/Users/michael/Dropbox/Programming/icg/build",
+                "fileGroups": [
+                  {
+                    "isGenerated": false,
+                    "sources": [
+                      "common/MLogger.h",
+                      "common/bmpwrite.h",
+                      "common/check_error_gl.h",
+                      "common/icg_common.h",
+                      "common/imshow.h",
+                      "common/picoPNG.h"
+                    ]
+                  }
+                ],
+                "fullName": "common_headers",
+                "name": "common_headers",
+                "sourceDirectory": "/Users/michael/Dropbox/Programming/icg",
+                "type": "UTILITY"
+              },
+              {
+                "artifacts": [
+                  "/Users/michael/Dropbox/Programming/icg/build/raytrace/raytrace"
+                ],
+                "buildDirectory": "/Users/michael/Dropbox/Programming/icg/build/raytrace",
+                "fileGroups": [
+                  {
+                    "compileFlags": " -std=c++11 -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk  ",
+                    "defines": [
+                      "GLEW_STATIC",
+                      "OPENGP_HEADERONLY",
+                      "USE_EIGEN",
+                      "WITH_EIGEN",
+                      "WITH_GLEW",
+                      "WITH_GLFW",
+                      "WITH_OPENGL",
+                      "WITH_OPENGP"
+                    ],
+                    "includePath": [
+                      {
+                        "path": "/Users/michael/Dropbox/Programming/icg/common"
+                      },
+                      {
+                        "path": "/Users/michael/Dropbox/Programming/icg/external/eigen/include"
+                      },
+                      {
+                        "path": "/Users/michael/Dropbox/Programming/icg/common/../external/OpenGP/src"
+                      },
+                      {
+                        "path": "/usr/local/include"
+                      }
+                    ],
+                    "isGenerated": false,
+                    "language": "CXX",
+                    "sources": [
+                      "main.cpp"
+                    ]
+                  }
+                ],
+                "fullName": "raytrace",
+                "linkLanguageFlags": "-std=c++11 -g",
+                "linkLibraries": "-framework OpenGL -framework OpenGL /usr/local/lib/libGLEW.dylib /usr/local/lib/libglfw.dylib",
+                "linkerLanguage": "CXX",
+                "name": "raytrace",
+                "sourceDirectory": "/Users/michael/Dropbox/Programming/icg/raytrace",
+                "type": "EXECUTABLE"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "cookie": "0.04561708876892001",
+    "inReplyTo": "codemodel",
+    "type": "reply"
+  }
+}
