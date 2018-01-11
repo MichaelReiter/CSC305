@@ -109,4 +109,4 @@ src/raytrace/output.png
 /external
 /slides
 *.bmp
-.vscode
+.vscode/
