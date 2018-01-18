@@ -52,7 +52,7 @@ void ray_sphere_intersection(Vec3 ray) {
 
 //    double discriminant = (d dot (e - c))^2 - (d dot d)*(((e - c) dot (e - c)) - R*R);
 //
-//    // TODO: be sure to check for floating point bugs
+//    // TODO: be sure to check for doubleing point bugs
 //
 //    if (discriminant < 0) {
 //        // If discriminant is negative, ray and sphere do not intersect
@@ -76,43 +76,38 @@ int main(int, char**) {
     // number of rows (ny)
     int heightResolution = 600;
 
-    float aspectRatio = float(widthResolution) / float(heightResolution);
+    double aspectRatio = double(widthResolution) / double(heightResolution);
     Image<Colour> image(heightResolution, widthResolution);
 
-    // Ray origin is camera position (e)
-//    Vec3 cameraPosition = Vec3(0, 0, 0);
+    // Boundaries
+    double left = -1.0f * aspectRatio;
+    double right = 1.0f * aspectRatio;
+    double top = 1.0f;
+    double bottom = -1.0f;
 
-//    Vec3 spherePosition = Vec3(0, 5, 0);
+    // World space axes
+    Vec3 U = Vec3(1.0f, 0.0f, 0.0f);
+    Vec3 V = Vec3(0.0f, 1.0f, 0.0f);
+    Vec3 W = Vec3(0.0f, 0.0f, -1.0f);
+
+    // Camera position
+    double focalLength = 15.0f;
+    Vec3 E = -focalLength * W;
+
+    // Sphere
+    Vec3 spherePosition = Vec3(0.0f, 0.0f, -40.0f);
+    double sphereRadius = 1.0f;
+
+    // Point light
+    Vec3 lightPosition = Vec3(0.0f, 4.0f, 0.0f);
+    double lightIntensity = 1.0f;
 
     // TODO:
     // define floor plane
-    // define a single point light source
-
-    Vec3 W = Vec3(0.0f, 0.0f, -1.0f);
-    Vec3 V = Vec3(0.0f, 1.0f, 0.0f);
-    Vec3 U = Vec3(1.0f, 0.0f, 0.0f);
-
-    float d = 1.0f;
-    Vec3 E = -d * W;
-
-    float left = -1.0f * aspectRatio;
-    float right = 1.0f * aspectRatio;
-    float top = 1.0f;
-    float bottom = -1.0f;
-
-    Vec3 spherePosition = Vec3(0.0f, 0.0f, -4.0f);
-    float sphereRadius = 3.0f;
-
-    Vec3 lightPosition = Vec3(0.0f, 4.0f, 0.0f);
-    float lightIntensity = 1.0f;
 
     // For each pixel
     for (int row = 0; row < image.rows(); row++) {
         for (int col = 0; col < image.cols(); col++) {
-            // Generate primary ray
-
-            /// TODO: build primary rays
-            // example: Vec3 o = Vec3(0,0,0);
 
             Vec3 pixel = left * U + (col * (right - left) / image.cols()) * U;
             pixel += bottom * V + (row * (top - bottom) / image.rows()) * V;
@@ -121,10 +116,10 @@ int main(int, char**) {
             ray = ray.normalized();
 
             Vec3 EsubC = E - spherePosition;
-            float discriminant = std::powf(ray.dot(EsubC), 2) - EsubC.dot(EsubC) + sphereRadius*sphereRadius;
+            double discriminant = std::powf(ray.dot(EsubC), 2) - EsubC.dot(EsubC) + sphereRadius*sphereRadius;
             if (discriminant >= 0) {
 
-                float t = -ray.dot(EsubC) - std::sqrtf(discriminant);
+                double t = -ray.dot(EsubC) - std::sqrtf(discriminant);
                 Vec3 pos = E + t * ray;
                 Vec3 normal = (pos - spherePosition) / sphereRadius;
                 Vec3 lightDir = lightPosition - pos;
@@ -152,13 +147,6 @@ int main(int, char**) {
 //                // Set pixel color to background color
 //                image(row, col) = black();
 //            }
-
-            /// EXAMPLE: use "image(row, col) = colour;" to set pixel values
-            // if (row > 0 && row < 200 && col > 0 && col < 200)  {
-            //     image(row, col) = red();
-            // } else {
-            //     image(row, col) = white();
-            // }
         }
     }
 
