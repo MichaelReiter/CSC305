@@ -110,3 +110,6 @@ src/raytrace/output.png
 /slides
 *.bmp
 .vscode/
+
+.idea/
+cmake-build-debug/
