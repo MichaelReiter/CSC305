@@ -1,3 +1,6 @@
+#ifndef RAY_H
+#define RAY_H
+
 #include "OpenGP/Image/Image.h"
 
 using namespace OpenGP;
@@ -9,3 +12,5 @@ public:
     Ray(Vec3 o, Vec3 d);
     Vec3 position(double t);
 };
+
+#endif

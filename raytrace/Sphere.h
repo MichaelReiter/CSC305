@@ -1,10 +1,13 @@
 #include "OpenGP/Image/Image.h"
+#include "Ray.h"
+#include "Surface.h"
 
 using namespace OpenGP;
 
-class Sphere {
+class Sphere : public Surface {
 public:
-    Vec3 center;
-    double radius;
-    Sphere(Vec3 c, double r);
+    Vec3 position;
+    float radius;
+    Sphere(Vec3 p, float r);
+    Vec3 hit(Ray ray);
 };
