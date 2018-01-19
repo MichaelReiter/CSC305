@@ -1,3 +1,6 @@
+#ifndef LIGHT_H
+#define LIGHT_H
+
 #include "OpenGP/Image/Image.h"
 
 using namespace OpenGP;
@@ -8,3 +11,5 @@ public:
     double intensity;
     Light(Vec3 p, double i);
 };
+
+#endif

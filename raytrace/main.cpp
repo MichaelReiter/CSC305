@@ -83,17 +83,16 @@ int main(int, char**) {
     // For each pixel
     for (int row = 0; row < image.rows(); row++) {
         for (int col = 0; col < image.cols(); col++) {
-
+            // Cast ray
             Vec3 pixelPosition = left * U + (col * (right - left) / image.cols()) * U;
             pixelPosition += bottom * V + (row * (top - bottom) / image.rows()) * V;
-
             Vec3 rayDirection = (pixelPosition - e).normalized();
             Ray ray = Ray(e, rayDirection);
 
-            // Vec3 ec = e - sphere.position;
-            // float discriminant = std::powf(ray.direction.dot(ec), 2) - ec.dot(ec) + sphere.radius*sphere.radius;
-
+            // Compute intersection point of object in scene
             Vec3 intersectionPoint = sphere.hit(ray);
+
+            // Color pixels
             if (intersectionPoint != Vec3(0,0,0)) {
                 image(row, col) = lighting(lights, intersectionPoint, sphere);
             } else {

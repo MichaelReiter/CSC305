@@ -1,3 +1,6 @@
+#ifndef SPHERE_H
+#define SPHERE_H
+
 #include "OpenGP/Image/Image.h"
 #include "Ray.h"
 #include "Surface.h"
@@ -11,3 +14,5 @@ public:
     Sphere(Vec3 p, float r);
     Vec3 hit(Ray ray);
 };
+
+#endif
