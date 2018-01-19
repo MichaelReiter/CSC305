@@ -3,8 +3,8 @@
 using namespace OpenGP;
 
 class Sphere {
+public:
     Vec3 center;
     double radius;
-public:
     Sphere(Vec3 c, double r);
 };

@@ -1,7 +1,7 @@
 get_filename_component(EXERCISENAME ${CMAKE_CURRENT_LIST_DIR} NAME)
 file(GLOB_RECURSE SOURCES "*.cpp")
 file(GLOB_RECURSE HEADERS "*.h")
-add_executable(${EXERCISENAME} ${SOURCES} ${HEADERS} Ray.cpp Ray.h Sphere.cpp Sphere.h)
+add_executable(${EXERCISENAME} ${SOURCES} ${HEADERS} Light.cpp Light.h Ray.cpp Ray.h Sphere.cpp Sphere.h)
 if(WIN32)
         target_link_libraries(${EXERCISENAME} "legacy_stdio_definitions.lib")
 endif()
