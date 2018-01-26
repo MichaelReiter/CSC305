@@ -13,6 +13,7 @@ Colour red() { return Colour(1.0f, 0.0f, 0.0f); }
 Colour blue() { return Colour(0.0f, 0.0f, 1.0f); }
 Colour white() { return Colour(1.0f, 1.0f, 1.0f); }
 Colour black() { return Colour(0.0f, 0.0f, 0.0f); }
+Colour grey() { return Colour(0.5f, 0.5f, 0.5f); }
 
 // REMINDER! normalize unit vectors
 Color lighting(std::vector<Light> lights, Vec3 intersectionPoint, Vec3 cameraPosition, Sphere s) {
@@ -21,9 +22,8 @@ Color lighting(std::vector<Light> lights, Vec3 intersectionPoint, Vec3 cameraPos
 
     // Ambient color = ambient material coefficient (surface color) * ambient light source
     // I_a = k_a * L_a
-    Color ambientLightColor = white(); //Color(0.0f, 0.0f, 0.0f);
     float ambientLightIntensity = 0.25f;
-    Color ambientColor = ambientLightColor * ambientLightIntensity;
+    Color ambientColor = s.material.ambientColor * ambientLightIntensity;
 
     // For multiple point lights, L = I_a + sum of diffuse and specular color for each point light
     Color diffuseColor = black();
@@ -38,8 +38,8 @@ Color lighting(std::vector<Light> lights, Vec3 intersectionPoint, Vec3 cameraPos
         Vec3 lightDirection = (light.position - intersectionPoint).normalized();
         diffuseColor += light.intensity * std::fmaxf(0.0f, normal.dot(lightDirection)) * s.material.diffuseColor;
 
-        // Specular color = specular material coefficient * (R dotted with V) to the power of phongExponent * light source
-        // I_s = k_s * (R dot V)^phongExponent * L_p
+        // Specular color = specular material coefficient * (normal dotted with h) to the power of phongExponent * light source
+        // I_s = k_s * (n dot h)^phongExponent * L_p
         // v is a unit vector pointing from the surface to the camera
         Vec3 v = (cameraPosition - intersectionPoint).normalized();
         Vec3 h = (v + lightDirection).normalized();
@@ -76,7 +76,7 @@ int main(int, char**) {
     // Sphere
     Vec3 spherePosition = Vec3(0.0f, 0.0f, -40.0f);
     float sphereRadius = 3.0f;
-    Material sphereMaterial = Material(red(), white(), 32);
+    Material sphereMaterial = Material(red(), red(), grey(), 32);
     Sphere sphere = Sphere(spherePosition, sphereRadius, sphereMaterial);
 
     // Point lights
