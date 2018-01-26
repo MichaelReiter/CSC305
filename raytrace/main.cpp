@@ -1,6 +1,7 @@
 #include "OpenGP/Image/Image.h"
 #include "bmpwrite.h"
 #include "Light.h"
+#include "Material.h"
 #include "Ray.h"
 #include "Sphere.h"
 #include <vector>
@@ -9,18 +10,19 @@ using namespace OpenGP;
 
 using Colour = Vec3; // RGB Value
 Colour red() { return Colour(1.0f, 0.0f, 0.0f); }
+Colour blue() { return Colour(0.0f, 0.0f, 1.0f); }
 Colour white() { return Colour(1.0f, 1.0f, 1.0f); }
 Colour black() { return Colour(0.0f, 0.0f, 0.0f); }
 
 // REMINDER! normalize unit vectors
-Color lighting(std::vector<Light> lights, Vec3 intersectionPoint, Sphere s) {
+Color lighting(std::vector<Light> lights, Vec3 intersectionPoint, Vec3 cameraPosition, Sphere s) {
     // Phong lighting model
     // Total color = ambient + diffuse + specular
 
     // Ambient color = ambient material coefficient (surface color) * ambient light source
     // I_a = k_a * L_a
-    Color ambientLightColor = Color(0.0f, 0.0f, 0.0f);
-    float ambientLightIntensity = 1.0f;
+    Color ambientLightColor = white(); //Color(0.0f, 0.0f, 0.0f);
+    float ambientLightIntensity = 0.25f;
     Color ambientColor = ambientLightColor * ambientLightIntensity;
 
     // For multiple point lights, L = I_a + sum of diffuse and specular color for each point light
@@ -34,12 +36,14 @@ Color lighting(std::vector<Light> lights, Vec3 intersectionPoint, Sphere s) {
         // n is a unit vector pointing normal to the surface
         Vec3 normal = (intersectionPoint - s.position).normalized();
         Vec3 lightDirection = (light.position - intersectionPoint).normalized();
-        diffuseColor += light.intensity * std::fmaxf(0.0f, normal.dot(lightDirection)) * red();
+        diffuseColor += light.intensity * std::fmaxf(0.0f, normal.dot(lightDirection)) * s.material.diffuseColor;
 
-        // Specular color = specular material coefficient * (R dotted with V) to the power of some parameter alpha * light source
-        // I_s = k_s * (R dot V)^alpha * L_p
+        // Specular color = specular material coefficient * (R dotted with V) to the power of phongExponent * light source
+        // I_s = k_s * (R dot V)^phongExponent * L_p
         // v is a unit vector pointing from the surface to the camera
-        // specularColor += 
+        Vec3 v = (cameraPosition - intersectionPoint).normalized();
+        Vec3 h = (v + lightDirection).normalized();
+        specularColor += light.intensity * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.material.phongExponent) * s.material.specularColor;
     }
 
     return ambientColor + diffuseColor + specularColor;
@@ -70,11 +74,14 @@ int main(int, char**) {
     Vec3 e = -focalLength * W;
 
     // Sphere
-    Sphere sphere = Sphere(Vec3(0.0f, 0.0f, -40.0f), 1.0f);
+    Vec3 spherePosition = Vec3(0.0f, 0.0f, -40.0f);
+    float sphereRadius = 3.0f;
+    Material sphereMaterial = Material(red(), white(), 32);
+    Sphere sphere = Sphere(spherePosition, sphereRadius, sphereMaterial);
 
     // Point lights
     std::vector<Light> lights {
-        Light(Vec3(0.0f, 4.0f, 0.0f), 1.0f)
+        Light(Vec3(50.0f, 40.0f, 0.0f), 0.75f)
     };
 
     // TODO:
@@ -94,7 +101,7 @@ int main(int, char**) {
 
             // Color pixels
             if (intersectionPoint != Vec3(0,0,0)) {
-                image(row, col) = lighting(lights, intersectionPoint, sphere);
+                image(row, col) = lighting(lights, intersectionPoint, e, sphere);
             } else {
                 // No intersection. Color pixel background color
                 image(row, col) = white();

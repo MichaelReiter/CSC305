@@ -2,9 +2,10 @@
 
 using namespace OpenGP;
 
-Sphere::Sphere(Vec3 p, float r) {
+Sphere::Sphere(Vec3 p, float r, Material m) {
     position = p;
     radius = r;
+    material = m;
 }
 
 Vec3 Sphere::hit(Ray ray) {
