@@ -8,21 +8,19 @@ Sphere::Sphere(Vec3 p, float r, Material m) {
     material = m;
 }
 
-Vec3 Sphere::hit(Ray ray) {
+float Sphere::hit(Ray ray) {
     Vec3 e = ray.origin;
     Vec3 d = ray.direction;
 
     Vec3 ec = e - position;
     float discriminant = std::powf(ray.direction.dot(ec), 2) - ec.dot(ec) + radius*radius;
 
+    float t = -1;
     if (discriminant >= 0) {
-        float t = -ray.direction.dot(ec) - std::sqrtf(discriminant);
-        Vec3 intersectionPoint = ray.position(t);
-        return intersectionPoint;
+        t = -ray.direction.dot(ec) - std::sqrtf(discriminant);
     }
 
-    // TODO fix this
-    return Vec3(0,0,0);
+    return t;
 
 //    float discriminant = (d dot (e - c))^2 - (d dot d)*(((e - c) dot (e - c)) - R*R);
 //

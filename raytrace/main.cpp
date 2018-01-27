@@ -2,6 +2,7 @@
 #include "bmpwrite.h"
 #include "Light.h"
 #include "Material.h"
+#include "Plane.h"
 #include "Ray.h"
 #include "Sphere.h"
 #include <vector>
@@ -13,10 +14,11 @@ Colour red() { return Colour(1.0f, 0.0f, 0.0f); }
 Colour blue() { return Colour(0.0f, 0.0f, 1.0f); }
 Colour white() { return Colour(1.0f, 1.0f, 1.0f); }
 Colour black() { return Colour(0.0f, 0.0f, 0.0f); }
+Colour lightGrey() { return Colour(0.75f, 0.75f, 0.75f); }
 Colour grey() { return Colour(0.5f, 0.5f, 0.5f); }
 
 // REMINDER! normalize unit vectors
-Color lighting(std::vector<Light> lights, Vec3 intersectionPoint, Vec3 cameraPosition, Sphere s) {
+Color lighting(std::vector<Light> &lights, Vec3 intersectionPoint, Vec3 cameraPosition, Surface const &s) {
     // Phong lighting model
     // Total color = ambient + diffuse + specular
 
@@ -24,6 +26,10 @@ Color lighting(std::vector<Light> lights, Vec3 intersectionPoint, Vec3 cameraPos
     // I_a = k_a * L_a
     float ambientLightIntensity = 0.25f;
     Color ambientColor = s.material.ambientColor * ambientLightIntensity;
+
+    // // Shadows
+    // Vec3 occulusionPoint = sphere.hit(ray);
+    // if (occulusionPoint != Vec3(0,0,0)) {
 
     // For multiple point lights, L = I_a + sum of diffuse and specular color for each point light
     Color diffuseColor = black();
@@ -73,19 +79,28 @@ int main(int, char**) {
     float focalLength = 15.0f;
     Vec3 e = -focalLength * W;
 
+    // Point lights
+    std::vector<Light> lights {
+        {Vec3(50.0f, 40.0f, 0.0f), 0.75f}
+    };
+
     // Sphere
     Vec3 spherePosition = Vec3(0.0f, 0.0f, -40.0f);
     float sphereRadius = 3.0f;
     Material sphereMaterial = Material(red(), red(), grey(), 32);
     Sphere sphere = Sphere(spherePosition, sphereRadius, sphereMaterial);
 
-    // Point lights
-    std::vector<Light> lights {
-        Light(Vec3(50.0f, 40.0f, 0.0f), 0.75f)
-    };
+    // Floor plane
+    Vec3 floorPosition = Vec3(0.0f, -3.0f, 0.0f);
+    Vec3 floorNormal = Vec3(0.0f, 1.0f, 0.0f);
+    Material floorMaterial = Material(lightGrey(), lightGrey(), grey(), 1);
+    Plane floorPlane = Plane(floorPosition, floorNormal, floorMaterial);
 
-    // TODO:
-    // define floor plane
+    // All objects in scene
+    std::vector<Surface*> scene {
+        &sphere,
+        &floorPlane
+    };
 
     // For each pixel
     for (int row = 0; row < image.rows(); row++) {
@@ -97,11 +112,24 @@ int main(int, char**) {
             Ray ray = Ray(e, rayDirection);
 
             // Compute intersection point of object in scene
-            Vec3 intersectionPoint = sphere.hit(ray);
+            float t = -1;
+            Surface* intersectedSurface;
+            for (auto s : scene) {
+                float newT = s->hit(ray);
+                if (t == -1) {
+                    t = newT;
+                    intersectedSurface = s;
+                }
+                if (newT > 0 && newT < t) {
+                    t = newT;
+                    intersectedSurface = s;                    
+                }
+            }
+            Vec3 intersectionPoint = ray.position(t);
 
             // Color pixels
-            if (intersectionPoint != Vec3(0,0,0)) {
-                image(row, col) = lighting(lights, intersectionPoint, e, sphere);
+            if (t > 0) {
+                image(row, col) = lighting(lights, intersectionPoint, e, *intersectedSurface);
             } else {
                 // No intersection. Color pixel background color
                 image(row, col) = white();

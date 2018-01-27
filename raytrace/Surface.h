@@ -11,7 +11,7 @@ class Surface {
 public:
     Vec3 position;
     Material material;
-    virtual Vec3 hit(Ray ray) = 0;
+    virtual float hit(Ray ray) = 0;
 };
 
 #endif

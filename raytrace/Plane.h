@@ -1,5 +1,5 @@
-#ifndef SPHERE_H
-#define SPHERE_H
+#ifndef PLANE_H
+#define PLANE_H
 
 #include "OpenGP/Image/Image.h"
 #include "Material.h"
@@ -8,10 +8,10 @@
 
 using namespace OpenGP;
 
-class Sphere : public Surface {
+class Plane : public Surface {
 public:
-    float radius;
-    Sphere(Vec3 p, float r, Material m);
+    Vec3 normal;
+    Plane(Vec3 p, Vec3 n, Material m);
     float hit(Ray ray);
 };
 
