@@ -17,6 +17,13 @@ Colour black() { return Colour(0.0f, 0.0f, 0.0f); }
 Colour lightGrey() { return Colour(0.75f, 0.75f, 0.75f); }
 Colour grey() { return Colour(0.5f, 0.5f, 0.5f); }
 
+Color clampColor(Color c) {
+    float r = std::fminf(c[0], 1);
+    float g = std::fminf(c[1], 1);
+    float b = std::fminf(c[2], 1);
+    return Color(r, g, b);
+}
+
 // REMINDER! normalize unit vectors
 Color lighting(std::vector<Light> &lights, Vec3 intersectionPoint, Vec3 cameraPosition, Surface const &s) {
     // Phong lighting model
@@ -52,7 +59,7 @@ Color lighting(std::vector<Light> &lights, Vec3 intersectionPoint, Vec3 cameraPo
         specularColor += light.intensity * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.material.phongExponent) * s.material.specularColor;
     }
 
-    return ambientColor + diffuseColor + specularColor;
+    return clampColor(ambientColor + diffuseColor + specularColor);
 }
 
 int main(int, char**) {
