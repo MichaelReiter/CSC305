@@ -16,8 +16,8 @@ float Sphere::hit(Ray ray) {
     Vec3 e = ray.origin;
     Vec3 d = ray.direction;
 
-    Vec3 ec = e - position;
-    float discriminant = std::powf(ray.direction.dot(ec), 2) - ec.dot(ec) + radius*radius;
+    Vec3 ec = e - this->position;
+    float discriminant = std::powf(ray.direction.dot(ec), 2) - ec.dot(ec) + this->radius*this->radius;
 
     float t = -1;
     if (discriminant >= 0) {

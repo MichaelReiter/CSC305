@@ -9,7 +9,7 @@ Plane::Plane(Vec3 p, Vec3 n, Material m)  {
 }
 
 Vec3 Plane::getNormalAtPoint(Vec3 point) {
-    return this->normal;
+    return (this->normal).normalized();
 }
 
 float Plane::hit(Ray ray) {
