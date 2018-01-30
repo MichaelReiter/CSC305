@@ -13,6 +13,7 @@ public:
     Vec3 normal;
     Plane(Vec3 p, Vec3 n, Material m);
     float hit(Ray ray);
+    Vec3 getNormalAtPoint(Vec3 point);
 };
 
 #endif

@@ -8,6 +8,10 @@ Plane::Plane(Vec3 p, Vec3 n, Material m)  {
     material = m;
 }
 
+Vec3 Plane::getNormalAtPoint(Vec3 point) {
+    return this->normal;
+}
+
 float Plane::hit(Ray ray) {
     float t = -1;
     float denominator = ray.direction.dot(this->normal);

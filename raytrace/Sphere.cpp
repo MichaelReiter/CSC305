@@ -8,6 +8,10 @@ Sphere::Sphere(Vec3 p, float r, Material m) {
     material = m;
 }
 
+Vec3 Sphere::getNormalAtPoint(Vec3 point) {
+    return (point - this->position).normalized();
+}
+
 float Sphere::hit(Ray ray) {
     Vec3 e = ray.origin;
     Vec3 d = ray.direction;

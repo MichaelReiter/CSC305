@@ -12,6 +12,7 @@ public:
     Vec3 position;
     Material material;
     virtual float hit(Ray ray) = 0;
+    virtual Vec3 getNormalAtPoint(Vec3 point) = 0;
 };
 
 #endif

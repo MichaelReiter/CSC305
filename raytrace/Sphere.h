@@ -13,6 +13,7 @@ public:
     float radius;
     Sphere(Vec3 p, float r, Material m);
     float hit(Ray ray);
+    Vec3 getNormalAtPoint(Vec3 point);
 };
 
 #endif

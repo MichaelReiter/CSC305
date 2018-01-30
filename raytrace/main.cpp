@@ -7,6 +7,8 @@
 #include "Sphere.h"
 #include <vector>
 
+#define AMBIENT_LIGHT_INTENSITY 0.25
+
 using namespace OpenGP;
 
 using Colour = Vec3; // RGB Value
@@ -24,15 +26,18 @@ Color clampColor(Color c) {
     return Color(r, g, b);
 }
 
+void printColor(Color c) {
+    printf("red: %f\ngreen: %f\nblue: %f\n", c[0], c[1], c[2]);
+}
+
 // REMINDER! normalize unit vectors
-Color lighting(std::vector<Light> &lights, Vec3 intersectionPoint, Vec3 cameraPosition, Surface const &s) {
+Color lighting(std::vector<Light> &lights, Vec3 intersectionPoint, Vec3 cameraPosition, Surface &s) {
     // Phong lighting model
     // Total color = ambient + diffuse + specular
 
     // Ambient color = ambient material coefficient (surface color) * ambient light source
     // I_a = k_a * L_a
-    float ambientLightIntensity = 0.25f;
-    Color ambientColor = s.material.ambientColor * ambientLightIntensity;
+    Color ambientColor = s.material.ambientColor * AMBIENT_LIGHT_INTENSITY;
 
     // // Shadows
     // Vec3 occulusionPoint = sphere.hit(ray);
@@ -47,7 +52,7 @@ Color lighting(std::vector<Light> &lights, Vec3 intersectionPoint, Vec3 cameraPo
         // l is a unit vector pointing from the surface to the light
         // l is computed by subtracting the intersection point of the ray and surface from the light source position
         // n is a unit vector pointing normal to the surface
-        Vec3 normal = (intersectionPoint - s.position).normalized();
+        Vec3 normal = s.getNormalAtPoint(intersectionPoint);
         Vec3 lightDirection = (light.position - intersectionPoint).normalized();
         diffuseColor += light.intensity * std::fmaxf(0.0f, normal.dot(lightDirection)) * s.material.diffuseColor;
 
@@ -59,14 +64,16 @@ Color lighting(std::vector<Light> &lights, Vec3 intersectionPoint, Vec3 cameraPo
         specularColor += light.intensity * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.material.phongExponent) * s.material.specularColor;
     }
 
-    return clampColor(ambientColor + diffuseColor + specularColor);
+    Color result = ambientColor + diffuseColor + specularColor;
+
+    return clampColor(result);
 }
 
 int main(int, char**) {
     // number of columns (nx)
-    int widthResolution = 800;
+    int widthResolution = 640;
     // number of rows (ny)
-    int heightResolution = 600;
+    int heightResolution = 480;
 
     float aspectRatio = float(widthResolution) / float(heightResolution);
     Image<Colour> image(heightResolution, widthResolution);
@@ -89,18 +96,19 @@ int main(int, char**) {
     // Point lights
     std::vector<Light> lights {
         {Vec3(50.0f, 40.0f, 0.0f), 0.75f}
+        // {Vec3(0.0f, 3.0f, -40.0f), 0.75f}
     };
 
     // Sphere
     Vec3 spherePosition = Vec3(0.0f, 0.0f, -40.0f);
-    float sphereRadius = 3.0f;
+    float sphereRadius = 1.0f;
     Material sphereMaterial = Material(red(), red(), grey(), 32);
     Sphere sphere = Sphere(spherePosition, sphereRadius, sphereMaterial);
 
     // Floor plane
-    Vec3 floorPosition = Vec3(0.0f, -3.0f, 0.0f);
+    Vec3 floorPosition = Vec3(0.0f, -1.0f, 0.0f);
     Vec3 floorNormal = Vec3(0.0f, 1.0f, 0.0f);
-    Material floorMaterial = Material(lightGrey(), lightGrey(), grey(), 1);
+    Material floorMaterial = Material(blue(), blue(), grey(), 32);
     Plane floorPlane = Plane(floorPosition, floorNormal, floorMaterial);
 
     // All objects in scene
