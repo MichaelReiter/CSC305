@@ -8,6 +8,7 @@
 #include <vector>
 
 #define AMBIENT_LIGHT_INTENSITY 0.25
+#define EPSILON 0.001
 
 using namespace OpenGP;
 
@@ -30,41 +31,32 @@ void printColor(Color c) {
     printf("red: %f\ngreen: %f\nblue: %f\n", c[0], c[1], c[2]);
 }
 
-// REMINDER! normalize unit vectors
+// Phong lighting model: total color = ambient + diffuse + specular
 Color lighting(std::vector<Light> &lights, Vec3 intersectionPoint, Vec3 cameraPosition, Surface &s) {
-    // Phong lighting model
-    // Total color = ambient + diffuse + specular
-
     // Ambient color = ambient material coefficient (surface color) * ambient light source
-    // I_a = k_a * L_a
-    Color ambientColor = s.material.ambientColor * AMBIENT_LIGHT_INTENSITY;
+    Color result = s.material.ambientColor * AMBIENT_LIGHT_INTENSITY;
 
-    // // Shadows
-    // Vec3 occulusionPoint = sphere.hit(ray);
-    // if (occulusionPoint != Vec3(0,0,0)) {
-
-    // For multiple point lights, L = I_a + sum of diffuse and specular color for each point light
-    Color diffuseColor = black();
-    Color specularColor = black();
     for (auto light : lights) {
-        // Diffuse color = diffuse material coefficient * (incoming light ray dotted with surface normal) * light source
-        // I_d = k_d * (l dot n) * L_p
-        // l is a unit vector pointing from the surface to the light
-        // l is computed by subtracting the intersection point of the ray and surface from the light source position
-        // n is a unit vector pointing normal to the surface
-        Vec3 normal = s.getNormalAtPoint(intersectionPoint);
+        // Shadows
         Vec3 lightDirection = (light.position - intersectionPoint).normalized();
-        diffuseColor += light.intensity * std::fmaxf(0.0f, normal.dot(lightDirection)) * s.material.diffuseColor;
+        Vec3 adjustedPoint = intersectionPoint + EPSILON * lightDirection;
+        Ray ray = Ray(adjustedPoint, lightDirection);
 
-        // Specular color = specular material coefficient * (normal dotted with h) to the power of phongExponent * light source
-        // I_s = k_s * (n dot h)^phongExponent * L_p
-        // v is a unit vector pointing from the surface to the camera
-        Vec3 v = (cameraPosition - intersectionPoint).normalized();
-        Vec3 h = (v + lightDirection).normalized();
-        specularColor += light.intensity * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.material.phongExponent) * s.material.specularColor;
+        bool shadow = false;
+        // If no occulusion (no collision), then add diffuse and specular components to light
+        if (!shadow) {
+            // Diffuse color = diffuse material coefficient * (incoming light ray dotted with surface normal) * light source
+            Vec3 normal = s.getNormalAtPoint(intersectionPoint);
+            Color diffuseColor = light.intensity * std::fmaxf(0.0f, normal.dot(lightDirection)) * s.material.diffuseColor;
+            result += diffuseColor;
+
+            // Specular color = specular material coefficient * (normal dotted with h) to the power of phongExponent * light source
+            Vec3 v = (cameraPosition - intersectionPoint).normalized();
+            Vec3 h = (v + lightDirection).normalized();
+            Color specularColor = light.intensity * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.material.phongExponent) * s.material.specularColor;
+            result += specularColor;
+        }
     }
-
-    Color result = ambientColor + diffuseColor + specularColor;
 
     return clampColor(result);
 }
@@ -96,7 +88,6 @@ int main(int, char**) {
     // Point lights
     std::vector<Light> lights {
         {Vec3(50.0f, 40.0f, 0.0f), 0.75f}
-        // {Vec3(0.0f, 3.0f, -40.0f), 0.75f}
     };
 
     // Sphere
