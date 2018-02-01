@@ -7,15 +7,24 @@
 #include <vector>
 
 using namespace OpenGP;
-using Colour = Vec3;
+using Color = Vec3;
 using Ray = Eigen::ParametrizedLine<float, 3>;
 
-Colour red() { return Colour(1.0f, 0.0f, 0.0f); }
-Colour blue() { return Colour(0.0f, 0.0f, 1.0f); }
-Colour white() { return Colour(1.0f, 1.0f, 1.0f); }
-Colour black() { return Colour(0.0f, 0.0f, 0.0f); }
-Colour light_grey() { return Colour(0.75f, 0.75f, 0.75f); }
-Colour grey() { return Colour(0.5f, 0.5f, 0.5f); }
+Color red() { return Color(1.0f, 0.0f, 0.0f); }
+Color blue() { return Color(0.0f, 0.0f, 1.0f); }
+Color white() { return Color(1.0f, 1.0f, 1.0f); }
+Color black() { return Color(0.0f, 0.0f, 0.0f); }
+Color light_grey() { return Color(0.75f, 0.75f, 0.75f); }
+Color grey() { return Color(0.5f, 0.5f, 0.5f); }
+
+Color checkerboard(Vec3 position)
+{
+    int s = (int)floor(position[1]) + (int)floor(position[2]);
+    if (s % 2 == 0) {
+        return Color(0.0f, 0.0f, 0.0f);
+    }
+    return Color(1.0f, 1.0f, 1.0f);
+}
 
 Color clamp_color(Color c)
 {
@@ -74,7 +83,7 @@ int main(int argc, char** argv)
     const int height_resolution = 480;
 
     float aspect_ratio = float(width_resolution) / float(height_resolution);
-    Image<Colour> image(height_resolution, width_resolution);
+    Image<Color> image(height_resolution, width_resolution);
 
     // Boundaries
     float left = -1.0f * aspect_ratio;
@@ -83,24 +92,24 @@ int main(int argc, char** argv)
     float bottom = -1.0f;
 
     // World space axes
-    Vec3 U = Vec3(1.0f, 0.0f, 0.0f);
-    Vec3 V = Vec3(0.0f, 1.0f, 0.0f);
-    Vec3 W = Vec3(0.0f, 0.0f, -1.0f);
+    const Vec3 u = Vec3(1.0f, 0.0f, 0.0f);
+    const Vec3 v = Vec3(0.0f, 1.0f, 0.0f);
+    const Vec3 w = Vec3(0.0f, 0.0f, -1.0f);
 
     // Camera position
-    float focal_length = 15.0f;
-    Vec3 e = -focal_length * W;
+    const float focal_length = 15.0f;
+    const Vec3 e = -focal_length * w;
 
     // Sphere
-    Vec3 sphere_position = Vec3(0.0f, 0.0f, -40.0f);
-    float sphere_radius = 1.0f;
-    Material sphere_material = Material(red(), red(), grey(), 32);
+    const Vec3 sphere_position = Vec3(0.0f, 0.0f, -40.0f);
+    const float sphere_radius = 1.0f;
+    const Material sphere_material = Material(red(), red(), grey(), 32);
     Sphere sphere = Sphere(sphere_position, sphere_radius, sphere_material);
 
     // Floor plane
-    Vec3 floor_position = Vec3(0.0f, -1.0f, 0.0f);
-    Vec3 floor_normal = Vec3(0.0f, 1.0f, 0.0f);
-    Material floor_material = Material(blue(), blue(), grey(), 32);
+    const Vec3 floor_position = Vec3(0.0f, -1.0f, 0.0f);
+    const Vec3 floor_normal = Vec3(0.0f, 1.0f, 0.0f);
+    const Material floor_material = Material(blue(), blue(), grey(), 32);
     Plane floor_plane = Plane(floor_position, floor_normal, floor_material);
 
     // All objects in scene
@@ -119,8 +128,8 @@ int main(int argc, char** argv)
     for (int row = 0; row < image.rows(); row++) {
         for (int col = 0; col < image.cols(); col++) {
             // Cast ray
-            Vec3 pixel_position = left * U + (col * (right - left) / image.cols()) * U;
-            pixel_position += bottom * V + (row * (top - bottom) / image.rows()) * V;
+            Vec3 pixel_position = left * u + (col * (right - left) / image.cols()) * u;
+            pixel_position += bottom * v + (row * (top - bottom) / image.rows()) * v;
             Vec3 ray_direction = (pixel_position - e).normalized();
             Ray ray = Ray(e, ray_direction);
 
@@ -128,13 +137,13 @@ int main(int argc, char** argv)
             float t = -1;
             Surface* intersected_surface;
             for (auto s : scene) {
-                float newT = s->get_ray_intersection_parameter(ray);
+                float t_prime = s->get_ray_intersection_parameter(ray);
                 if (t == -1) {
-                    t = newT;
+                    t = t_prime;
                     intersected_surface = s;
                 }
-                if (newT > 0 && newT < t) {
-                    t = newT;
+                if (t_prime > 0 && t_prime < t) {
+                    t = t_prime;
                     intersected_surface = s;
                 }
             }

@@ -4,7 +4,7 @@
 #include "OpenGP/Image/Image.h"
 
 using namespace OpenGP;
-using Colour = Vec3;
+using Color = Vec3;
 
 class Material {
 public:
