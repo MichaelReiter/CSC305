@@ -10,9 +10,9 @@ Vec3 Plane::getNormalAtPoint(Vec3 point) {
 
 float Plane::hit(Ray ray) {
     float t = -1;
-    float denominator = ray.direction.dot(this->normal);
+    float denominator = ray.direction().dot(this->normal);
     if (abs(denominator) > 0.0001f) {
-        float newT = (this->position - ray.origin).dot(this->normal) / denominator;
+        float newT = (this->position - ray.origin()).dot(this->normal) / denominator;
         if (newT >= 0) {
             t = newT;
         }

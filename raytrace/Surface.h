@@ -3,9 +3,9 @@
 
 #include "OpenGP/Image/Image.h"
 #include "Material.h"
-#include "Ray.h"
 
 using namespace OpenGP;
+using Ray = Eigen::ParametrizedLine<float, 3>;
 
 class Surface {
 public:

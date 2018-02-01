@@ -3,16 +3,15 @@
 #include "Light.h"
 #include "Material.h"
 #include "Plane.h"
-#include "Ray.h"
 #include "Sphere.h"
 #include <vector>
 
-#define AMBIENT_LIGHT_INTENSITY 0.25
-#define EPSILON 0.001
-
 using namespace OpenGP;
-
 using Colour = Vec3; // RGB Value
+using Ray = Eigen::ParametrizedLine<float, 3>;
+
+// typedef Eigen::ParametrizedLine<float, 3> Ray;
+
 Colour red() { return Colour(1.0f, 0.0f, 0.0f); }
 Colour blue() { return Colour(0.0f, 0.0f, 1.0f); }
 Colour white() { return Colour(1.0f, 1.0f, 1.0f); }
@@ -20,26 +19,29 @@ Colour black() { return Colour(0.0f, 0.0f, 0.0f); }
 Colour lightGrey() { return Colour(0.75f, 0.75f, 0.75f); }
 Colour grey() { return Colour(0.5f, 0.5f, 0.5f); }
 
-Color clampColor(Color c) {
+Color ClampColor(Color c) {
     float r = std::fminf(c[0], 1);
     float g = std::fminf(c[1], 1);
     float b = std::fminf(c[2], 1);
     return Color(r, g, b);
 }
 
-void printColor(Color c) {
+void PrintColor(Color c) {
     printf("red: %f\ngreen: %f\nblue: %f\n", c[0], c[1], c[2]);
 }
 
 // Phong lighting model: total color = ambient + diffuse + specular
-Color lighting(std::vector<Light>& lights, Vec3 intersectionPoint, Vec3 cameraPosition, Surface& s) {
+Color PhongLighting(std::vector<Light>& lights, Vec3 intersectionPoint, Vec3 cameraPosition, Surface& s) {
+    const float kAmbientLightIntensity = 0.25f;
+    const float kEpsilon = 0.0001f;
+
     // Ambient color = ambient material coefficient (surface color) * ambient light source
-    Color result = s.material.ambientColor * AMBIENT_LIGHT_INTENSITY;
+    Color result = s.material.ambientColor * kAmbientLightIntensity;
 
     for (auto light : lights) {
         // Shadows
         Vec3 lightDirection = (light.position - intersectionPoint).normalized();
-        Vec3 adjustedPoint = intersectionPoint + EPSILON * lightDirection;
+        Vec3 adjustedPoint = intersectionPoint + kEpsilon * lightDirection;
         Ray ray = Ray(adjustedPoint, lightDirection);
 
         bool shadow = false;
@@ -60,17 +62,17 @@ Color lighting(std::vector<Light>& lights, Vec3 intersectionPoint, Vec3 cameraPo
         }
     }
 
-    return clampColor(result);
+    return ClampColor(result);
 }
 
-int main(int, char**) {
+int main(int argc, char** argv) {
     // number of columns (nx)
-    int widthResolution = 640;
+    const int kWidthResolution = 640;
     // number of rows (ny)
-    int heightResolution = 480;
+    const int kHeightResolution = 480;
 
-    float aspectRatio = float(widthResolution) / float(heightResolution);
-    Image<Colour> image(heightResolution, widthResolution);
+    float aspectRatio = float(kWidthResolution) / float(kHeightResolution);
+    Image<Colour> image(kHeightResolution, kWidthResolution);
 
     // Boundaries
     float left = -1.0f * aspectRatio;
@@ -87,11 +89,6 @@ int main(int, char**) {
     float focalLength = 15.0f;
     Vec3 e = -focalLength * W;
 
-    // Point lights
-    std::vector<Light> lights {
-        {Vec3(50.0f, 40.0f, 0.0f), 0.75f}
-    };
-
     // Sphere
     Vec3 spherePosition = Vec3(0.0f, 0.0f, -40.0f);
     float sphereRadius = 1.0f;
@@ -105,10 +102,16 @@ int main(int, char**) {
     Plane floorPlane = Plane(floorPosition, floorNormal, floorMaterial);
 
     // All objects in scene
-    std::vector<Surface*> scene {
-        &sphere,
-        &floorPlane
-    };
+    std::vector<Surface*> scene;
+    scene.push_back(&sphere);
+    scene.push_back(&floorPlane);
+
+    // Point lights
+    Light light = Light(Vec3(50.0f, 40.0f, 0.0f), 0.75f);
+    Light light2 = Light(Vec3(0.0f, 4.0f, -40.0f), 0.75f);
+    std::vector<Light> lights;
+    lights.push_back(light);
+    // lights.push_back(light2);
 
     // For each pixel
     for (int row = 0; row < image.rows(); row++) {
@@ -133,11 +136,11 @@ int main(int, char**) {
                     intersectedSurface = s;
                 }
             }
-            Vec3 intersectionPoint = ray.position(t);
+            Vec3 intersectionPoint = ray.pointAt(t);
 
             // Color pixels
             if (t > 0) {
-                image(row, col) = lighting(lights, intersectionPoint, e, *intersectedSurface);
+                image(row, col) = PhongLighting(lights, intersectionPoint, e, *intersectedSurface);
             } else {
                 // No intersection. Color pixel background color
                 image(row, col) = white();
