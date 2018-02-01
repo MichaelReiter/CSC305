@@ -1,4 +1,4 @@
-#include "Sphere.h"
+#include "sphere.h"
 
 Sphere::Sphere(Vec3 p, float r, Material m) :
     Surface(p, m),

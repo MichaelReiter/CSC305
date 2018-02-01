@@ -1,9 +1,9 @@
 #include "OpenGP/Image/Image.h"
 #include "bmpwrite.h"
-#include "Light.h"
-#include "Material.h"
-#include "Plane.h"
-#include "Sphere.h"
+#include "light.h"
+#include "material.h"
+#include "plane.h"
+#include "sphere.h"
 #include <vector>
 
 using namespace OpenGP;

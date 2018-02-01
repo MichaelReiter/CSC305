@@ -2,8 +2,8 @@
 #define SPHERE_H
 
 #include "OpenGP/Image/Image.h"
-#include "Material.h"
-#include "Surface.h"
+#include "material.h"
+#include "surface.h"
 
 using namespace OpenGP;
 using Ray = Eigen::ParametrizedLine<float, 3>;

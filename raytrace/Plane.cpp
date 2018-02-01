@@ -1,4 +1,4 @@
-#include "Plane.h"
+#include "plane.h"
 
 Plane::Plane(Vec3 p, Vec3 n, Material m) :
     Surface(p, m),

@@ -2,7 +2,7 @@
 #define SURFACE_H
 
 #include "OpenGP/Image/Image.h"
-#include "Material.h"
+#include "material.h"
 
 using namespace OpenGP;
 using Ray = Eigen::ParametrizedLine<float, 3>;
