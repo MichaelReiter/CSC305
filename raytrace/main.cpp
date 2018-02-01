@@ -34,11 +34,11 @@ Color PhongLighting(std::vector<Light>& lights, Vec3 intersectionPoint, Vec3 cam
     const float kEpsilon = 0.0001f;
 
     // Ambient color = ambient material coefficient (surface color) * ambient light source
-    Color result = s.material.getAmbientColor() * kAmbientLightIntensity;
+    Color result = s.material.GetAmbientColor() * kAmbientLightIntensity;
 
     for (auto light : lights) {
         // Shadows
-        Vec3 lightDirection = (light.getPosition() - intersectionPoint).normalized();
+        Vec3 lightDirection = (light.GetPosition() - intersectionPoint).normalized();
         Vec3 adjustedPoint = intersectionPoint + kEpsilon * lightDirection;
         Ray ray = Ray(adjustedPoint, lightDirection);
 
@@ -48,15 +48,15 @@ Color PhongLighting(std::vector<Light>& lights, Vec3 intersectionPoint, Vec3 cam
         // If no occulusion (no collision), then add diffuse and specular components to light
         if (!shadow) {
             // Diffuse color = diffuse material coefficient * (incoming light ray dotted with surface normal) * light source
-            Vec3 normal = s.getNormalAtPoint(intersectionPoint);
-            Color diffuseColor = light.getIntensity() * std::fmaxf(0.0f, normal.dot(lightDirection)) * s.material.getDiffuseColor();
-            result += diffuseColor;
+            Vec3 normal = s.GetNormal(intersectionPoint);
+            Color diffuse_color = light.GetIntensity() * std::fmaxf(0.0f, normal.dot(lightDirection)) * s.material.GetDiffuseColor();
+            result += diffuse_color;
 
-            // Specular color = specular material coefficient * (normal dotted with h) to the power of phongExponent * light source
+            // Specular color = specular material coefficient * (normal dotted with h) to the power of phong_exponent * light source
             Vec3 v = (cameraPosition - intersectionPoint).normalized();
             Vec3 h = (v + lightDirection).normalized();
-            Color specularColor = light.getIntensity() * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.material.getPhongExponent()) * s.material.getSpecularColor();
-            result += specularColor;
+            Color specular_color = light.GetIntensity() * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.material.GetPhongExponent()) * s.material.GetSpecularColor();
+            result += specular_color;
         }
     }
 

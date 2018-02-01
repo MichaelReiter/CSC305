@@ -9,10 +9,10 @@ Light::Light(Vec3 p, double i) {
 
 Light::~Light() {}
 
-Vec3 Light::getPosition() {
+Vec3 Light::GetPosition() {
     return position;
 }
 
-float Light::getIntensity() {
+float Light::GetIntensity() {
     return intensity;
 }

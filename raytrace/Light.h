@@ -11,8 +11,8 @@ public:
 
     ~Light();
 
-    Vec3 getPosition();
-    float getIntensity();
+    Vec3 GetPosition();
+    float GetIntensity();
 
 private:
     Vec3 position;

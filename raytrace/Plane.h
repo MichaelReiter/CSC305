@@ -15,7 +15,7 @@ public:
     ~Plane();
 
     float GetRayIntersectionParameter(Ray ray);
-    Vec3 getNormalAtPoint(Vec3 point);
+    Vec3 GetNormal(Vec3 point);
 
 private:
     Vec3 normal;

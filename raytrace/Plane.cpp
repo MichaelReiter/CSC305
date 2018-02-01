@@ -7,7 +7,7 @@ Plane::Plane(Vec3 p, Vec3 n, Material m) :
 
 Plane::~Plane() {}
 
-Vec3 Plane::getNormalAtPoint(Vec3 point) {
+Vec3 Plane::GetNormal(Vec3 point) {
     return normal.normalized();
 }
 

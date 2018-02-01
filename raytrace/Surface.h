@@ -17,7 +17,8 @@ public:
     virtual ~Surface() {}
 
     virtual float GetRayIntersectionParameter(Ray ray) = 0;
-    virtual Vec3 getNormalAtPoint(Vec3 point) = 0;
+    virtual Vec3 GetNormal(Vec3 point) = 0;
+
 protected:
     Surface(Vec3 p, Material m) :
         position(p),

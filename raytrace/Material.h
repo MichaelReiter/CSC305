@@ -13,16 +13,16 @@ public:
 
     ~Material();
 
-    Color getAmbientColor();
-    Color getDiffuseColor();
-    Color getSpecularColor();
-    int getPhongExponent();
+    Color GetAmbientColor();
+    Color GetDiffuseColor();
+    Color GetSpecularColor();
+    int GetPhongExponent();
 
 private:
-    Color ambientColor;
-    Color diffuseColor;
-    Color specularColor;
-    int phongExponent;
+    Color ambient_color;
+    Color diffuse_color;
+    Color specular_color;
+    int phong_exponent;
 };
 
 #endif // MATERIAL_H

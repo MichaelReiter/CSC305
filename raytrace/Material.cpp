@@ -1,33 +1,33 @@
 #include "Material.h"
 
 Material::Material() {
-    ambientColor = Color(0.0f, 0.0f, 0.0f);
-    diffuseColor = Color(0.0f, 0.0f, 0.0f);
-    specularColor = Color(0.0f, 0.0f, 0.0f);
-    phongExponent = 1;
+    ambient_color = Color(0.0f, 0.0f, 0.0f);
+    diffuse_color = Color(0.0f, 0.0f, 0.0f);
+    specular_color = Color(0.0f, 0.0f, 0.0f);
+    phong_exponent = 1;
 };
 
 Material::Material(Color a, Color d, Color s, int p) :
-    ambientColor(a),
-    diffuseColor(d),
-    specularColor(s),
-    phongExponent(p)
+    ambient_color(a),
+    diffuse_color(d),
+    specular_color(s),
+    phong_exponent(p)
 {}
 
 Material::~Material() {}
 
-Color Material::getAmbientColor() {
-    return ambientColor;
+Color Material::GetAmbientColor() {
+    return ambient_color;
 }
 
-Color Material::getDiffuseColor() {
-    return diffuseColor;
+Color Material::GetDiffuseColor() {
+    return diffuse_color;
 }
 
-Color Material::getSpecularColor() {
-    return specularColor;
+Color Material::GetSpecularColor() {
+    return specular_color;
 }
 
-int Material::getPhongExponent() {
-    return phongExponent;
+int Material::GetPhongExponent() {
+    return phong_exponent;
 }
