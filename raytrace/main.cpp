@@ -40,7 +40,7 @@ void print_color(Color c)
 }
 
 // Phong lighting model: total color = ambient + diffuse + specular
-Color phong_lighting(std::vector<Light>& lights, Vec3 intersection_point, Vec3 camera_position, Surface& s)
+Color phong_lighting(std::vector<Light>& lights, Vec3 intersection_point, Vec3 camera_position, Surface& s, Sphere& sphere)
 {
     const float ambient_light_intensity = 0.25f;
     const float epsilon = 0.0001f;
@@ -52,10 +52,10 @@ Color phong_lighting(std::vector<Light>& lights, Vec3 intersection_point, Vec3 c
         // Shadows
         Vec3 light_direction = (light.get_position() - intersection_point).normalized();
         Vec3 adjusted_point = intersection_point + epsilon * light_direction;
-        Ray ray = Ray(adjusted_point, light_direction);
+        Ray shadow_ray = Ray(adjusted_point, light_direction);
 
-        bool shadow = false;
-        // https://stackoverflow.com/questions/19501838/get-derived-type-via-base-class-virtual-function
+        float t = sphere.get_ray_intersection_parameter(shadow_ray);
+        bool shadow = t > 0;
 
         // If no occulusion (no collision), then add diffuse and specular components to light
         if (!shadow) {
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
 
     // Point lights
     Light light = Light(Vec3(50.0f, 40.0f, 0.0f), 0.75f);
-    Light light2 = Light(Vec3(0.0f, 4.0f, -40.0f), 0.75f);
+    // Light light2 = Light(Vec3(0.0f, 4.0f, -60.0f), 0.75f);
     std::vector<Light> lights;
     lights.push_back(light);
     // lights.push_back(light2);
@@ -151,7 +151,7 @@ int main(int argc, char** argv)
 
             // Color pixels
             if (t > 0) {
-                image(row, col) = phong_lighting(lights, intersection_point, e, *intersected_surface);
+                image(row, col) = phong_lighting(lights, intersection_point, e, *intersected_surface, sphere);
             } else {
                 // No intersection. Color pixel background color
                 image(row, col) = black();
