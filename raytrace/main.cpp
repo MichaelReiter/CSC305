@@ -40,7 +40,7 @@ void print_color(Color c)
 }
 
 // Phong lighting model: total color = ambient + diffuse + specular
-Color phong_lighting(std::vector<Light>& lights, Vec3 intersection_point, Vec3 camera_position, Surface& s, Sphere& sphere)
+Color phong_lighting(std::vector<Light>& lights, Vec3 intersection_point, Vec3 camera_position, Surface& s, std::vector<Surface*>& scene)
 {
     const float ambient_light_intensity = 0.25f;
     const float epsilon = 0.0001f;
@@ -54,8 +54,17 @@ Color phong_lighting(std::vector<Light>& lights, Vec3 intersection_point, Vec3 c
         Vec3 adjusted_point = intersection_point + epsilon * light_direction;
         Ray shadow_ray = Ray(adjusted_point, light_direction);
 
-        float t = sphere.get_ray_intersection_parameter(shadow_ray);
-        bool shadow = t > 0;
+        float t = -1;
+        bool shadow = false;
+        for (auto s : scene) {
+            if (dynamic_cast<Sphere*>(s)) {
+                float t_prime = s->get_ray_intersection_parameter(shadow_ray);
+                if (t_prime > 0) {
+                    t = t_prime;
+                }
+                shadow = t > 0;
+            }
+        }
 
         // If no occulusion (no collision), then add diffuse and specular components to light
         if (!shadow) {
@@ -100,26 +109,32 @@ int main(int argc, char** argv)
     const float focal_length = 15.0f;
     const Vec3 e = -focal_length * w;
 
-    // Sphere
-    const Vec3 sphere_position = Vec3(0.0f, 0.0f, -40.0f);
+    // Spheres
+    const Vec3 sphere_position = Vec3(2.0f, 0.0f, -40.0f);
     const float sphere_radius = 1.0f;
     const Material sphere_material = Material(red(), red(), grey(), 32);
     Sphere sphere = Sphere(sphere_position, sphere_radius, sphere_material);
 
+    const Vec3 sphere2_position = Vec3(-2.0f, 0.0f, -40.0f);
+    const float sphere2_radius = 1.0f;
+    const Material sphere2_material = Material(blue(), blue(), grey(), 32);
+    Sphere sphere2 = Sphere(sphere2_position, sphere2_radius, sphere2_material);
+
     // Floor plane
     const Vec3 floor_position = Vec3(0.0f, -1.0f, 0.0f);
     const Vec3 floor_normal = Vec3(0.0f, 1.0f, 0.0f);
-    const Material floor_material = Material(blue(), blue(), grey(), 32);
+    const Material floor_material = Material(grey(), grey(), light_grey(), 32);
     Plane floor_plane = Plane(floor_position, floor_normal, floor_material);
 
     // All objects in scene
     std::vector<Surface*> scene;
     scene.push_back(&sphere);
+    scene.push_back(&sphere2);
     scene.push_back(&floor_plane);
 
     // Point lights
     Light light = Light(Vec3(50.0f, 40.0f, 0.0f), 0.75f);
-    // Light light2 = Light(Vec3(0.0f, 4.0f, -60.0f), 0.75f);
+    Light light2 = Light(Vec3(0.0f, 4.0f, -60.0f), 0.75f);
     std::vector<Light> lights;
     lights.push_back(light);
     // lights.push_back(light2);
@@ -151,7 +166,7 @@ int main(int argc, char** argv)
 
             // Color pixels
             if (t > 0) {
-                image(row, col) = phong_lighting(lights, intersection_point, e, *intersected_surface, sphere);
+                image(row, col) = phong_lighting(lights, intersection_point, e, *intersected_surface, scene);
             } else {
                 // No intersection. Color pixel background color
                 image(row, col) = black();
