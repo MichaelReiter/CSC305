@@ -8,23 +8,21 @@ using Colour = Vec3;
 
 class Material {
 public:
+    Material();
+    Material(Color a, Color d, Color s, int p);
+
+    ~Material();
+
+    Color getAmbientColor();
+    Color getDiffuseColor();
+    Color getSpecularColor();
+    int getPhongExponent();
+
+private:
     Color ambientColor;
     Color diffuseColor;
     Color specularColor;
     int phongExponent;
-
-    Material();
-
-    Material(Color a, Color d, Color s, int p) :
-        ambientColor(a),
-        diffuseColor(d),
-        specularColor(s),
-        phongExponent(p)
-    {}
-
-    Material(const Material& material);
-
-    ~Material();
 };
 
 #endif // MATERIAL_H

@@ -10,17 +10,15 @@ using Ray = Eigen::ParametrizedLine<float, 3>;
 
 class Plane : public Surface {
 public:
-    Vec3 normal;
-
-    Plane(Vec3 p, Vec3 n, Material m) :
-        Surface(p, m),
-        normal(n)
-    {}
+    Plane(Vec3 p, Vec3 n, Material m);
 
     ~Plane();
 
-    float hit(Ray ray);
+    float GetRayIntersectionParameter(Ray ray);
     Vec3 getNormalAtPoint(Vec3 point);
+
+private:
+    Vec3 normal;
 };
 
 #endif // PLANE_H

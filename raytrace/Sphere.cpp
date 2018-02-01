@@ -1,19 +1,22 @@
 #include "Sphere.h"
 
-using namespace OpenGP;
+Sphere::Sphere(Vec3 p, float r, Material m) :
+    Surface(p, m),
+    radius(r)
+{}
 
 Sphere::~Sphere() {}
 
 Vec3 Sphere::getNormalAtPoint(Vec3 point) {
-    return (point - this->position).normalized();
+    return (point - position).normalized();
 }
 
-float Sphere::hit(Ray ray) {
+float Sphere::GetRayIntersectionParameter(Ray ray) {
     Vec3 e = ray.origin();
     Vec3 d = ray.direction();
 
-    Vec3 ec = e - this->position;
-    float discriminant = std::powf(ray.direction().dot(ec), 2) - ec.dot(ec) + this->radius*this->radius;
+    Vec3 ec = e - position;
+    float discriminant = std::powf(ray.direction().dot(ec), 2) - ec.dot(ec) + radius*radius;
 
     float t = -1;
     if (discriminant >= 0) {

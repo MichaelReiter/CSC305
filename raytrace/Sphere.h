@@ -10,17 +10,15 @@ using Ray = Eigen::ParametrizedLine<float, 3>;
 
 class Sphere : public Surface {
 public:
-    float radius;
-
-    Sphere(Vec3 p, float r, Material m) :
-        Surface(p, m),
-        radius(r)
-    {}
+    Sphere(Vec3 p, float r, Material m);
 
     ~Sphere();
 
-    float hit(Ray ray);
+    float GetRayIntersectionParameter(Ray ray);
     Vec3 getNormalAtPoint(Vec3 point);
+
+private:
+    float radius;
 };
 
 #endif // SPHERE_H

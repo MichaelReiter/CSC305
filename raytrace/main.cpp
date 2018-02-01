@@ -7,10 +7,8 @@
 #include <vector>
 
 using namespace OpenGP;
-using Colour = Vec3; // RGB Value
+using Colour = Vec3;
 using Ray = Eigen::ParametrizedLine<float, 3>;
-
-// typedef Eigen::ParametrizedLine<float, 3> Ray;
 
 Colour red() { return Colour(1.0f, 0.0f, 0.0f); }
 Colour blue() { return Colour(0.0f, 0.0f, 1.0f); }
@@ -36,11 +34,11 @@ Color PhongLighting(std::vector<Light>& lights, Vec3 intersectionPoint, Vec3 cam
     const float kEpsilon = 0.0001f;
 
     // Ambient color = ambient material coefficient (surface color) * ambient light source
-    Color result = s.material.ambientColor * kAmbientLightIntensity;
+    Color result = s.material.getAmbientColor() * kAmbientLightIntensity;
 
     for (auto light : lights) {
         // Shadows
-        Vec3 lightDirection = (light.position - intersectionPoint).normalized();
+        Vec3 lightDirection = (light.getPosition() - intersectionPoint).normalized();
         Vec3 adjustedPoint = intersectionPoint + kEpsilon * lightDirection;
         Ray ray = Ray(adjustedPoint, lightDirection);
 
@@ -51,13 +49,13 @@ Color PhongLighting(std::vector<Light>& lights, Vec3 intersectionPoint, Vec3 cam
         if (!shadow) {
             // Diffuse color = diffuse material coefficient * (incoming light ray dotted with surface normal) * light source
             Vec3 normal = s.getNormalAtPoint(intersectionPoint);
-            Color diffuseColor = light.intensity * std::fmaxf(0.0f, normal.dot(lightDirection)) * s.material.diffuseColor;
+            Color diffuseColor = light.getIntensity() * std::fmaxf(0.0f, normal.dot(lightDirection)) * s.material.getDiffuseColor();
             result += diffuseColor;
 
             // Specular color = specular material coefficient * (normal dotted with h) to the power of phongExponent * light source
             Vec3 v = (cameraPosition - intersectionPoint).normalized();
             Vec3 h = (v + lightDirection).normalized();
-            Color specularColor = light.intensity * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.material.phongExponent) * s.material.specularColor;
+            Color specularColor = light.getIntensity() * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.material.getPhongExponent()) * s.material.getSpecularColor();
             result += specularColor;
         }
     }
@@ -126,7 +124,7 @@ int main(int argc, char** argv) {
             float t = -1;
             Surface* intersectedSurface;
             for (auto s : scene) {
-                float newT = s->hit(ray);
+                float newT = s->GetRayIntersectionParameter(ray);
                 if (t == -1) {
                     t = newT;
                     intersectedSurface = s;

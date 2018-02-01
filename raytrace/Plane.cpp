@@ -1,18 +1,21 @@
 #include "Plane.h"
 
-using namespace OpenGP;
+Plane::Plane(Vec3 p, Vec3 n, Material m) :
+    Surface(p, m),
+    normal(n)
+{}
 
 Plane::~Plane() {}
 
 Vec3 Plane::getNormalAtPoint(Vec3 point) {
-    return (this->normal).normalized();
+    return normal.normalized();
 }
 
-float Plane::hit(Ray ray) {
+float Plane::GetRayIntersectionParameter(Ray ray) {
     float t = -1;
-    float denominator = ray.direction().dot(this->normal);
+    float denominator = ray.direction().dot(normal);
     if (abs(denominator) > 0.0001f) {
-        float newT = (this->position - ray.origin()).dot(this->normal) / denominator;
+        float newT = (position - ray.origin()).dot(normal) / denominator;
         if (newT >= 0) {
             t = newT;
         }

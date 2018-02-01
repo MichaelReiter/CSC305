@@ -7,15 +7,16 @@ using namespace OpenGP;
 
 class Light {
 public:
-    Vec3 position;
-    double intensity;
-
-    Light(Vec3 p, double i) :
-        position(p),
-        intensity(i)
-    {}
+    Light(Vec3 p, double i);
 
     ~Light();
+
+    Vec3 getPosition();
+    float getIntensity();
+
+private:
+    Vec3 position;
+    double intensity;
 };
 
 #endif // LIGHT_H
