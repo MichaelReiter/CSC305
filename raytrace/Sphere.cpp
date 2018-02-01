@@ -18,7 +18,7 @@ float Sphere::get_ray_intersection_parameter(Ray ray)
     Vec3 d = ray.direction();
 
     Vec3 ec = e - position;
-    float discriminant = std::powf(ray.direction().dot(ec), 2) - ec.dot(ec) + radius*radius;
+    float discriminant = std::powf(ray.direction().dot(ec), 2) - ec.dot(ec) + radius * radius;
 
     float t = -1;
     if (discriminant >= 0) {

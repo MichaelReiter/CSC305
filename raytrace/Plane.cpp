@@ -17,9 +17,9 @@ float Plane::get_ray_intersection_parameter(Ray ray)
     float t = -1;
     float denominator = ray.direction().dot(normal);
     if (abs(denominator) > 0.0001f) {
-        float newT = (position - ray.origin()).dot(normal) / denominator;
-        if (newT >= 0) {
-            t = newT;
+        float t_prime = (position - ray.origin()).dot(normal) / denominator;
+        if (t_prime >= 0) {
+            t = t_prime;
         }
     }
     return t;
