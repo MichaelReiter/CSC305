@@ -2,11 +2,7 @@
 
 using namespace OpenGP;
 
-Sphere::Sphere(Vec3 p, float r, Material m) {
-    position = p;
-    radius = r;
-    material = m;
-}
+Sphere::~Sphere() {}
 
 Vec3 Sphere::getNormalAtPoint(Vec3 point) {
     return (point - this->position).normalized();

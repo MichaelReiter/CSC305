@@ -13,4 +13,4 @@ public:
     Vec3 position(double t);
 };
 
-#endif
+#endif // RAY_H

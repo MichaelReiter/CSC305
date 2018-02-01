@@ -11,8 +11,18 @@ class Surface {
 public:
     Vec3 position;
     Material material;
+
+    Surface() {}
+
+    virtual ~Surface() {}
+
     virtual float hit(Ray ray) = 0;
     virtual Vec3 getNormalAtPoint(Vec3 point) = 0;
+protected:
+    Surface(Vec3 p, Material m) :
+        position(p),
+        material(m)
+    {}
 };
 
-#endif
+#endif // SURFACE_H

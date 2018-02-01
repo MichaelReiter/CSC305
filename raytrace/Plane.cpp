@@ -2,11 +2,7 @@
 
 using namespace OpenGP;
 
-Plane::Plane(Vec3 p, Vec3 n, Material m)  {
-    position = p;
-    normal = n;
-    material = m;
-}
+Plane::~Plane() {}
 
 Vec3 Plane::getNormalAtPoint(Vec3 point) {
     return (this->normal).normalized();

@@ -12,9 +12,19 @@ public:
     Color diffuseColor;
     Color specularColor;
     int phongExponent;
+
     Material();
-    Material(Color a, Color d, Color s, int p);
+
+    Material(Color a, Color d, Color s, int p) :
+        ambientColor(a),
+        diffuseColor(d),
+        specularColor(s),
+        phongExponent(p)
+    {}
+
     Material(const Material& material);
+
+    ~Material();
 };
 
-#endif
+#endif // MATERIAL_H

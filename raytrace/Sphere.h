@@ -11,9 +11,16 @@ using namespace OpenGP;
 class Sphere : public Surface {
 public:
     float radius;
-    Sphere(Vec3 p, float r, Material m);
+
+    Sphere(Vec3 p, float r, Material m) :
+        Surface(p, m),
+        radius(r)
+    {}
+
+    ~Sphere();
+
     float hit(Ray ray);
     Vec3 getNormalAtPoint(Vec3 point);
 };
 
-#endif
+#endif // SPHERE_H

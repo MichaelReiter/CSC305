@@ -32,7 +32,7 @@ void printColor(Color c) {
 }
 
 // Phong lighting model: total color = ambient + diffuse + specular
-Color lighting(std::vector<Light> &lights, Vec3 intersectionPoint, Vec3 cameraPosition, Surface &s) {
+Color lighting(std::vector<Light>& lights, Vec3 intersectionPoint, Vec3 cameraPosition, Surface& s) {
     // Ambient color = ambient material coefficient (surface color) * ambient light source
     Color result = s.material.ambientColor * AMBIENT_LIGHT_INTENSITY;
 
@@ -43,6 +43,8 @@ Color lighting(std::vector<Light> &lights, Vec3 intersectionPoint, Vec3 cameraPo
         Ray ray = Ray(adjustedPoint, lightDirection);
 
         bool shadow = false;
+        // https://stackoverflow.com/questions/19501838/get-derived-type-via-base-class-virtual-function
+
         // If no occulusion (no collision), then add diffuse and specular components to light
         if (!shadow) {
             // Diffuse color = diffuse material coefficient * (incoming light ray dotted with surface normal) * light source
@@ -128,7 +130,7 @@ int main(int, char**) {
                 }
                 if (newT > 0 && newT < t) {
                     t = newT;
-                    intersectedSurface = s;                    
+                    intersectedSurface = s;
                 }
             }
             Vec3 intersectionPoint = ray.position(t);

@@ -12,4 +12,4 @@ public:
     Light(Vec3 p, double i);
 };
 
-#endif
+#endif // LIGHT_H
