@@ -7,11 +7,13 @@ Plane::Plane(Vec3 p, Vec3 n, Material m) :
 
 Plane::~Plane() {}
 
-Vec3 Plane::GetNormal(Vec3 point) {
+Vec3 Plane::get_normal(Vec3 point)
+{
     return normal.normalized();
 }
 
-float Plane::GetRayIntersectionParameter(Ray ray) {
+float Plane::get_ray_intersection_parameter(Ray ray)
+{
     float t = -1;
     float denominator = ray.direction().dot(normal);
     if (abs(denominator) > 0.0001f) {

@@ -7,11 +7,13 @@ Sphere::Sphere(Vec3 p, float r, Material m) :
 
 Sphere::~Sphere() {}
 
-Vec3 Sphere::GetNormal(Vec3 point) {
+Vec3 Sphere::get_normal(Vec3 point)
+{
     return (point - position).normalized();
 }
 
-float Sphere::GetRayIntersectionParameter(Ray ray) {
+float Sphere::get_ray_intersection_parameter(Ray ray)
+{
     Vec3 e = ray.origin();
     Vec3 d = ray.direction();
 

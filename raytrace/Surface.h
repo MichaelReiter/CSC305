@@ -9,21 +9,26 @@ using Ray = Eigen::ParametrizedLine<float, 3>;
 
 class Surface {
 public:
-    Vec3 position;
-    Material material;
-
     Surface() {}
 
     virtual ~Surface() {}
 
-    virtual float GetRayIntersectionParameter(Ray ray) = 0;
-    virtual Vec3 GetNormal(Vec3 point) = 0;
+    virtual float get_ray_intersection_parameter(Ray ray) = 0;
+    virtual Vec3 get_normal(Vec3 point) = 0;
+    Material get_material()
+    {
+        return material;
+    }
 
 protected:
+    Vec3 position;
     Surface(Vec3 p, Material m) :
         position(p),
         material(m)
     {}
+
+private:
+    Material material;
 };
 
 #endif // SURFACE_H

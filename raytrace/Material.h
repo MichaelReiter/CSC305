@@ -13,10 +13,10 @@ public:
 
     ~Material();
 
-    Color GetAmbientColor();
-    Color GetDiffuseColor();
-    Color GetSpecularColor();
-    int GetPhongExponent();
+    Color get_ambient_color();
+    Color get_diffuse_color();
+    Color get_specular_color();
+    int get_phong_exponent();
 
 private:
     Color ambient_color;

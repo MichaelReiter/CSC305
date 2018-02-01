@@ -2,17 +2,20 @@
 
 using namespace OpenGP;
 
-Light::Light(Vec3 p, double i) {
+Light::Light(Vec3 p, double i)
+{
     position = p;
     intensity = i;
 }
 
 Light::~Light() {}
 
-Vec3 Light::GetPosition() {
+Vec3 Light::get_position()
+{
     return position;
 }
 
-float Light::GetIntensity() {
+float Light::get_intensity()
+{
     return intensity;
 }

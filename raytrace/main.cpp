@@ -17,28 +17,31 @@ Colour black() { return Colour(0.0f, 0.0f, 0.0f); }
 Colour lightGrey() { return Colour(0.75f, 0.75f, 0.75f); }
 Colour grey() { return Colour(0.5f, 0.5f, 0.5f); }
 
-Color ClampColor(Color c) {
+Color clamp_color(Color c)
+{
     float r = std::fminf(c[0], 1);
     float g = std::fminf(c[1], 1);
     float b = std::fminf(c[2], 1);
     return Color(r, g, b);
 }
 
-void PrintColor(Color c) {
+void print_color(Color c)
+{
     printf("red: %f\ngreen: %f\nblue: %f\n", c[0], c[1], c[2]);
 }
 
 // Phong lighting model: total color = ambient + diffuse + specular
-Color PhongLighting(std::vector<Light>& lights, Vec3 intersectionPoint, Vec3 cameraPosition, Surface& s) {
+Color phong_lighting(std::vector<Light>& lights, Vec3 intersectionPoint, Vec3 cameraPosition, Surface& s)
+{
     const float kAmbientLightIntensity = 0.25f;
     const float kEpsilon = 0.0001f;
 
     // Ambient color = ambient material coefficient (surface color) * ambient light source
-    Color result = s.material.GetAmbientColor() * kAmbientLightIntensity;
+    Color result = s.get_material().get_ambient_color() * kAmbientLightIntensity;
 
     for (auto light : lights) {
         // Shadows
-        Vec3 lightDirection = (light.GetPosition() - intersectionPoint).normalized();
+        Vec3 lightDirection = (light.get_position() - intersectionPoint).normalized();
         Vec3 adjustedPoint = intersectionPoint + kEpsilon * lightDirection;
         Ray ray = Ray(adjustedPoint, lightDirection);
 
@@ -48,22 +51,23 @@ Color PhongLighting(std::vector<Light>& lights, Vec3 intersectionPoint, Vec3 cam
         // If no occulusion (no collision), then add diffuse and specular components to light
         if (!shadow) {
             // Diffuse color = diffuse material coefficient * (incoming light ray dotted with surface normal) * light source
-            Vec3 normal = s.GetNormal(intersectionPoint);
-            Color diffuse_color = light.GetIntensity() * std::fmaxf(0.0f, normal.dot(lightDirection)) * s.material.GetDiffuseColor();
+            Vec3 normal = s.get_normal(intersectionPoint);
+            Color diffuse_color = light.get_intensity() * std::fmaxf(0.0f, normal.dot(lightDirection)) * s.get_material().get_diffuse_color();
             result += diffuse_color;
 
             // Specular color = specular material coefficient * (normal dotted with h) to the power of phong_exponent * light source
             Vec3 v = (cameraPosition - intersectionPoint).normalized();
             Vec3 h = (v + lightDirection).normalized();
-            Color specular_color = light.GetIntensity() * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.material.GetPhongExponent()) * s.material.GetSpecularColor();
+            Color specular_color = light.get_intensity() * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.get_material().get_phong_exponent()) * s.get_material().get_specular_color();
             result += specular_color;
         }
     }
 
-    return ClampColor(result);
+    return clamp_color(result);
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
     // number of columns (nx)
     const int kWidthResolution = 640;
     // number of rows (ny)
@@ -124,7 +128,7 @@ int main(int argc, char** argv) {
             float t = -1;
             Surface* intersectedSurface;
             for (auto s : scene) {
-                float newT = s->GetRayIntersectionParameter(ray);
+                float newT = s->get_ray_intersection_parameter(ray);
                 if (t == -1) {
                     t = newT;
                     intersectedSurface = s;
@@ -138,7 +142,7 @@ int main(int argc, char** argv) {
 
             // Color pixels
             if (t > 0) {
-                image(row, col) = PhongLighting(lights, intersectionPoint, e, *intersectedSurface);
+                image(row, col) = phong_lighting(lights, intersectionPoint, e, *intersectedSurface);
             } else {
                 // No intersection. Color pixel background color
                 image(row, col) = white();
