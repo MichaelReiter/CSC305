@@ -9,20 +9,23 @@ using Color = Vec3;
 class Material {
 public:
     Material();
-    Material(Color a, Color d, Color s, int p);
+    Material(Color c, int p, bool t=false);
 
     ~Material();
 
-    Color get_ambient_color();
-    Color get_diffuse_color();
-    Color get_specular_color();
+    Color get_ambient_color(Vec3 point);
+    Color get_diffuse_color(Vec3 point);
+    Color get_specular_color(Vec3 point);
     int get_phong_exponent();
+
+    Color checkerboard_texture(Vec3 point);
 
 private:
     Color ambient_color;
     Color diffuse_color;
     Color specular_color;
     int phong_exponent;
+    bool textured;
 };
 
 #endif // MATERIAL_H

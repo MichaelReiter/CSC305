@@ -14,17 +14,7 @@ Color red() { return Color(1.0f, 0.0f, 0.0f); }
 Color blue() { return Color(0.0f, 0.0f, 1.0f); }
 Color white() { return Color(1.0f, 1.0f, 1.0f); }
 Color black() { return Color(0.0f, 0.0f, 0.0f); }
-Color light_grey() { return Color(0.75f, 0.75f, 0.75f); }
 Color grey() { return Color(0.5f, 0.5f, 0.5f); }
-
-Color checkerboard(Vec3 position)
-{
-    int s = (int)floor(position[1]) + (int)floor(position[2]);
-    if (s % 2 == 0) {
-        return Color(0.0f, 0.0f, 0.0f);
-    }
-    return Color(1.0f, 1.0f, 1.0f);
-}
 
 Color clamp_color(Color c)
 {
@@ -34,11 +24,6 @@ Color clamp_color(Color c)
     return Color(r, g, b);
 }
 
-void print_color(Color c)
-{
-    printf("red: %f\ngreen: %f\nblue: %f\n", c[0], c[1], c[2]);
-}
-
 // Phong lighting model: total color = ambient + diffuse + specular
 Color phong_lighting(std::vector<Light>& lights, Vec3 intersection_point, Vec3 camera_position, Surface& s, std::vector<Surface*>& scene)
 {
@@ -46,7 +31,7 @@ Color phong_lighting(std::vector<Light>& lights, Vec3 intersection_point, Vec3 c
     const float epsilon = 0.0001f;
 
     // Ambient color = ambient material coefficient (surface color) * ambient light source
-    Color result = s.get_material().get_ambient_color() * ambient_light_intensity;
+    Color result = s.get_material().get_ambient_color(intersection_point) * ambient_light_intensity;
 
     for (auto light : lights) {
         // Shadows
@@ -70,13 +55,13 @@ Color phong_lighting(std::vector<Light>& lights, Vec3 intersection_point, Vec3 c
         if (!shadow) {
             // Diffuse color = diffuse material coefficient * (incoming light ray dotted with surface normal) * light source
             Vec3 normal = s.get_normal(intersection_point);
-            Color diffuse_color = light.get_intensity() * std::fmaxf(0.0f, normal.dot(light_direction)) * s.get_material().get_diffuse_color();
+            Color diffuse_color = light.get_intensity() * std::fmaxf(0.0f, normal.dot(light_direction)) * s.get_material().get_diffuse_color(intersection_point);
             result += diffuse_color;
 
             // Specular color = specular material coefficient * (normal dotted with h) to the power of phong_exponent * light source
             Vec3 v = (camera_position - intersection_point).normalized();
             Vec3 h = (v + light_direction).normalized();
-            Color specular_color = light.get_intensity() * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.get_material().get_phong_exponent()) * s.get_material().get_specular_color();
+            Color specular_color = light.get_intensity() * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.get_material().get_phong_exponent()) * s.get_material().get_specular_color(intersection_point);
             result += specular_color;
         }
     }
@@ -89,7 +74,7 @@ int main(int argc, char** argv)
     // number of columns (nx)
     const int width_resolution = 640;
     // number of rows (ny)
-    const int height_resolution = 480;
+    const int height_resolution = 400;
 
     float aspect_ratio = float(width_resolution) / float(height_resolution);
     Image<Color> image(height_resolution, width_resolution);
@@ -112,24 +97,24 @@ int main(int argc, char** argv)
     // Spheres
     const Vec3 sphere_position = Vec3(2.0f, 0.0f, -40.0f);
     const float sphere_radius = 1.0f;
-    const Material sphere_material = Material(red(), red(), grey(), 32);
+    const Material sphere_material = Material(red(), 32);
     Sphere sphere = Sphere(sphere_position, sphere_radius, sphere_material);
 
     const Vec3 sphere2_position = Vec3(-2.0f, 0.0f, -40.0f);
     const float sphere2_radius = 1.0f;
-    const Material sphere2_material = Material(blue(), blue(), grey(), 32);
+    const Material sphere2_material = Material(blue(), 32);
     Sphere sphere2 = Sphere(sphere2_position, sphere2_radius, sphere2_material);
 
     // Floor plane
     const Vec3 floor_position = Vec3(0.0f, -1.0f, 0.0f);
     const Vec3 floor_normal = Vec3(0.0f, 1.0f, 0.0f);
-    const Material floor_material = Material(grey(), grey(), light_grey(), 32);
+    const Material floor_material = Material(grey(), 32, true);
     Plane floor_plane = Plane(floor_position, floor_normal, floor_material);
 
     // All objects in scene
     std::vector<Surface*> scene;
     scene.push_back(&sphere);
-    scene.push_back(&sphere2);
+    // scene.push_back(&sphere2);
     scene.push_back(&floor_plane);
 
     // Point lights
