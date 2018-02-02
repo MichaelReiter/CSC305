@@ -10,18 +10,18 @@ using Color = Vec3;
 class Surface {
 public:
     Surface();
-    Surface(Vec3 p, Color c, int phong, bool t=false);
+    Surface(const Vec3& p, const Color& c, int phong, bool t=false);
 
     ~Surface();
 
-    virtual float get_ray_intersection_parameter(Ray ray) = 0;
-    virtual Vec3 get_normal(Vec3 point) = 0;
-    Color get_ambient_color(Vec3 point);
-    Color get_diffuse_color(Vec3 point);
-    Color get_specular_color(Vec3 point);
-    int get_phong_exponent();
+    virtual float get_ray_intersection_parameter(const Ray& ray) const = 0;
+    virtual Vec3 get_normal(const Vec3& point) const = 0;
+    Color get_ambient_color(const Vec3& point) const;
+    Color get_diffuse_color(const Vec3& point) const;
+    Color get_specular_color(const Vec3& point) const;
+    int get_phong_exponent() const;
 
-    Color checkerboard_texture(Vec3 point);
+    Color checkerboard_texture(const Vec3& point) const;
 
 protected:
     Vec3 position;

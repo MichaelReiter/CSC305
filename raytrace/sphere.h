@@ -9,12 +9,12 @@ using Ray = Eigen::ParametrizedLine<float, 3>;
 
 class Sphere : public Surface {
 public:
-    Sphere(Vec3 p, float r, Color c, int phong, bool t=false);
+    Sphere(const Vec3& p, float r, const Color& c, int phong, bool t=false);
 
     ~Sphere();
 
-    float get_ray_intersection_parameter(Ray ray);
-    Vec3 get_normal(Vec3 point);
+    float get_ray_intersection_parameter(const Ray& ray) const;
+    Vec3 get_normal(const Vec3& point) const;
 
 private:
     float radius;

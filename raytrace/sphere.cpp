@@ -1,18 +1,18 @@
 #include "sphere.h"
 
-Sphere::Sphere(Vec3 p, float r, Color c, int phong, bool t) :
+Sphere::Sphere(const Vec3& p, float r, const Color& c, int phong, bool t) :
     Surface(p, c, phong, t),
     radius(r)
 {}
 
 Sphere::~Sphere() {}
 
-Vec3 Sphere::get_normal(Vec3 point)
+Vec3 Sphere::get_normal(const Vec3& point) const
 {
     return (point - position).normalized();
 }
 
-float Sphere::get_ray_intersection_parameter(Ray ray)
+float Sphere::get_ray_intersection_parameter(const Ray& ray) const
 {
     Vec3 e = ray.origin();
     Vec3 d = ray.direction();
@@ -20,7 +20,7 @@ float Sphere::get_ray_intersection_parameter(Ray ray)
     Vec3 ec = e - position;
     float discriminant = std::powf(ray.direction().dot(ec), 2) - ec.dot(ec) + radius * radius;
 
-    float t = -1;
+    float t = -1.0f;
     if (discriminant >= 0) {
         float t0 = -ray.direction().dot(ec) - std::sqrtf(discriminant);
         float t1 = -ray.direction().dot(ec) + std::sqrtf(discriminant);
