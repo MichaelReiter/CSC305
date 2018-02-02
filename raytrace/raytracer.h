@@ -1,7 +1,6 @@
 #ifndef RAYTRACER_H
 #define RAYTRACER_H
 
-#include "OpenGP/Image/Image.h"
 #include "surface.h"
 #include "light.h"
 
