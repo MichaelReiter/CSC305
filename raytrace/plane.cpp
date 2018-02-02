@@ -1,7 +1,7 @@
 #include "plane.h"
 
-Plane::Plane(Vec3 p, Vec3 n, Material m) :
-    Surface(p, m),
+Plane::Plane(Vec3 p, Vec3 n, Color c, int phong, bool t) :
+    Surface(p, c, phong, t),
     normal(n)
 {}
 

@@ -2,7 +2,6 @@
 #define SPHERE_H
 
 #include "OpenGP/Image/Image.h"
-#include "material.h"
 #include "surface.h"
 
 using namespace OpenGP;
@@ -10,7 +9,7 @@ using Ray = Eigen::ParametrizedLine<float, 3>;
 
 class Sphere : public Surface {
 public:
-    Sphere(Vec3 p, float r, Material m);
+    Sphere(Vec3 p, float r, Color c, int phong, bool t=false);
 
     ~Sphere();
 

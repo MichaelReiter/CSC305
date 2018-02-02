@@ -1,52 +1,53 @@
-#include "material.h"
+#include "surface.h"
 
-Material::Material()
+Surface::Surface()
 {
     ambient_color = Color(0.0f, 0.0f, 0.0f);
     diffuse_color = Color(0.0f, 0.0f, 0.0f);
     specular_color = Color(0.0f, 0.0f, 0.0f);
     phong_exponent = 1;
-    checkerboard = false;
-};
+    textured = false;
+}
 
-Material::Material(Color c, int p, bool t) :
+Surface::Surface(Vec3 p, Color c, int phong, bool t) :
+    position(p),
     ambient_color(c),
     diffuse_color(c),
-    phong_exponent(p),
-    checkerboard(t)
+    phong_exponent(phong),
+    textured(t)
 {
     specular_color = Color(0.5f, 0.5f, 0.5f);
 }
 
-Material::~Material() {}
+Surface::~Surface() {}
 
-Color Material::get_ambient_color(Vec3 point)
+Color Surface::get_ambient_color(Vec3 point)
 {
-    if (checkerboard) {
+    if (textured) {
         return checkerboard_texture(point);
     }
     return ambient_color;
 }
 
-Color Material::get_diffuse_color(Vec3 point)
+Color Surface::get_diffuse_color(Vec3 point)
 {
-    if (checkerboard) {
+    if (textured) {
         return checkerboard_texture(point);
     }
     return diffuse_color;
 }
 
-Color Material::get_specular_color(Vec3 point)
+Color Surface::get_specular_color(Vec3 point)
 {
     return specular_color;
 }
 
-int Material::get_phong_exponent()
+int Surface::get_phong_exponent()
 {
     return phong_exponent;
 }
 
-Color Material::checkerboard_texture(Vec3 point)
+Color Surface::checkerboard_texture(Vec3 point)
 {
     const float scale = 2;
     float x = point[0] / scale;

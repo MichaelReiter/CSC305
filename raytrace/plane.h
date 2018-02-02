@@ -2,7 +2,6 @@
 #define PLANE_H
 
 #include "OpenGP/Image/Image.h"
-#include "material.h"
 #include "surface.h"
 
 using namespace OpenGP;
@@ -10,7 +9,7 @@ using Ray = Eigen::ParametrizedLine<float, 3>;
 
 class Plane : public Surface {
 public:
-    Plane(Vec3 p, Vec3 n, Material m);
+    Plane(Vec3 p, Vec3 n, Color c, int phong, bool t=false);
 
     ~Plane();
 

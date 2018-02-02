@@ -1,7 +1,7 @@
 #include "sphere.h"
 
-Sphere::Sphere(Vec3 p, float r, Material m) :
-    Surface(p, m),
+Sphere::Sphere(Vec3 p, float r, Color c, int phong, bool t) :
+    Surface(p, c, phong, t),
     radius(r)
 {}
 
@@ -32,3 +32,12 @@ float Sphere::get_ray_intersection_parameter(Ray ray)
 
     return t;
 }
+
+// Colour Sphere::texture_from_image(Vec3 point)
+// {
+//     float phi = acos((point.z() - position.z()) / radius);
+//     float theta = atan2(point.y() - position.y(), point.x() - position.x());
+//     float u = phi / (2 * M_PI);
+//     float v = (M_PI - theta) / M_PI;
+//     return this->image.at<Colour>((int)(image.cols*u), (int)(image.rows*v));
+// }

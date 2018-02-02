@@ -1,7 +1,6 @@
 #include "OpenGP/Image/Image.h"
 #include "bmpwrite.h"
 #include "light.h"
-#include "material.h"
 #include "plane.h"
 #include "sphere.h"
 #include <vector>
@@ -32,7 +31,7 @@ Color phong_lighting(std::vector<Light>& lights, Vec3 intersection_point, Vec3 c
     const float epsilon = 0.0001f;
 
     // Ambient component
-    Color result = s.get_material().get_ambient_color(intersection_point) * ambient_light_intensity;
+    Color result = s.get_ambient_color(intersection_point) * ambient_light_intensity;
 
     for (auto light : lights) {
         // Cast ray toward lights to compute shadows 
@@ -56,13 +55,13 @@ Color phong_lighting(std::vector<Light>& lights, Vec3 intersection_point, Vec3 c
         if (!shadow) {
             // Diffuse component
             Vec3 normal = s.get_normal(intersection_point);
-            Color diffuse_color = light.get_intensity() * std::fmaxf(0.0f, normal.dot(light_direction)) * s.get_material().get_diffuse_color(intersection_point);
+            Color diffuse_color = light.get_intensity() * std::fmaxf(0.0f, normal.dot(light_direction)) * s.get_diffuse_color(intersection_point);
             result += diffuse_color;
 
             // Specular component
             Vec3 v = (camera_position - intersection_point).normalized();
             Vec3 h = (v + light_direction).normalized();
-            Color specular_color = light.get_intensity() * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.get_material().get_phong_exponent()) * s.get_material().get_specular_color(intersection_point);
+            Color specular_color = light.get_intensity() * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.get_phong_exponent()) * s.get_specular_color(intersection_point);
             result += specular_color;
         }
     }
@@ -100,24 +99,20 @@ int main(int argc, char** argv)
     // Spheres
     const Vec3 sphere_position = Vec3(2.0f, 0.0f, -40.0f);
     const float sphere_radius = 1.0f;
-    const Material sphere_material = Material(red(), 32);
-    Sphere sphere = Sphere(sphere_position, sphere_radius, sphere_material);
+    Sphere sphere = Sphere(sphere_position, sphere_radius, red(), 32);
 
     const Vec3 sphere2_position = Vec3(-2.0f, 0.0f, -40.0f);
     const float sphere2_radius = 1.0f;
-    const Material sphere2_material = Material(blue(), 256);
-    Sphere sphere2 = Sphere(sphere2_position, sphere2_radius, sphere2_material);
+    Sphere sphere2 = Sphere(sphere2_position, sphere2_radius, blue(), 256);
 
     const Vec3 sphere3_position = Vec3(0.0f, 0.0f, -30.0f);
     const float sphere3_radius = 1.0f;
-    const Material sphere3_material = Material(white(), 32);
-    Sphere sphere3 = Sphere(sphere3_position, sphere3_radius, sphere3_material);
+    Sphere sphere3 = Sphere(sphere3_position, sphere3_radius, white(), 32);
 
     // Floor plane
     const Vec3 floor_position = Vec3(0.0f, -1.0f, 0.0f);
     const Vec3 floor_normal = Vec3(0.0f, 1.0f, 0.0f);
-    const Material floor_material = Material(grey(), 32, true);
-    Plane floor_plane = Plane(floor_position, floor_normal, floor_material);
+    Plane floor_plane = Plane(floor_position, floor_normal, grey(), 32, true);
 
     // All objects in scene
     std::vector<Surface*> scene;
