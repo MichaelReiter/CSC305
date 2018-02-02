@@ -1,12 +1,8 @@
 #ifndef RAYTRACER_H
 #define RAYTRACER_H
 
-#include "OpenGP/Image/Image.h"
 #include "surface.h"
 #include "light.h"
-
-using namespace OpenGP;
-using Ray = Eigen::ParametrizedLine<float, 3>;
 
 class Raytracer {
 public:
@@ -20,15 +16,15 @@ public:
         const Vec3& camera_position,
         const Surface& s,
         const std::vector<Surface*>& scene
-    );
-    Image<Color> trace_rays();
+    ) const;
+    Image<Color> trace_rays() const;
 
 private:
     int width_resolution;
     int height_resolution;
     int supersample_factor;
 
-    Image<Color> apply_supersampling(Image<Color> image);
+    Image<Color> apply_supersampling(Image<Color>& image) const;
 };
 
 #endif // RAYTRACER_H

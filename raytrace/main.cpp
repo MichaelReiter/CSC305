@@ -1,4 +1,3 @@
-#include "OpenGP/Image/Image.h"
 #include "bmpwrite.h"
 #include "raytracer.h"
 

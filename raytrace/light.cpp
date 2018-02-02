@@ -1,12 +1,9 @@
 #include "light.h"
 
-using namespace OpenGP;
-
-Light::Light(const Vec3& p, double i)
-{
-    position = p;
-    intensity = i;
-}
+Light::Light(const Vec3& p, double i) :
+    position(p),
+    intensity(i)
+{}
 
 Light::~Light() {}
 

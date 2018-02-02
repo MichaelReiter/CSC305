@@ -19,7 +19,7 @@ Color Raytracer::phong_lighting(
     const Vec3& camera_position,
     const Surface& s,
     const std::vector<Surface*>& scene
-)
+) const
 {
     const float ambient_light_intensity = 0.25f;
     const float epsilon = 0.0001f;
@@ -63,7 +63,7 @@ Color Raytracer::phong_lighting(
     return Colors::clamp_color(result);
 }
 
-Image<Color> Raytracer::trace_rays()
+Image<Color> Raytracer::trace_rays() const
 {
     int width = width_resolution * supersample_factor;
     int height = height_resolution * supersample_factor;
@@ -143,7 +143,7 @@ Image<Color> Raytracer::trace_rays()
     return image;
 }
 
-Image<Color> Raytracer::apply_supersampling(Image<Color> image)
+Image<Color> Raytracer::apply_supersampling(Image<Color>& image) const
 {
     int width = width_resolution * supersample_factor;
     int height = height_resolution * supersample_factor;
