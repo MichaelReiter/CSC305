@@ -13,6 +13,8 @@ public:
     static const Color white;
     static const Color black;
     static const Color grey;
+
+    static Color clamp_color(const Color& c);
 };
 
 #endif // COLORS_H
