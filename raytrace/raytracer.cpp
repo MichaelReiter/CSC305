@@ -31,7 +31,7 @@ Color Raytracer::phong_lighting(
         // Cast ray toward lights to compute shadows 
         Vec3 light_direction = (light.get_position() - intersection_point).normalized();
         Vec3 adjusted_point = intersection_point + epsilon * light_direction;
-        Ray shadow_ray = Ray(adjusted_point, light_direction);
+        Ray shadow_ray = {adjusted_point, light_direction};
 
         float t = -1.0f;
         bool shadow = false;
@@ -111,7 +111,7 @@ Image<Color> Raytracer::trace_rays() const
             Vec3 pixel_position = left * u + (col * (right - left) / image.cols()) * u;
             pixel_position += bottom * v + (row * (top - bottom) / image.rows()) * v;
             Vec3 ray_direction = (pixel_position - e).normalized();
-            Ray ray = Ray(e, ray_direction);
+            Ray ray = {e, ray_direction};
 
             // Compute intersection point of nearest surface in scene
             float t = -1.0f;
