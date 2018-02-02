@@ -2,14 +2,14 @@
 
 Sphere::Sphere(const Vec3& p, float r, const Color& c, int phong, bool t) :
     Surface(p, c, phong, t),
-    radius(r)
+    m_radius(r)
 {}
 
 Sphere::~Sphere() {}
 
 Vec3 Sphere::get_normal(const Vec3& point) const
 {
-    return (point - position).normalized();
+    return (point - m_position).normalized();
 }
 
 float Sphere::get_ray_intersection_parameter(const Ray& ray) const
@@ -17,8 +17,8 @@ float Sphere::get_ray_intersection_parameter(const Ray& ray) const
     Vec3 e = ray.origin();
     Vec3 d = ray.direction();
 
-    Vec3 ec = e - position;
-    float discriminant = std::powf(ray.direction().dot(ec), 2) - ec.dot(ec) + radius * radius;
+    Vec3 ec = e - m_position;
+    float discriminant = std::powf(ray.direction().dot(ec), 2) - ec.dot(ec) + m_radius * m_radius;
 
     float t = -1.0f;
     if (discriminant >= 0) {
@@ -32,12 +32,3 @@ float Sphere::get_ray_intersection_parameter(const Ray& ray) const
 
     return t;
 }
-
-// Colour Sphere::texture_from_image(Vec3 point)
-// {
-//     float phi = acos((point.z() - position.z()) / radius);
-//     float theta = atan2(point.y() - position.y(), point.x() - position.x());
-//     float u = phi / (2 * M_PI);
-//     float v = (M_PI - theta) / M_PI;
-//     return this->image.at<Colour>((int)(image.cols*u), (int)(image.rows*v));
-// }

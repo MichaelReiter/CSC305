@@ -3,9 +3,9 @@
 
 #include "OpenGP/Image/Image.h"
 
-using namespace OpenGP;
-using Ray = Eigen::ParametrizedLine<float, 3>;
-using Color = Vec3;
+typedef Eigen::ParametrizedLine<float, 3> Ray;
+typedef OpenGP::Vec3 Vec3;
+typedef Vec3 Color;
 
 class Surface {
 public:
@@ -24,14 +24,14 @@ public:
     Color checkerboard_texture(const Vec3& point) const;
 
 protected:
-    Vec3 position;
+    Vec3 m_position;
 
 private:
-    Color ambient_color;
-    Color diffuse_color;
-    Color specular_color;
-    int phong_exponent;
-    bool textured;
+    Color m_ambient_color;
+    Color m_diffuse_color;
+    Color m_specular_color;
+    int m_phong_exponent;
+    bool m_textured;
 };
 
 #endif // SURFACE_H

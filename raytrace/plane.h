@@ -13,7 +13,7 @@ public:
     Vec3 get_normal(const Vec3& point) const;
 
 private:
-    Vec3 normal;
+    Vec3 m_normal;
 };
 
 #endif // PLANE_H

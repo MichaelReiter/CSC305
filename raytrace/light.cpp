@@ -1,18 +1,18 @@
 #include "light.h"
 
 Light::Light(const Vec3& p, double i) :
-    position(p),
-    intensity(i)
+    m_position(p),
+    m_intensity(i)
 {}
 
 Light::~Light() {}
 
 Vec3 Light::get_position() const
 {
-    return position;
+    return m_position;
 }
 
 float Light::get_intensity() const
 {
-    return intensity;
+    return m_intensity;
 }

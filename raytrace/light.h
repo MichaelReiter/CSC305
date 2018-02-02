@@ -3,7 +3,7 @@
 
 #include "OpenGP/Image/Image.h"
 
-using namespace OpenGP;
+typedef OpenGP::Vec3 Vec3;
 
 class Light {
 public:
@@ -15,8 +15,8 @@ public:
     float get_intensity() const;
 
 private:
-    Vec3 position;
-    double intensity;
+    Vec3 m_position;
+    double m_intensity;
 };
 
 #endif // LIGHT_H

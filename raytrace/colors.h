@@ -3,8 +3,8 @@
 
 #include "OpenGP/Image/Image.h"
 
-using namespace OpenGP;
-using Color = Vec3;
+typedef OpenGP::Vec3 Vec3;
+typedef Vec3 Color;
 
 class Colors {
 public:    

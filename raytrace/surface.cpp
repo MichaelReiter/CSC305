@@ -1,51 +1,49 @@
 #include "surface.h"
 #include "colors.h"
 
-Surface::Surface()
-{
-    ambient_color = Colors::black;
-    diffuse_color = Colors::black;
-    specular_color = Colors::black;
-    phong_exponent = 1;
-    textured = false;
-}
+Surface::Surface() :
+    m_ambient_color(Colors::black),
+    m_diffuse_color(Colors::black),
+    m_specular_color(Colors::black),
+    m_phong_exponent(1),
+    m_textured(false)
+{}
 
 Surface::Surface(const Vec3& p, const Color& c, int phong, bool t) :
-    position(p),
-    ambient_color(c),
-    diffuse_color(c),
-    phong_exponent(phong),
-    textured(t)
-{
-    specular_color = Colors::grey;
-}
+    m_position(p),
+    m_ambient_color(c),
+    m_diffuse_color(c),
+    m_specular_color(Colors::grey),
+    m_phong_exponent(phong),
+    m_textured(t)
+{}
 
 Surface::~Surface() {}
 
 Color Surface::get_ambient_color(const Vec3& point) const
 {
-    if (textured) {
+    if (m_textured) {
         return checkerboard_texture(point);
     }
-    return ambient_color;
+    return m_ambient_color;
 }
 
 Color Surface::get_diffuse_color(const Vec3& point) const
 {
-    if (textured) {
+    if (m_textured) {
         return checkerboard_texture(point);
     }
-    return diffuse_color;
+    return m_diffuse_color;
 }
 
 Color Surface::get_specular_color(const Vec3& point) const
 {
-    return specular_color;
+    return m_specular_color;
 }
 
 int Surface::get_phong_exponent() const
 {
-    return phong_exponent;
+    return m_phong_exponent;
 }
 
 Color Surface::checkerboard_texture(const Vec3& point) const

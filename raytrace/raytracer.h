@@ -1,14 +1,24 @@
 #ifndef RAYTRACER_H
 #define RAYTRACER_H
 
+#include "OpenGP/Image/Image.h"
 #include "surface.h"
 #include "light.h"
+
+typedef OpenGP::Image<Color> Image;
 
 class Raytracer {
 public:
     Raytracer(int w, int h, int s);
 
     ~Raytracer();
+
+    Image trace_rays() const;
+
+private:
+    int m_width_resolution;
+    int m_height_resolution;
+    int m_supersample_factor;
 
     Color phong_lighting(
         const std::vector<Light>& lights,
@@ -17,14 +27,7 @@ public:
         const Surface& s,
         const std::vector<Surface*>& scene
     ) const;
-    Image<Color> trace_rays() const;
-
-private:
-    int width_resolution;
-    int height_resolution;
-    int supersample_factor;
-
-    Image<Color> apply_supersampling(Image<Color>& image) const;
+    Image apply_supersampling(Image& image) const;
 };
 
 #endif // RAYTRACER_H

@@ -13,7 +13,7 @@ public:
     Vec3 get_normal(const Vec3& point) const;
 
 private:
-    float radius;
+    float m_radius;
 };
 
 #endif // SPHERE_H

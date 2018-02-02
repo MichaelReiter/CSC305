@@ -5,9 +5,9 @@
 #include <vector>
 
 Raytracer::Raytracer(int w, int h, int s) :
-    width_resolution(w),
-    height_resolution(h),
-    supersample_factor(s)
+    m_width_resolution(w),
+    m_height_resolution(h),
+    m_supersample_factor(s)
 {}
 
 Raytracer::~Raytracer() {}
@@ -27,7 +27,7 @@ Color Raytracer::phong_lighting(
     // Ambient component
     Color result = s.get_ambient_color(intersection_point) * ambient_light_intensity;
 
-    for (auto& light : lights) {
+    for (auto const& light : lights) {
         // Cast ray toward lights to compute shadows 
         Vec3 light_direction = (light.get_position() - intersection_point).normalized();
         Vec3 adjusted_point = intersection_point + epsilon * light_direction;
@@ -35,7 +35,7 @@ Color Raytracer::phong_lighting(
 
         float t = -1.0f;
         bool shadow = false;
-        for (auto& s : scene) {
+        for (auto const& s : scene) {
             if (dynamic_cast<Sphere*>(s)) {
                 float t_prime = s->get_ray_intersection_parameter(shadow_ray);
                 if (t_prime > 0) {
@@ -63,12 +63,12 @@ Color Raytracer::phong_lighting(
     return Colors::clamp_color(result);
 }
 
-Image<Color> Raytracer::trace_rays() const
+Image Raytracer::trace_rays() const
 {
-    int width = width_resolution * supersample_factor;
-    int height = height_resolution * supersample_factor;
+    int width = m_width_resolution * m_supersample_factor;
+    int height = m_height_resolution * m_supersample_factor;
     float aspect_ratio = float(width) / float(height);
-    Image<Color> image(height, width);
+    Image image(height, width);
 
     // Boundaries
     float left = -1.0f * aspect_ratio;
@@ -116,7 +116,7 @@ Image<Color> Raytracer::trace_rays() const
             // Compute intersection point of nearest surface in scene
             float t = -1.0f;
             Surface* intersected_surface;
-            for (auto s : scene) {
+            for (auto const& s : scene) {
                 float t_prime = s->get_ray_intersection_parameter(ray);
                 if (t == -1.0f || (t_prime > 0 && t_prime < t)) {
                     t = t_prime;
@@ -136,26 +136,26 @@ Image<Color> Raytracer::trace_rays() const
     }
 
     // Antialiasing
-    if (supersample_factor > 1) {
+    if (m_supersample_factor > 1) {
         image = apply_supersampling(image);
     }
 
     return image;
 }
 
-Image<Color> Raytracer::apply_supersampling(Image<Color>& image) const
+Image Raytracer::apply_supersampling(Image& image) const
 {
-    int width = width_resolution * supersample_factor;
-    int height = height_resolution * supersample_factor;
-    Image<Color> supersampled_image(height / supersample_factor, width / supersample_factor);
+    int width = m_width_resolution * m_supersample_factor;
+    int height = m_height_resolution * m_supersample_factor;
+    Image supersampled_image(height / m_supersample_factor, width / m_supersample_factor);
     for (int row = 0; row < image.rows(); row++) {
         for (int col = 0; col < image.cols(); col++) {
             Color c1 = image(row, col);
-            Color c2 = image(std::min(row+1, width * supersample_factor), col);
-            Color c3 = image(row, std::min(col+1, height * supersample_factor));
-            Color c4 = image(std::min(row+1, width * supersample_factor), std::min(col+1, height * supersample_factor));
+            Color c2 = image(std::min(row+1, width * m_supersample_factor), col);
+            Color c3 = image(row, std::min(col+1, height * m_supersample_factor));
+            Color c4 = image(std::min(row+1, width * m_supersample_factor), std::min(col+1, height * m_supersample_factor));
             Color averaged_color = (c1 + c2 + c3 + c4) / 4;
-            supersampled_image(row / supersample_factor, col / supersample_factor) = averaged_color;
+            supersampled_image(row / m_supersample_factor, col / m_supersample_factor) = averaged_color;
         }
     }
     return supersampled_image;
