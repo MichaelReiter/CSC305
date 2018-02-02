@@ -16,6 +16,7 @@ Color white() { return Color(1.0f, 1.0f, 1.0f); }
 Color black() { return Color(0.0f, 0.0f, 0.0f); }
 Color grey() { return Color(0.5f, 0.5f, 0.5f); }
 
+// Ensure RGB values are constrained within [0, 1]
 Color clamp_color(Color c)
 {
     float r = std::fminf(c[0], 1);
@@ -30,11 +31,11 @@ Color phong_lighting(std::vector<Light>& lights, Vec3 intersection_point, Vec3 c
     const float ambient_light_intensity = 0.25f;
     const float epsilon = 0.0001f;
 
-    // Ambient color = ambient material coefficient (surface color) * ambient light source
+    // Ambient component
     Color result = s.get_material().get_ambient_color(intersection_point) * ambient_light_intensity;
 
     for (auto light : lights) {
-        // Shadows
+        // Cast ray toward lights to compute shadows 
         Vec3 light_direction = (light.get_position() - intersection_point).normalized();
         Vec3 adjusted_point = intersection_point + epsilon * light_direction;
         Ray shadow_ray = Ray(adjusted_point, light_direction);
@@ -51,14 +52,14 @@ Color phong_lighting(std::vector<Light>& lights, Vec3 intersection_point, Vec3 c
             }
         }
 
-        // If no occulusion (no collision), then add diffuse and specular components to light
+        // If no occulusion then add diffuse and specular components to lighting model
         if (!shadow) {
-            // Diffuse color = diffuse material coefficient * (incoming light ray dotted with surface normal) * light source
+            // Diffuse component
             Vec3 normal = s.get_normal(intersection_point);
             Color diffuse_color = light.get_intensity() * std::fmaxf(0.0f, normal.dot(light_direction)) * s.get_material().get_diffuse_color(intersection_point);
             result += diffuse_color;
 
-            // Specular color = specular material coefficient * (normal dotted with h) to the power of phong_exponent * light source
+            // Specular component
             Vec3 v = (camera_position - intersection_point).normalized();
             Vec3 h = (v + light_direction).normalized();
             Color specular_color = light.get_intensity() * std::powf(std::fmaxf(0.0f, normal.dot(h)), s.get_material().get_phong_exponent()) * s.get_material().get_specular_color(intersection_point);
@@ -133,16 +134,12 @@ int main(int argc, char** argv)
             Vec3 ray_direction = (pixel_position - e).normalized();
             Ray ray = Ray(e, ray_direction);
 
-            // Compute intersection point of object in scene
+            // Compute intersection point of nearest surface in scene
             float t = -1;
             Surface* intersected_surface;
             for (auto s : scene) {
                 float t_prime = s->get_ray_intersection_parameter(ray);
-                if (t == -1) {
-                    t = t_prime;
-                    intersected_surface = s;
-                }
-                if (t_prime > 0 && t_prime < t) {
+                if (t == -1 || (t_prime > 0 && t_prime < t)) {
                     t = t_prime;
                     intersected_surface = s;
                 }
@@ -153,7 +150,7 @@ int main(int argc, char** argv)
             if (t > 0) {
                 image(row, col) = phong_lighting(lights, intersection_point, e, *intersected_surface, scene);
             } else {
-                // No intersection. Color pixel background color
+                // No intersection. Default to background color
                 image(row, col) = black();
             }
         }
