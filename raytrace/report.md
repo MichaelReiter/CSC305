@@ -9,9 +9,10 @@ The program compiles and renders
 - Ray-plane intersection of a given surface material using Phong shading model
 - Casting sphere shadows on the plane
 
-## Advanced Functionality (+2%)
+## Advanced Functionality
 I also implemented the following advanced functionality
-- Procedural checkerboard texturing
+- Procedural checkerboard texturing (+2%)
+- Antialiasing using supersampling (+5%)
 
 ## Extras
 On top of that (Arthur told me I could get extra marks for the following)

@@ -72,10 +72,12 @@ Color phong_lighting(std::vector<Light>& lights, Vec3 intersection_point, Vec3 c
 
 int main(int argc, char** argv)
 {
+    // Antialiased using supersampling
+    const int supersample_factor = 2;
     // number of columns (nx)
-    const int width_resolution = 640;
+    const int width_resolution = 1280 * supersample_factor;
     // number of rows (ny)
-    const int height_resolution = 400;
+    const int height_resolution = 800 * supersample_factor;
 
     float aspect_ratio = float(width_resolution) / float(height_resolution);
     Image<Color> image(height_resolution, width_resolution);
@@ -103,7 +105,7 @@ int main(int argc, char** argv)
 
     const Vec3 sphere2_position = Vec3(-2.0f, 0.0f, -40.0f);
     const float sphere2_radius = 1.0f;
-    const Material sphere2_material = Material(blue(), 32);
+    const Material sphere2_material = Material(blue(), 256);
     Sphere sphere2 = Sphere(sphere2_position, sphere2_radius, sphere2_material);
 
     // Floor plane
@@ -115,7 +117,7 @@ int main(int argc, char** argv)
     // All objects in scene
     std::vector<Surface*> scene;
     scene.push_back(&sphere);
-    // scene.push_back(&sphere2);
+    scene.push_back(&sphere2);
     scene.push_back(&floor_plane);
 
     // Point lights
@@ -123,7 +125,7 @@ int main(int argc, char** argv)
     Light light2 = Light(Vec3(0.0f, 4.0f, -60.0f), 0.75f);
     std::vector<Light> lights;
     lights.push_back(light);
-    // lights.push_back(light2);
+    lights.push_back(light2);
 
     // For each pixel
     for (int row = 0; row < image.rows(); row++) {
@@ -154,6 +156,22 @@ int main(int argc, char** argv)
                 image(row, col) = black();
             }
         }
+    }
+
+    // Antialiasing
+    if (supersample_factor > 1) {
+        Image<Color> supersampled_image(height_resolution / supersample_factor, width_resolution / supersample_factor);
+        for (int row = 0; row < image.rows(); row++) {
+            for (int col = 0; col < image.cols(); col++) {
+                Color c1 = image(row, col);
+                Color c2 = image(std::min(row+1, width_resolution * supersample_factor), col);
+                Color c3 = image(row, std::min(col+1, height_resolution * supersample_factor));
+                Color c4 = image(std::min(row+1, width_resolution * supersample_factor), std::min(col+1, height_resolution * supersample_factor));
+                Color averaged_color = (c1 + c2 + c3 + c4) / 4;
+                supersampled_image(row / supersample_factor, col / supersample_factor) = averaged_color;
+            }
+        }
+        image = supersampled_image;
     }
 
     bmpwrite("./out.bmp", image);

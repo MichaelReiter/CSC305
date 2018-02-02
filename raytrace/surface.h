@@ -15,7 +15,7 @@ public:
 
     virtual float get_ray_intersection_parameter(Ray ray) = 0;
     virtual Vec3 get_normal(Vec3 point) = 0;
-    Material get_material()
+    virtual Material get_material()
     {
         return material;
     }
