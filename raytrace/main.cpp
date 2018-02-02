@@ -108,6 +108,11 @@ int main(int argc, char** argv)
     const Material sphere2_material = Material(blue(), 256);
     Sphere sphere2 = Sphere(sphere2_position, sphere2_radius, sphere2_material);
 
+    const Vec3 sphere3_position = Vec3(0.0f, 0.0f, -30.0f);
+    const float sphere3_radius = 1.0f;
+    const Material sphere3_material = Material(white(), 32);
+    Sphere sphere3 = Sphere(sphere3_position, sphere3_radius, sphere3_material);
+
     // Floor plane
     const Vec3 floor_position = Vec3(0.0f, -1.0f, 0.0f);
     const Vec3 floor_normal = Vec3(0.0f, 1.0f, 0.0f);
@@ -118,6 +123,7 @@ int main(int argc, char** argv)
     std::vector<Surface*> scene;
     scene.push_back(&sphere);
     scene.push_back(&sphere2);
+    scene.push_back(&sphere3);
     scene.push_back(&floor_plane);
 
     // Point lights

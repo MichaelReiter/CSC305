@@ -25,7 +25,7 @@ private:
     Color diffuse_color;
     Color specular_color;
     int phong_exponent;
-    bool textured;
+    bool checkerboard;
 };
 
 #endif // MATERIAL_H
