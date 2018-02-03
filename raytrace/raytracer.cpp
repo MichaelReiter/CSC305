@@ -27,7 +27,7 @@ Color Raytracer::phong_lighting(
     // Ambient component
     Color result = s.get_ambient_color(intersection_point) * ambient_light_intensity;
 
-    for (auto const& light : lights) {
+    for (const auto& light : lights) {
         // Cast ray toward lights to compute shadows 
         Vec3 light_direction = (light.get_position() - intersection_point).normalized();
         Vec3 adjusted_point = intersection_point + epsilon * light_direction;
@@ -35,7 +35,7 @@ Color Raytracer::phong_lighting(
 
         float t = -1.0f;
         bool shadow = false;
-        for (auto const& s : scene) {
+        for (const auto& s : scene) {
             if (dynamic_cast<Sphere*>(s)) {
                 float t_prime = s->get_ray_intersection_parameter(shadow_ray);
                 if (t_prime > 0) {
@@ -116,7 +116,7 @@ Image Raytracer::trace_rays() const
             // Compute intersection point of nearest surface in scene
             float t = -1.0f;
             Surface* intersected_surface;
-            for (auto const& s : scene) {
+            for (const auto& s : scene) {
                 float t_prime = s->get_ray_intersection_parameter(ray);
                 if (t == -1.0f || (t_prime > 0 && t_prime < t)) {
                     t = t_prime;
