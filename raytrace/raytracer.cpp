@@ -21,8 +21,8 @@ Color Raytracer::phong_lighting(
     const std::vector<Surface*>& scene
 ) const
 {
-    const float ambient_light_intensity = 0.25f;
-    const float epsilon = 0.0001f;
+    constexpr float ambient_light_intensity = 0.25f;
+    constexpr float epsilon = 0.0001f;
 
     // Ambient component
     Color result = s.get_ambient_color(intersection_point) * ambient_light_intensity;
@@ -65,16 +65,16 @@ Color Raytracer::phong_lighting(
 
 Image Raytracer::trace_rays() const
 {
-    int width = m_width_resolution * m_supersample_factor;
-    int height = m_height_resolution * m_supersample_factor;
-    float aspect_ratio = float(width) / float(height);
+    const int width = m_width_resolution * m_supersample_factor;
+    const int height = m_height_resolution * m_supersample_factor;
+    const float aspect_ratio = float(width) / float(height);
     Image image(height, width);
 
     // Boundaries
-    float left = -1.0f * aspect_ratio;
-    float right = 1.0f * aspect_ratio;
-    float top = 1.0f;
-    float bottom = -1.0f;
+    const float left = -1.0f * aspect_ratio;
+    const float right = 1.0f * aspect_ratio;
+    const float top = 1.0f;
+    const float bottom = -1.0f;
 
     // World space axes
     const Vec3 u = {1.0f, 0.0f, 0.0f};
