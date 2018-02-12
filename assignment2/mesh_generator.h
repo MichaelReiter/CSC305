@@ -2,13 +2,12 @@
 #define MESH_GENERATOR_H
 
 #include <fstream>
-#include <string>
 
 class MeshGenerator {
 public:
     MeshGenerator();
 
-    ~MeshGenerator();    
+    ~MeshGenerator();
 
     enum Shape: unsigned int {
         Cube = 0,
@@ -16,12 +15,12 @@ public:
         Cylinder
     };
 
-    void generate_obj_file(enum Shape shape, std::string filename);
+    void generate_obj_file(enum Shape shape, const std::string& filename) const;
 
 private:
-    void write_cube_obj(std::ofstream& file);
-    void write_sphere_obj(std::ofstream& file);
-    void write_cylinder_obj(std::ofstream& file);
+    void write_cube_obj(std::ofstream& file) const;
+    void write_sphere_obj(std::ofstream& file) const;
+    void write_cylinder_obj(std::ofstream& file) const;
 };
 
 #endif // MESH_GENERATOR_H

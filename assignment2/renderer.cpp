@@ -18,7 +18,6 @@ void Renderer::draw() const
 
 int Renderer::create_application() const
 {
-    // Create main window and set callback function
     OpenGP::Application app;
     OpenGP::Window& window = app.create_window([this](OpenGP::Window& window) {
         draw();
