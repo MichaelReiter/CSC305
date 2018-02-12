@@ -6,7 +6,7 @@ file(GLOB_RECURSE SHADERS "*.glsl")
 file(GLOB IMGUI "../external/OpenGP/src/OpenGP/external/imgui/*.h" )
 file(GLOB IMGUI "../external/OpenGP/src/OpenGP/external/imgui/*.cpp" )
 
-add_executable(${EXERCISENAME} ${SOURCES} ${HEADERS} ${SHADERS} ${IMGUI})
+add_executable(${EXERCISENAME} ${SOURCES} ${HEADERS} ${SHADERS} ${IMGUI} mesh_generator.cpp mesh_generator.h renderer.cpp renderer.h)
 if(WIN32)
         target_link_libraries(${EXERCISENAME} "legacy_stdio_definitions.lib")
 endif()
@@ -20,4 +20,3 @@ file(COPY ${PROJECT_SOURCE_DIR}/data/soup.png DESTINATION ${CMAKE_CURRENT_BINARY
 
 file(COPY ${PROJECT_SOURCE_DIR}/assignment2/Mesh/Mesh_vshader.glsl DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${PROJECT_SOURCE_DIR}/assignment2/Mesh/Mesh_fshader.glsl DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
