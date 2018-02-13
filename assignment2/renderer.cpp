@@ -25,5 +25,6 @@ int Renderer::create_application() const
     window.set_title("Assignment 2");
     window.set_size(m_width, m_height);
 
-    return app.run();
+    // return app.run();
+    return 0;
 }

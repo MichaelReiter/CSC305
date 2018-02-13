@@ -1,16 +1,32 @@
 #include <iostream>
+#include <sstream>
+#include <math.h>
 #include <vector>
 #include "mesh_generator.h"
-#include "OpenGP/Image/Image.h"
 
 MeshGenerator::MeshGenerator() {}
 
 MeshGenerator::~MeshGenerator() {}
 
+void MeshGenerator::write_vertices(std::ofstream& file, const std::vector<OpenGP::Vec3>& vertices) const
+{
+    file << "# vertices" << std::endl;
+    for (const auto& v : vertices) {
+        file << "v " << std::fixed << v[0] << " " << v[1] << " " << v[2] << std::endl;
+    }
+}
+
+void MeshGenerator::write_faces(std::ofstream& file, const std::vector<OpenGP::Vec3>& faces) const
+{
+    file << "# faces" << std::endl;
+    for (const auto& f : faces) {
+        file << "f " << (int)f[0] << " " << (int)f[1] << " " << (int)f[2] << std::endl;
+    }
+}
+
 void MeshGenerator::write_cube_obj(std::ofstream& file) const
 {
     file << "# cube" << std::endl;
-    file << "# vertices" << std::endl;
     std::vector<OpenGP::Vec3> vertices {
         {-1, 1, -1},
         {-1, 1, 1},
@@ -21,10 +37,7 @@ void MeshGenerator::write_cube_obj(std::ofstream& file) const
         {1, -1, 1},
         {1, -1, -1}
     };
-    for (const auto& v : vertices) {
-        file << "v " << v[0] << " " << v[1] << " " << v[2] << std::endl;
-    }
-    file << "# faces" << std::endl;
+    write_vertices(file, vertices);
     std::vector<OpenGP::Vec3> faces {
         {6, 2, 1},
         {6, 1, 5},
@@ -39,9 +52,7 @@ void MeshGenerator::write_cube_obj(std::ofstream& file) const
         {7, 3, 2},
         {7, 2, 6}
     };
-    for (const auto& f : faces) {
-        file << "f " << f[0] << " " << f[1] << " " << f[2] << std::endl;
-    }
+    write_faces(file, faces);    
 }
 
 void MeshGenerator::write_sphere_obj(std::ofstream& file) const
@@ -52,7 +63,27 @@ void MeshGenerator::write_sphere_obj(std::ofstream& file) const
 
 void MeshGenerator::write_cylinder_obj(std::ofstream& file) const
 {
+    constexpr int resolution = 15;
     file << "# cylinder" << std::endl;
+    std::vector<OpenGP::Vec3> vertices;
+    int v;
+    for (v = 0; v < resolution; v++) {
+        float theta = (2 * M_PI * v) / (resolution - 1);
+        vertices.push_back({sin(theta), 1.0f, cos(theta)});
+        vertices.push_back({sin(theta), -1.0f, cos(theta)});
+    }
+    // TODO: push north and south poles and construct circle faces
+    // vertices.push_back({0, -1.0f, 0});
+    // vertices.push_back({0, 1.0f, 0});
+    write_vertices(file, vertices);
+    std::vector<OpenGP::Vec3> faces;
+    int f;
+    for (f = 1; f < resolution*2; f++) {
+        faces.push_back({(f), (f+1), (f+2)});
+        faces.push_back({(f+1), (f+3), (f+2)});
+    }
+
+    write_faces(file, faces);
 }
 
 void MeshGenerator::generate_obj_file(enum Shape shape, const std::string& filename) const
