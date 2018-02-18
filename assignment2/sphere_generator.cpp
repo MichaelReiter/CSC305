@@ -3,7 +3,7 @@
 #include <vector>
 #include "sphere_generator.h"
 
-SphereGenerator::SphereGenerator(int resolution) :
+SphereGenerator::SphereGenerator(unsigned int resolution) :
     m_resolution(resolution)
 {}
 

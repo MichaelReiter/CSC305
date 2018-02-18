@@ -5,12 +5,12 @@
 
 class CylinderGenerator : public MeshGenerator {
 public:
-    CylinderGenerator(int resolution);
+    CylinderGenerator(unsigned int resolution);
 
     ~CylinderGenerator();
 
 private:
-    int m_resolution;
+    unsigned int m_resolution;
 
     void write_to_file(std::ofstream& file) const;
 };

@@ -5,12 +5,12 @@
 
 class SphereGenerator : public MeshGenerator {
 public:
-    SphereGenerator(int resolution);
+    SphereGenerator(unsigned int resolution);
 
     ~SphereGenerator();
 
 private:
-    int m_resolution;
+    unsigned int m_resolution;
 
     void write_to_file(std::ofstream& file) const;
 };
