@@ -10,20 +10,12 @@ public:
 
     ~MeshGenerator();
 
-    enum Shape : unsigned int {
-        Cube = 0,
-        Sphere,
-        Cylinder
-    };
+    void generate_obj_file(const std::string& filename) const;
 
-    void generate_obj_file(enum Shape shape, const std::string& filename) const;
-
-private:
+protected:
     void write_vertices(std::ofstream& file, const std::vector<OpenGP::Vec3>& vertices) const;
     void write_faces(std::ofstream& file, const std::vector<OpenGP::Vec3>& faces) const;
-    void write_cube_obj(std::ofstream& file) const;
-    void write_sphere_obj(std::ofstream& file) const;
-    void write_cylinder_obj(std::ofstream& file) const;
+    virtual void write_to_file(std::ofstream& file) const = 0;
 };
 
 #endif // MESH_GENERATOR_H
