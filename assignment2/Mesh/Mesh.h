@@ -34,8 +34,8 @@ public:
     }
 
     void load_vertices(
-        const std::vector<OpenGP::Vec3>& vertexArray,
-        const std::vector<unsigned int>& indexArray
+        const std::vector<OpenGP::Vec3>& vertex_array,
+        const std::vector<unsigned int>& index_array
     )
     {
         // Vertex one vertex array
@@ -48,8 +48,8 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, m_vertex_point_buffer);
         glBufferData(
             GL_ARRAY_BUFFER,
-            vertexArray.size() * sizeof(OpenGP::Vec3),
-            &vertexArray[0],
+            vertex_array.size() * sizeof(OpenGP::Vec3),
+            &vertex_array[0],
             GL_STATIC_DRAW
         );
         glEnableVertexAttribArray(0);
@@ -68,18 +68,18 @@ public:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_indices);
         glBufferData(
             GL_ELEMENT_ARRAY_BUFFER,
-            indexArray.size() * sizeof(unsigned int),
-            &indexArray[0],
+            index_array.size() * sizeof(unsigned int),
+            &index_array[0],
             GL_STATIC_DRAW
         );
         check_error_gl();
 
-        m_num_vertices = (unsigned) indexArray.size();
+        m_num_vertices = (unsigned)index_array.size();
 
         glBindVertexArray(0);
     }
 
-    void load_normals(const std::vector<OpenGP::Vec3>& normalArray)
+    void load_normals(const std::vector<OpenGP::Vec3>& normal_array)
     {
         // Vertex one vertex Array
         glBindVertexArray(m_vao);
@@ -89,8 +89,8 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, m_vertex_normal_buffer);
         glBufferData(
             GL_ARRAY_BUFFER,
-            normalArray.size() * sizeof(OpenGP::Vec3),
-            &normalArray[0],
+            normal_array.size() * sizeof(OpenGP::Vec3),
+            &normal_array[0],
             GL_STATIC_DRAW
         );
         glEnableVertexAttribArray(1);
@@ -137,7 +137,7 @@ public:
         glBindVertexArray(0);
     }
 
-    void load_textures(const std::string filename)
+    void load_textures(const std::string& filename)
     {
         // Used snippet from https://raw.githubusercontent.com/lvandeve/lodepng/master/examples/example_decode.cpp
         // raw pixels
