@@ -6,7 +6,7 @@ file(GLOB_RECURSE SHADERS "*.glsl")
 file(GLOB IMGUI "../external/OpenGP/src/OpenGP/external/imgui/*.h" )
 file(GLOB IMGUI "../external/OpenGP/src/OpenGP/external/imgui/*.cpp" )
 
-add_executable(${EXERCISENAME} ${SOURCES} ${HEADERS} ${SHADERS} ${IMGUI} mesh_generator.cpp mesh_generator.h cube_generator.cpp cube_generator.h cylinder_generator.cpp cylinder_generator.h pyramid_generator.cpp pyramid_generator.h sphere_generator.cpp sphere_generator.h renderer.cpp renderer.h)
+add_executable(${EXERCISENAME} ${SOURCES} ${HEADERS} ${SHADERS} ${IMGUI} cone_generator.cpp cone_generator.h mesh_generator.cpp mesh_generator.h cube_generator.cpp cube_generator.h cylinder_generator.cpp cylinder_generator.h pyramid_generator.cpp pyramid_generator.h sphere_generator.cpp sphere_generator.h renderer.cpp renderer.h)
 if(WIN32)
         target_link_libraries(${EXERCISENAME} "legacy_stdio_definitions.lib")
 endif()

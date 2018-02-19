@@ -11,7 +11,8 @@ The program compiles and implements the follow functionality
 
 ## Advanced Functionality
 I also implemented the following advanced functionality
-- 
+- Generate cone .obj meshes
+- Generate pyramid .obj meshes
 
 ## Extras
 On top of that
