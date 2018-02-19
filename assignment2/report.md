@@ -13,6 +13,7 @@ The program compiles and implements the follow functionality
 I also implemented the following advanced functionality
 - Generate cone .obj meshes
 - Generate pyramid .obj meshes
+- Render the meshes using the Phong illumination model
 
 ## Extras
 On top of that

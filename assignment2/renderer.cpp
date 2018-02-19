@@ -34,6 +34,7 @@ void Renderer::draw(OpenGP::Shader& shader, OpenGP::GPUMesh& mesh) const
 
     shader.bind();
 
+    // Create model, view and projection matrices
     OpenGP::Mat4x4 model = OpenGP::Mat4x4::Identity();
     OpenGP::Vec3 camera_position = {5 * cosf(m_time), 2, 5 * sinf(m_time)};
     OpenGP::Mat4x4 view = OpenGP::look_at(camera_position,
@@ -52,7 +53,7 @@ void Renderer::draw(OpenGP::Shader& shader, OpenGP::GPUMesh& mesh) const
     shader.set_uniform("MVP", MVP);
     shader.set_uniform("camera_position", camera_position);
 
-    // Set material and lighting paramters
+    // Set material and lighting parameters
     OpenGP::Vec3 light_direction = OpenGP::Vec3(cosf(2 * m_time), -1, sinf(2 * m_time)).normalized();
     shader.set_uniform("light_direction", light_direction);
     shader.set_uniform("light_color", OpenGP::Vec3(1.0f, 1.0f, 1.0f));
@@ -75,7 +76,7 @@ int Renderer::create_application()
     OpenGP::GPUMesh mesh;
 
     OpenGP::SurfaceMesh mesh_data;
-    mesh_data.read("/Users/michael/Dropbox/Programming/icg/bunny.obj");
+    mesh_data.read("/Users/michael/Dropbox/Programming/icg/sphere.obj");
     mesh_data.update_vertex_normals();
 
     mesh.init_from_mesh(mesh_data);
