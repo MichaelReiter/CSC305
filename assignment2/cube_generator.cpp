@@ -1,6 +1,3 @@
-#include <iostream>
-#include <math.h>
-#include <vector>
 #include "cube_generator.h"
 
 CubeGenerator::CubeGenerator() {}

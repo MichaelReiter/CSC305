@@ -1,6 +1,3 @@
-#include <iostream>
-#include <math.h>
-#include <vector>
 #include "sphere_generator.h"
 
 SphereGenerator::SphereGenerator(unsigned int resolution) :

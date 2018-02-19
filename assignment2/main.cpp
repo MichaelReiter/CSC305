@@ -1,5 +1,6 @@
 #include "cube_generator.h"
 #include "cylinder_generator.h"
+#include "pyramid_generator.h"
 #include "renderer.h"
 #include "sphere_generator.h"
 
@@ -14,7 +15,9 @@ int main(int argc, char** argv)
     CubeGenerator cube_generator = CubeGenerator();
     SphereGenerator sphere_generator = SphereGenerator(sphere_resolution);
     CylinderGenerator cylinder_generator = CylinderGenerator(cylinder_resolution);
+    PyramidGenerator pyramid_generator = PyramidGenerator();    
     cube_generator.generate_obj_file("cube.obj");
+    pyramid_generator.generate_obj_file("pyramid.obj");
     sphere_generator.generate_obj_file("sphere.obj");
     cylinder_generator.generate_obj_file("cylinder.obj");
 

@@ -1,6 +1,3 @@
-#include <iostream>
-#include <math.h>
-#include <vector>
 #include "cylinder_generator.h"
 
 CylinderGenerator::CylinderGenerator(unsigned int resolution) :
