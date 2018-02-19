@@ -13,6 +13,7 @@ private:
     unsigned int m_resolution;
 
     void write_to_file(std::ofstream& file) const;
+    OpenGP::Vec3 convert_polar_coordinates_to_cartesian(float r, float theta, float phi) const;
 };
 
 #endif // SPHERE_GENERATOR_H
