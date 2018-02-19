@@ -13,12 +13,10 @@ private:
     float m_time;
     unsigned int m_width;
     unsigned int m_height;
-    std::unique_ptr<OpenGP::Shader> m_shader;
-    std::unique_ptr<OpenGP::GPUMesh> m_mesh;
 
-    void draw();
     void update();
-    std::string load_source(const std::string& filename) const;
+    std::string read_file_to_string(const std::string& filename) const;
+    void draw(OpenGP::Shader& shader, OpenGP::GPUMesh& mesh) const;
 };
 
 #endif // RENDERER_H
