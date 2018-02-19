@@ -26,13 +26,13 @@ void SphereGenerator::write_to_file(std::ofstream& file) const
             vertices.push_back(convert_polar_coordinates_to_cartesian(1.0f, theta2, phi1));
             if (i == 0) {
                 // North pole
-                faces.push_back({v, (v + 2), (v + 3)});
+                faces.push_back({v, (v + 3), (v + 2)});
             } else if (i + 1 == m_resolution) {
                 // South pole
-                faces.push_back({(v + 2), v, (v + 1)});
+                faces.push_back({(v + 2), (v + 1), v});
             } else {
-                faces.push_back({v, (v + 1), (v + 3)});
-                faces.push_back({(v + 1), (v + 2), (v + 3)});
+                faces.push_back({v, (v + 3), (v + 1)});
+                faces.push_back({(v + 1), (v + 3), (v + 2)});
             }
             v += 4;
         }
@@ -43,8 +43,8 @@ void SphereGenerator::write_to_file(std::ofstream& file) const
 
 OpenGP::Vec3 SphereGenerator::convert_polar_coordinates_to_cartesian(float r, float theta, float phi) const
 {
-    float x = r * sinf(theta) * cosf(phi);
-    float y = r * sinf(theta) * sinf(phi);
-    float z = r * cosf(theta);
+    float x = r * sinf(theta) * sinf(phi);
+    float y = r * cosf(theta);
+    float z = r * sinf(theta) * cosf(phi);
     return {x, y, z};
 }
