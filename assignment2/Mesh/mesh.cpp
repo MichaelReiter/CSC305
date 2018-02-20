@@ -1,6 +1,5 @@
 #include "mesh.h"
 
-#include <cassert>
 #include <iostream>
 #include "OpenGP/GL/check_error_gl.h"
 #include "OpenGP/GL/shader_helpers.h"

@@ -5,7 +5,7 @@ file(GLOB_RECURSE SHADERS "*.glsl")
 
 file(GLOB MESHGENERATORS "MeshGenerators/*.cpp")
 file(GLOB MESHGENERATORS "MeshGenerators/*.h")
-file(GLOB MESH "Mes/*.cpp")
+file(GLOB MESH "Mesh/*.cpp")
 file(GLOB MESH "Mesh/*.h")
 file(GLOB RENDERER "Renderer/*.cpp")
 file(GLOB RENDERER "Renderer/*.h")

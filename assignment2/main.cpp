@@ -2,8 +2,8 @@
 #include "MeshGenerators/cube_generator.h"
 #include "MeshGenerators/cylinder_generator.h"
 #include "MeshGenerators/pyramid_generator.h"
-#include "Renderer/renderer.h"
 #include "MeshGenerators/sphere_generator.h"
+#include "Renderer/renderer.h"
 
 int main(int argc, char** argv)
 {
@@ -19,12 +19,14 @@ int main(int argc, char** argv)
     CylinderGenerator cylinder_generator {cylinder_resolution};
     PyramidGenerator pyramid_generator;
     SphereGenerator sphere_generator {sphere_resolution};
+
     cone_generator.generate_obj_file("cone.obj");
     cube_generator.generate_obj_file("cube.obj");
     cylinder_generator.generate_obj_file("cylinder.obj");
     pyramid_generator.generate_obj_file("pyramid.obj");
     sphere_generator.generate_obj_file("sphere.obj");
 
+    // Render a mesh using OpenGL
     Renderer renderer = {width, height};
     return renderer.create_application();
 }
