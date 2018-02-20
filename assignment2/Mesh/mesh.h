@@ -9,9 +9,9 @@ public:
 
     ~Mesh();
 
-    void load_vertices(const std::vector<OpenGP::Vec3>& vertex_array,
-                       const std::vector<unsigned int>& index_array);
-    void load_normals(const std::vector<OpenGP::Vec3>& normal_array);
+    void load_vertices(const std::vector<OpenGP::Vec3>& vertices,
+                       const std::vector<unsigned int>& indices);
+    void load_normals(const std::vector<OpenGP::Vec3>& normals);
     void load_texture_coordinates(const std::vector<OpenGP::Vec2>& texture_coordinates);
     void load_textures(const std::string& filename);
     void draw(const OpenGP::Mat4x4& model, const OpenGP::Mat4x4& view, const OpenGP::Mat4x4& projection);

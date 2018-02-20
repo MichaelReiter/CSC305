@@ -1,8 +1,7 @@
-#include <fstream>
-#include <OpenGP/GL/Application.h>
-#include <OpenGP/GL/Eigen.h>
-#include <math.h>
 #include "renderer.h"
+
+#include <fstream>
+#include <math.h>
 
 Renderer::Renderer(unsigned int width, unsigned int height) :
     m_width(width),
@@ -25,7 +24,7 @@ std::string Renderer::read_file_to_string(const std::string& filename) const
     return buffer.str();
 }
 
-void Renderer::draw(OpenGP::Shader& shader, OpenGP::GPUMesh& mesh) const
+void Renderer::draw(OpenGP::Shader& shader, Mesh& mesh) const
 {
     glViewport(0, 0, m_width, m_height);
     glEnable(GL_DEPTH_TEST);
@@ -63,8 +62,8 @@ void Renderer::draw(OpenGP::Shader& shader, OpenGP::GPUMesh& mesh) const
     shader.set_uniform("object_specular", OpenGP::Vec3(0.6f, 0.6f, 0.6f));
     shader.set_uniform("phong_exponent", 32.0f);
 
-    mesh.set_attributes(shader);
-    mesh.draw();
+    // mesh.set_attributes(shader);
+    mesh.draw(model, view, projection);
 
     shader.unbind();
 }
@@ -73,13 +72,35 @@ int Renderer::create_application()
 {
     OpenGP::Application app;
     OpenGP::Shader shader;
-    OpenGP::GPUMesh mesh;
+    Mesh mesh;
 
-    OpenGP::SurfaceMesh mesh_data;
-    mesh_data.read("/Users/michael/Dropbox/Programming/icg/sphere.obj");
-    mesh_data.update_vertex_normals();
-
-    mesh.init_from_mesh(mesh_data);
+    // Read vertices and faces from .obj file
+    // read("/Users/michael/Dropbox/Programming/icg/sphere.obj");
+    std::vector<OpenGP::Vec3> vertices {
+        {-1, -1, 1},
+        {-1, 1, 1},
+        {1, 1, 1},
+        {1, -1, 1},
+        {-1, -1, -1},
+        {-1, 1, -1},
+        {1, 1, -1},
+        {1, -1, -1}
+    };
+    std::vector<unsigned int> indices {
+        6, 1, 2,
+        6, 5, 1,
+        8, 3, 4,
+        8, 7, 3,
+        8, 6, 7,
+        8, 5, 6,
+        3, 1, 4,
+        3, 2, 1,
+        5, 4, 1,
+        5, 8, 4,
+        7, 2, 3,
+        7, 6, 2
+    };
+    mesh.load_vertices(vertices, indices);
 
     shader.add_vshader_from_source(read_file_to_string("/Users/michael/Dropbox/Programming/icg/assignment2/shaders/vertex_shader.glsl").c_str());
     shader.add_fshader_from_source(read_file_to_string("/Users/michael/Dropbox/Programming/icg/assignment2/shaders/fragment_shader.glsl").c_str());
