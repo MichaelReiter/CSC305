@@ -5,8 +5,6 @@
 
 class Mesh {
 public:
-    GLuint get_program_id() const;
-
     void init();
     void load_vertices(const std::vector<OpenGP::Vec3>& vertex_array,
                        const std::vector<unsigned int>& index_array);
@@ -25,7 +23,7 @@ private:
     unsigned int m_num_vertices;
     bool m_has_normals;
     bool m_has_textures;
-    bool m_has_tex_coords;
+    bool m_has_texture_coords;
 };
 
 #endif // MESH_H

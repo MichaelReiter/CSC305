@@ -7,11 +7,6 @@
 #include "OpenGP/SurfaceMesh/SurfaceMesh.h"
 #include "OpenGP/external/LodePNG/lodepng.cpp"
 
-GLuint Mesh::get_program_id() const
-{
-    return m_pid;
-}
-
 void Mesh::init()
 {
     // Compile the shaders
@@ -26,11 +21,11 @@ void Mesh::init()
     m_num_vertices = 0;
     m_has_normals = false;
     m_has_textures = false;
-    m_has_tex_coords = false;
+    m_has_texture_coords = false;
 }
 
-void Mesh::load_vertices(const std::vector<OpenGP::Vec3>& vertex_array,
-                         const std::vector<unsigned int>& index_array)
+void Mesh::load_vertices(const std::vector<OpenGP::Vec3>& vertices,
+                         const std::vector<unsigned int>& indices)
 {
     // Vertex one vertex array
     glGenVertexArrays(1, &m_vao);
@@ -40,36 +35,32 @@ void Mesh::load_vertices(const std::vector<OpenGP::Vec3>& vertex_array,
     // Vertex Buffer
     glGenBuffers(1, &m_vertex_point_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertex_point_buffer);
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        vertex_array.size() * sizeof(OpenGP::Vec3),
-        &vertex_array[0],
-        GL_STATIC_DRAW
-    );
+    glBufferData(GL_ARRAY_BUFFER,
+                 vertices.size() * sizeof(OpenGP::Vec3),
+                 &vertices[0],
+                 GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(
-        0,
-        3, // vec3
-        GL_FLOAT,
-        GL_FALSE, // DONT_NORMALIZE
-        3 * sizeof(float), // STRIDE
-        (void*)0 // ZERO_BUFFER_OFFSET
-    );
+    glVertexAttribPointer(0,
+                          3, // vec3
+                          GL_FLOAT,
+                          GL_FALSE, // DONT_NORMALIZE
+                          3 * sizeof(float), // STRIDE
+                          (void*)0); // ZERO_BUFFER_OFFSET
     check_error_gl();
 
     GLuint vbo_indices;
     glGenBuffers(1, &vbo_indices);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_indices);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                    index_array.size() * sizeof(unsigned int),
-                    &index_array[0],
-                    GL_STATIC_DRAW);
+                 indices.size() * sizeof(unsigned int),
+                 &indices[0],
+                 GL_STATIC_DRAW);
     check_error_gl();
-    m_num_vertices = (unsigned)index_array.size();
+    m_num_vertices = (unsigned)indices.size();
     glBindVertexArray(0);
 }
 
-void Mesh::load_normals(const std::vector<OpenGP::Vec3>& normal_array)
+void Mesh::load_normals(const std::vector<OpenGP::Vec3>& normals)
 {
     // Vertex one vertex Array
     glBindVertexArray(m_vao);
@@ -78,18 +69,16 @@ void Mesh::load_normals(const std::vector<OpenGP::Vec3>& normal_array)
     glGenBuffers(1, &m_vertex_normal_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertex_normal_buffer);
     glBufferData(GL_ARRAY_BUFFER,
-                    normal_array.size() * sizeof(OpenGP::Vec3),
-                    &normal_array[0],
-                    GL_STATIC_DRAW);
+                 normals.size() * sizeof(OpenGP::Vec3),
+                 &normals[0],
+                 GL_STATIC_DRAW);
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(
-        1,
-        3, // vec3
-        GL_FLOAT,
-        GL_TRUE, // NORMALIZE
-        3 * sizeof(float), // STRIDE
-        (void*)0 // ZERO_BUFFER_OFFSET
-    );
+    glVertexAttribPointer(1,
+                          3, // vec3
+                          GL_FLOAT,
+                          GL_TRUE, // NORMALIZE
+                          3 * sizeof(float), // STRIDE
+                          (void*)0); // ZERO_BUFFER_OFFSET
     check_error_gl();
 
     m_has_normals = true;
@@ -104,50 +93,42 @@ void Mesh::load_texture_coordinates(const std::vector<OpenGP::Vec2>& texture_coo
 
     glGenBuffers(1, &m_texture_coordinates_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, m_texture_coordinates_buffer);
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        texture_coordinates.size() * sizeof(OpenGP::Vec3),
-        &texture_coordinates[0],
-        GL_STATIC_DRAW
-    );
+    glBufferData(GL_ARRAY_BUFFER,
+                 texture_coordinates.size() * sizeof(OpenGP::Vec3),
+                 &texture_coordinates[0],
+                 GL_STATIC_DRAW);
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(
-        2,
-        2, // vec2
-        GL_FLOAT,
-        GL_FALSE, // DONT_NORMALIZE
-        2 * sizeof(float), // STRIDE
-        (void*)0 // ZERO_BUFFER_OFFSET
-    );
+    glVertexAttribPointer(2,
+                          2, // vec2
+                          GL_FLOAT,
+                          GL_FALSE, // DONT_NORMALIZE
+                          2 * sizeof(float), // STRIDE
+                          (void*)0); // ZERO_BUFFER_OFFSET
     check_error_gl();
 
-    m_has_tex_coords = true;
+    m_has_texture_coords = true;
     glBindVertexArray(0);
 }
 
 void Mesh::load_textures(const std::string& filename)
 {
-    // Used snippet from https://raw.githubusercontent.com/lvandeve/lodepng/master/examples/example_decode.cpp
-    // raw pixels
+    // Raw pixels
     std::vector<unsigned char> image;
     unsigned int width;
     unsigned int height;
-    // decode
     unsigned int error = lodepng::decode(image, width, height, filename);
-    // if there's an error, display it
     if (error) {
         std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
     }
-    // The pixels are now in the vector "image", 4 bytes per pixel, ordered RGBARGBA... Use it as texture, draw it
-    // unfortunately they are upside down so fix that
+    // The pixels are now in the vector "image", 4 bytes per pixel, ordered RGBARGBA...
+    // Use it as texture, draw it
+    // Image is upside down, so correct that
     unsigned char* row = new unsigned char[4 * width];
     for (int i = 0; i < int(height) / 2; i++) {
         memcpy(row, &image[4 * i * width], 4 * width * sizeof(unsigned char));
-        memcpy(
-            &image[4 * i * width],
-            &image[image.size() - 4 * (i + 1) * width],
-            4 * width * sizeof(unsigned char)
-        );
+        memcpy(&image[4 * i * width],
+               &image[image.size() - 4 * (i + 1) * width],
+               4 * width * sizeof(unsigned char));
         memcpy(&image[image.size() - 4 * (i + 1) * width], row, 4 * width * sizeof(unsigned char));
     }
     delete row;
@@ -172,17 +153,15 @@ void Mesh::load_textures(const std::string& filename)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     check_error_gl();
 
-    glTexImage2D(
-        GL_TEXTURE_2D,
-        0,
-        GL_RGBA,
-        width,
-        height,
-        0,
-        GL_RGBA,
-        GL_UNSIGNED_BYTE,
-        &image[0]
-    );
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 GL_RGBA,
+                 width,
+                 height,
+                 0,
+                 GL_RGBA,
+                 GL_UNSIGNED_BYTE,
+                 &image[0]);
     check_error_gl();
 
     m_has_textures = true;
@@ -210,7 +189,7 @@ void Mesh::draw(const OpenGP::Mat4x4& model, const OpenGP::Mat4x4& view, const O
     }
 
     // Use textures when shading
-    if (m_has_textures && m_has_tex_coords) {
+    if (m_has_textures && m_has_texture_coords) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_texture_buffer);
         glUniform1i(glGetUniformLocation(m_pid, "m_has_textures"), 1);
@@ -225,12 +204,10 @@ void Mesh::draw(const OpenGP::Mat4x4& model, const OpenGP::Mat4x4& view, const O
 
     check_error_gl();
     // Draw
-    glDrawElements(
-        GL_TRIANGLES,
-        m_num_vertices,
-        GL_UNSIGNED_INT,
-        0 // ZERO_BUFFER_OFFSET
-    );
+    glDrawElements(GL_TRIANGLES,
+                   m_num_vertices,
+                   GL_UNSIGNED_INT,
+                   0); // ZERO_BUFFER_OFFSET
     check_error_gl();
 
     // Clean up
