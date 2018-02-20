@@ -1,9 +1,9 @@
-#include "cone_generator.h"
-#include "cube_generator.h"
-#include "cylinder_generator.h"
-#include "pyramid_generator.h"
-#include "renderer.h"
-#include "sphere_generator.h"
+#include "MeshGenerators/cone_generator.h"
+#include "MeshGenerators/cube_generator.h"
+#include "MeshGenerators/cylinder_generator.h"
+#include "MeshGenerators/pyramid_generator.h"
+#include "Renderer/renderer.h"
+#include "MeshGenerators/sphere_generator.h"
 
 int main(int argc, char** argv)
 {
