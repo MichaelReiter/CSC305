@@ -5,9 +5,10 @@
 #include <stdio.h>
 
 namespace Rendering {
-    Renderer::Renderer(unsigned int width, unsigned int height) :
+    Renderer::Renderer(unsigned int width, unsigned int height, const std::string& mesh_path) :
         m_width(width),
         m_height(height),
+        m_mesh_path(mesh_path),
         m_time(0.0f)
     {}
 
@@ -105,14 +106,17 @@ namespace Rendering {
         Mesh mesh;
 
         // Read vertices and faces from .obj file
-        std::string filename = "/Users/michael/Dropbox/Programming/icg/bunny.obj";
         std::vector<OpenGP::Vec3> vertices;
         std::vector<unsigned int> indices;
-        read_vertices_and_indices_from_file(filename, vertices, indices);
+        read_vertices_and_indices_from_file(m_mesh_path, vertices, indices);
         mesh.load_vertices(vertices, indices);
 
-        shader.add_vshader_from_source(read_file_to_string("/Users/michael/Dropbox/Programming/icg/assignment2/shaders/vertex_shader.glsl").c_str());
-        shader.add_fshader_from_source(read_file_to_string("/Users/michael/Dropbox/Programming/icg/assignment2/shaders/fragment_shader.glsl").c_str());
+        shader.add_vshader_from_source(
+            read_file_to_string(
+                "/Users/michael/Dropbox/Programming/icg/assignment2/Shaders/vertex_shader.glsl").c_str());
+        shader.add_fshader_from_source(
+            read_file_to_string(
+                "/Users/michael/Dropbox/Programming/icg/assignment2/Shaders/fragment_shader.glsl").c_str());
         shader.link();
 
         app.add_listener<OpenGP::ApplicationUpdateEvent>([this](const OpenGP::ApplicationUpdateEvent& aue) {

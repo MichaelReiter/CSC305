@@ -8,7 +8,7 @@
 namespace Rendering {
     class Renderer {
     public:
-        Renderer(unsigned int width, unsigned int height);
+        Renderer(unsigned int width, unsigned int height, const std::string& mesh_path);
 
         ~Renderer();
 
@@ -18,6 +18,7 @@ namespace Rendering {
         float m_time;
         unsigned int m_width;
         unsigned int m_height;
+        std::string m_mesh_path;
 
         void update();
         std::string read_file_to_string(const std::string& filename) const;

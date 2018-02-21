@@ -27,6 +27,10 @@ int main(int argc, char** argv)
     sphere_generator.generate_obj_file("sphere.obj");
 
     // Render a mesh using OpenGL
-    Rendering::Renderer renderer = {width, height};
+    Rendering::Renderer renderer = {
+        width,
+        height,
+        "/Users/michael/Dropbox/Programming/icg/sphere.obj"
+    };
     return renderer.create_application();
 }
