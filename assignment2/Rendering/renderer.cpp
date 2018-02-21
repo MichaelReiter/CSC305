@@ -27,44 +27,70 @@ namespace Rendering {
         return buffer.str();
     }
 
-    void Renderer::draw(Mesh& mesh) const
-    {
-        mesh.draw(m_width, m_height, m_time);
-    }
-
     void Renderer::read_obj_file(const std::string& filename,
                                  std::vector<OpenGP::Vec3>& vertices,
                                  std::vector<unsigned int>& indices,
                                  std::vector<OpenGP::Vec3>& normals) const
     {
-        std::ifstream file(filename);
-        if (file.is_open()) {
-            std::string line;
-            while (std::getline(file, line)) {
-                float x;
-                float y;
-                float z;
-                float xn;
-                float yn;
-                float zn;
-                // TODO: use regex to parse file
-                if (line.c_str()[0] == 'v') {
-                    sscanf(line.c_str(), "v %f %f %f", &x, &y, &z);
-                    vertices.push_back({x, y, z});
-                    printf("v %f %f %f\n", x, y, z);
-                } else if (line.c_str()[0] == 'f') {
-                    sscanf(line.c_str(), "f %f//%f %f//%f %f//%f", &x, &xn, &y, &yn, &z, &zn);
-                    indices.push_back((unsigned int)x);
-                    indices.push_back((unsigned int)y);
-                    indices.push_back((unsigned int)z);
-                    normals.push_back({xn, yn, zn});
-                    printf("f %d//%d %d//%d %d//%d\n", (int)x, (int)xn, (int)y, (int)yn, (int)z, (int)zn);
-                }
+        vertices.push_back({0.0f, 0.0f, 0.0f});
+        std::vector<unsigned int> vertex_indices;
+        std::vector<unsigned int> texture_coordinate_indices;
+        std::vector<unsigned int> normal_indices;
+        std::vector<OpenGP::Vec2> texture_coordinates;
+
+        FILE *file = fopen(filename.c_str(), "r");
+        if (file == NULL) {
+            printf("Could not open file\n");
+            return;
+        }
+
+        while (true) {
+            char lineHeader[128];
+            int res = fscanf(file, "%s", lineHeader);
+            if (res == EOF) {
+                break;
             }
-            file.close();
-        } else {
-            std::cout << "Failed to open .obj file for reading vertices." << std::endl;
-            exit(EXIT_FAILURE);
+            if (strcmp(lineHeader, "v") == 0) {
+                // Read vertices
+                float x, y, z;
+                fscanf(file, "%f %f %f\n", &x, &y, &z);
+                vertices.push_back(OpenGP::Vec3(x, y, z));
+            } else if (strcmp(lineHeader, "vt") == 0) {
+                // Read texture coordinates
+                float u, v;
+                fscanf(file, "%f %f\n", &u, &v);
+                texture_coordinates.push_back(OpenGP::Vec2(u, v));
+            } else if (strcmp(lineHeader, "vn") == 0) {
+                // Read normal vectors
+                float x, y, z;
+                fscanf(file, "%f %f %f\n", &x, &y, &z);
+                normals.push_back(OpenGP::Vec3(x, y, z));
+            } else if (strcmp(lineHeader, "f") == 0) {
+                // Read faces
+                std::string vertex1;
+                std::string vertex2;
+                std::string vertex3;
+                unsigned int vertex_index[3];
+                unsigned int texture_coordinate_index[3];
+                unsigned int normal_index[3];
+                int matches = fscanf(file,
+                                     "%d//%d %d//%d %d//%d\n",
+                                     &vertex_index[0],
+                                     &normal_index[0],
+                                     &vertex_index[1],
+                                     &normal_index[1],
+                                     &vertex_index[2],
+                                     &normal_index[2]);
+                indices.push_back(vertex_index[0]);
+                indices.push_back(vertex_index[1]);
+                indices.push_back(vertex_index[2]);
+                texture_coordinate_indices.push_back(texture_coordinate_index[0]);
+                texture_coordinate_indices.push_back(texture_coordinate_index[1]);
+                texture_coordinate_indices.push_back(texture_coordinate_index[2]);
+                normal_indices.push_back(normal_index[0]);
+                normal_indices.push_back(normal_index[1]);
+                normal_indices.push_back(normal_index[2]);
+            }
         }
     }
 
@@ -86,7 +112,7 @@ namespace Rendering {
         });
 
         OpenGP::Window& window = app.create_window([this, &mesh](const OpenGP::Window& window) {
-            draw(mesh);
+            mesh.draw(m_width, m_height, m_time);
         });
         window.set_title("Assignment 2");
         window.set_size(m_width, m_height);

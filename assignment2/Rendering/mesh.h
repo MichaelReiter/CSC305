@@ -11,7 +11,7 @@ namespace Rendering {
         ~Mesh();
 
         void load_vertices(const std::vector<OpenGP::Vec3>& vertices,
-                        const std::vector<unsigned int>& indices);
+                           const std::vector<unsigned int>& indices);
         void load_normals(const std::vector<OpenGP::Vec3>& normals);
         void load_texture_coordinates(const std::vector<OpenGP::Vec2>& texture_coordinates);
         void load_textures(const std::string& filename);
