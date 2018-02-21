@@ -3,16 +3,18 @@
 
 #include "mesh_generator.h"
 
-class ConeGenerator : public MeshGenerator {
-public:
-    ConeGenerator(unsigned int resolution);
+namespace MeshGenerators {
+    class ConeGenerator : public MeshGenerator {
+    public:
+        ConeGenerator(unsigned int resolution);
 
-    ~ConeGenerator();
+        ~ConeGenerator();
 
-private:
-    unsigned int m_resolution;
+    private:
+        unsigned int m_resolution;
 
-    void write_to_file(std::ofstream& file) const;
-};
+        void write_to_file(std::ofstream& file) const;
+    };
+}
 
 #endif // CONE_GENERATOR_H

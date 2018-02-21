@@ -14,11 +14,11 @@ int main(int argc, char** argv)
     constexpr unsigned int sphere_resolution = 30;
 
     // Generate .obj mesh files by mathematically approximating shapes
-    ConeGenerator cone_generator {cone_resolution};
-    CubeGenerator cube_generator;
-    CylinderGenerator cylinder_generator {cylinder_resolution};
-    PyramidGenerator pyramid_generator;
-    SphereGenerator sphere_generator {sphere_resolution};
+    MeshGenerators::ConeGenerator cone_generator {cone_resolution};
+    MeshGenerators::CubeGenerator cube_generator;
+    MeshGenerators::CylinderGenerator cylinder_generator {cylinder_resolution};
+    MeshGenerators::PyramidGenerator pyramid_generator;
+    MeshGenerators::SphereGenerator sphere_generator {sphere_resolution};
 
     cone_generator.generate_obj_file("cone.obj");
     cube_generator.generate_obj_file("cube.obj");

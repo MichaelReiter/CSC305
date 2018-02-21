@@ -3,14 +3,16 @@
 
 #include "mesh_generator.h"
 
-class CubeGenerator : public MeshGenerator {
-public:
-    CubeGenerator();
+namespace MeshGenerators {
+    class CubeGenerator : public MeshGenerator {
+    public:
+        CubeGenerator();
 
-    ~CubeGenerator();
+        ~CubeGenerator();
 
-private:
-    void write_to_file(std::ofstream& file) const;
-};
+    private:
+        void write_to_file(std::ofstream& file) const;
+    };
+}
 
 #endif // CUBE_GENERATOR_H

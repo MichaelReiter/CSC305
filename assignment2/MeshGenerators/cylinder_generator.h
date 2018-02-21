@@ -3,16 +3,18 @@
 
 #include "mesh_generator.h"
 
-class CylinderGenerator : public MeshGenerator {
-public:
-    CylinderGenerator(unsigned int resolution);
+namespace MeshGenerators {
+    class CylinderGenerator : public MeshGenerator {
+    public:
+        CylinderGenerator(unsigned int resolution);
 
-    ~CylinderGenerator();
+        ~CylinderGenerator();
 
-private:
-    unsigned int m_resolution;
+    private:
+        unsigned int m_resolution;
 
-    void write_to_file(std::ofstream& file) const;
-};
+        void write_to_file(std::ofstream& file) const;
+    };
+}
 
 #endif // CYLINDER_GENERATOR_H

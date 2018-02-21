@@ -3,14 +3,16 @@
 
 #include "mesh_generator.h"
 
-class PyramidGenerator : public MeshGenerator {
-public:
-    PyramidGenerator();
+namespace MeshGenerators {
+    class PyramidGenerator : public MeshGenerator {
+    public:
+        PyramidGenerator();
 
-    ~PyramidGenerator();
+        ~PyramidGenerator();
 
-private:
-    void write_to_file(std::ofstream& file) const;
-};
+    private:
+        void write_to_file(std::ofstream& file) const;
+    };
+}
 
 #endif // PYRAMID_GENERATOR_H
