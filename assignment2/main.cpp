@@ -3,7 +3,7 @@
 #include "MeshGenerators/cylinder_generator.h"
 #include "MeshGenerators/pyramid_generator.h"
 #include "MeshGenerators/sphere_generator.h"
-#include "Renderer/renderer.h"
+#include "Rendering/renderer.h"
 
 int main(int argc, char** argv)
 {
@@ -27,6 +27,6 @@ int main(int argc, char** argv)
     sphere_generator.generate_obj_file("sphere.obj");
 
     // Render a mesh using OpenGL
-    Renderer renderer = {width, height};
+    Rendering::Renderer renderer = {width, height};
     return renderer.create_application();
 }
