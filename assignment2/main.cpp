@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     Rendering::Renderer renderer = {
         width,
         height,
-        "/Users/michael/Dropbox/Programming/icg/sphere.obj"
+        "/Users/michael/Dropbox/Programming/icg/cube.obj"
     };
     return renderer.create_application();
 }

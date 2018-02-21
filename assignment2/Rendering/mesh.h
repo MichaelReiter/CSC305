@@ -15,7 +15,7 @@ namespace Rendering {
         void load_normals(const std::vector<OpenGP::Vec3>& normals);
         void load_texture_coordinates(const std::vector<OpenGP::Vec2>& texture_coordinates);
         void load_textures(const std::string& filename);
-        void draw(const OpenGP::Mat4x4& model, const OpenGP::Mat4x4& view, const OpenGP::Mat4x4& projection);
+        void draw(unsigned int width, unsigned int height, float t);
 
     private:
         GLuint m_vao; // vertex array object

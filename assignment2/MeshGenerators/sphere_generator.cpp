@@ -18,7 +18,7 @@ namespace MeshGenerators {
             float theta1 = ((float)(i) / m_resolution) * M_PI;
             float theta2 = ((float)(i + 1)  / m_resolution) * M_PI;
             // Longitude
-            for (int j = 0; j < m_resolution; j++) {
+            for (int j = 0; j < m_resolution+1; j++) {
                 float phi1 = ((float)(j) / m_resolution) * 2 * M_PI;
                 float phi2 = ((float)(j + 1) / m_resolution) * 2 * M_PI;
                 vertices.push_back(convert_polar_coordinates_to_cartesian(1.0f, theta1, phi1));

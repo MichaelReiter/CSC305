@@ -23,4 +23,5 @@ void main() {
                         + diffuse_coefficient * light_color * object_diffuse
                         + specular_coefficient * light_color * object_specular;
     fcolor = vec4(phong_lighting, 1);
+    fcolor = vec4(1);
 }
