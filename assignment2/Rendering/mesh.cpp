@@ -229,7 +229,7 @@ namespace Rendering {
         OpenGP::Vec3 object_diffuse = {1.0f, 0.0f, 0.0f};
         OpenGP::Vec3 object_specular = {0.6f, 0.6f, 0.6f};
         float phong_exponent = 32.0f;
-
+ 
         glUniform3fv(glGetUniformLocation(m_pid, "camera_position"), 1, camera_position.data());
         glUniform3fv(glGetUniformLocation(m_pid, "light_direction"), 1, light_direction.data());
         glUniform3fv(glGetUniformLocation(m_pid, "light_color"), 1, light_color.data());
