@@ -29,6 +29,7 @@ namespace MeshGenerators {
         for (int i = 1; i < m_resolution; i++) {
             faces.push_back({i, (m_resolution + 2), (i + 1)});
         }
-        write_faces(file, faces);
+        std::vector<OpenGP::Vec3> normals;        
+        // write_indices(file, faces, normals);
     }
 }

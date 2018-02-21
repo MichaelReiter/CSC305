@@ -33,6 +33,20 @@ namespace MeshGenerators {
             {7, 2, 3},
             {7, 6, 2}
         };
-        write_faces(file, faces);
+        std::vector<OpenGP::Vec3> normals {
+            {1, 1, 1},
+            {1, 1, 1},
+            {2, 2, 2},
+            {2, 2, 2},
+            {3, 3, 3},
+            {3, 3, 3},
+            {4, 4, 4},
+            {4, 4, 4},
+            {5, 5, 5},
+            {5, 5, 5},
+            {6, 6, 6},
+            {6, 6, 6}
+        };
+        write_indices(file, faces, normals);
     }
 }

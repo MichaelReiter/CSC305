@@ -12,6 +12,7 @@ namespace MeshGenerators {
         file << "# sphere" << std::endl;
         std::vector<OpenGP::Vec3> vertices;
         std::vector<OpenGP::Vec3> faces;
+        std::vector<OpenGP::Vec3> normals;
         // Latitude
         int v = 1;
         for (int i = 0; i < m_resolution; i++) {
@@ -39,7 +40,7 @@ namespace MeshGenerators {
             }
         }
         write_vertices(file, vertices);
-        write_faces(file, faces);
+        // write_indices(file, faces, normals);
     }
 
     OpenGP::Vec3 SphereGenerator::convert_polar_coordinates_to_cartesian(float r, float theta, float phi) const

@@ -24,6 +24,7 @@ namespace MeshGenerators {
             {2, 3, 5},
             {3, 4, 5}
         };
-        write_faces(file, faces);
+        std::vector<OpenGP::Vec3> normals;        
+        // write_indices(file, faces, normals);
     }
 }

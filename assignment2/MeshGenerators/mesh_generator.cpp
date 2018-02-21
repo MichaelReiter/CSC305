@@ -16,11 +16,16 @@ namespace MeshGenerators {
         }
     }
 
-    void MeshGenerator::write_faces(std::ofstream& file, const std::vector<OpenGP::Vec3>& faces) const
+    void MeshGenerator::write_indices(std::ofstream& file,
+                                      const std::vector<OpenGP::Vec3>& faces,
+                                      const std::vector<OpenGP::Vec3>& normals) const
     {
-        file << "# faces" << std::endl;
-        for (const auto& f : faces) {
-            file << "f " << (int)f[0] << " " << (int)f[1] << " " << (int)f[2] << std::endl;
+        file << "# indices" << std::endl;
+        for (int i = 0; i < faces.size(); i++) {
+            file << "f " << (int)faces[i][0] << "//" << (int)normals[i][0]
+                  << " " << (int)faces[i][1] << "//" << (int)normals[i][1]
+                  << " " << (int)faces[i][2] << "//" << (int)normals[i][2]
+                  << std::endl;
         }
     }
 
