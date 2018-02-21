@@ -1,9 +1,9 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include "mesh.h"
 #include "OpenGP/GL/Application.h"
 #include "OpenGP/GL/Eigen.h"
-#include "../Rendering/Mesh.h"
 
 namespace Rendering {
     class Renderer {
