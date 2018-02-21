@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <math.h>
+#include <stdio.h>
 
 Renderer::Renderer(unsigned int width, unsigned int height) :
     m_width(width),
@@ -68,6 +69,34 @@ void Renderer::draw(OpenGP::Shader& shader, Mesh& mesh) const
     shader.unbind();
 }
 
+void Renderer::read_vertices_and_indices_from_file(const std::string& filename,
+                                                   std::vector<OpenGP::Vec3>& vertices,
+                                                   std::vector<unsigned int>& indices) const
+{
+    std::ifstream file(filename);
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            char c;
+            float x;
+            float y;
+            float z;
+            sscanf(line.c_str(), "%c %f %f %f", &c, &x, &y, &z);
+            if (c == 'v') {
+                vertices.push_back({x, y, z});
+            } else if (c == 'f') {
+                indices.push_back((unsigned int)x);
+                indices.push_back((unsigned int)y);
+                indices.push_back((unsigned int)z);
+            }
+        }
+        file.close();
+    } else {
+        std::cout << "Failed to open .obj file for reading vertices." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+}
+
 int Renderer::create_application()
 {
     OpenGP::Application app;
@@ -75,31 +104,10 @@ int Renderer::create_application()
     Mesh mesh;
 
     // Read vertices and faces from .obj file
-    // read("/Users/michael/Dropbox/Programming/icg/sphere.obj");
-    std::vector<OpenGP::Vec3> vertices {
-        {-1, -1, 1},
-        {-1, 1, 1},
-        {1, 1, 1},
-        {1, -1, 1},
-        {-1, -1, -1},
-        {-1, 1, -1},
-        {1, 1, -1},
-        {1, -1, -1}
-    };
-    std::vector<unsigned int> indices {
-        6, 1, 2,
-        6, 5, 1,
-        8, 3, 4,
-        8, 7, 3,
-        8, 6, 7,
-        8, 5, 6,
-        3, 1, 4,
-        3, 2, 1,
-        5, 4, 1,
-        5, 8, 4,
-        7, 2, 3,
-        7, 6, 2
-    };
+    std::string filename = "/Users/michael/Dropbox/Programming/icg/bunny.obj";
+    std::vector<OpenGP::Vec3> vertices;
+    std::vector<unsigned int> indices;
+    read_vertices_and_indices_from_file(filename, vertices, indices);
     mesh.load_vertices(vertices, indices);
 
     shader.add_vshader_from_source(read_file_to_string("/Users/michael/Dropbox/Programming/icg/assignment2/shaders/vertex_shader.glsl").c_str());
