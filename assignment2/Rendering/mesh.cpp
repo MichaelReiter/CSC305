@@ -184,7 +184,7 @@ namespace Rendering {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Render in wireframe mode
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         glUseProgram(m_pid);
         glBindVertexArray(m_vao);
