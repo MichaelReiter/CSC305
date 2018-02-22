@@ -10,21 +10,26 @@ namespace MeshGenerators {
 
     void MeshGenerator::write_vertices(std::ofstream& file, const std::vector<OpenGP::Vec3>& vertices) const
     {
-        file << "# vertices" << std::endl;
         for (const auto& v : vertices) {
             file << "v " << std::fixed << v[0] << " " << v[1] << " " << v[2] << std::endl;
         }
     }
 
-    void MeshGenerator::write_indices(std::ofstream& file,
-                                      const std::vector<OpenGP::Vec3>& faces,
-                                      const std::vector<OpenGP::Vec3>& normals) const
+    void MeshGenerator::write_vertex_normals(std::ofstream& file, const std::vector<OpenGP::Vec3>& normals) const
     {
-        file << "# indices" << std::endl;
-        for (int i = 0; i < faces.size(); i++) {
-            file << "f " << (int)faces[i][0] << "//" << (int)normals[i][0]
-                  << " " << (int)faces[i][1] << "//" << (int)normals[i][1]
-                  << " " << (int)faces[i][2] << "//" << (int)normals[i][2]
+        for (const auto& n : normals) {
+            file << "vn " << std::fixed << n[0] << " " << n[1] << " " << n[2] << std::endl;
+        }
+    }
+
+    void MeshGenerator::write_faces(std::ofstream& file,
+                                    const std::vector<OpenGP::Vec3>& vertex_indices,
+                                    const std::vector<OpenGP::Vec3>& normal_indices) const
+    {
+        for (int i = 0; i < vertex_indices.size(); i++) {
+            file << "f " << (int)vertex_indices[i][0] << "//" << (int)normal_indices[i][0]
+                  << " " << (int)vertex_indices[i][1] << "//" << (int)normal_indices[i][1]
+                  << " " << (int)vertex_indices[i][2] << "//" << (int)normal_indices[i][2]
                   << std::endl;
         }
     }

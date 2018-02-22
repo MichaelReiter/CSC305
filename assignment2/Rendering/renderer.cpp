@@ -29,13 +29,12 @@ namespace Rendering {
 
     void Renderer::read_obj_file(const std::string& filename,
                                  std::vector<OpenGP::Vec3>& vertices,
-                                 std::vector<unsigned int>& indices,
+                                 std::vector<unsigned int>& vertex_indices,
                                  std::vector<OpenGP::Vec3>& normals) const
     {
         vertices.push_back({0.0f, 0.0f, 0.0f});
-        std::vector<unsigned int> vertex_indices;
-        std::vector<unsigned int> texture_coordinate_indices;
-        std::vector<unsigned int> normal_indices;
+        // std::vector<unsigned int> texture_coordinate_indices;
+        // std::vector<unsigned int> normal_indices;
         std::vector<OpenGP::Vec2> texture_coordinates;
 
         FILE *file = fopen(filename.c_str(), "r");
@@ -52,24 +51,26 @@ namespace Rendering {
             }
             if (strcmp(lineHeader, "v") == 0) {
                 // Read vertices
-                float x, y, z;
+                float x;
+                float y;
+                float z;
                 fscanf(file, "%f %f %f\n", &x, &y, &z);
                 vertices.push_back(OpenGP::Vec3(x, y, z));
             } else if (strcmp(lineHeader, "vt") == 0) {
                 // Read texture coordinates
-                float u, v;
+                float u;
+                float v;
                 fscanf(file, "%f %f\n", &u, &v);
                 texture_coordinates.push_back(OpenGP::Vec2(u, v));
             } else if (strcmp(lineHeader, "vn") == 0) {
                 // Read normal vectors
-                float x, y, z;
+                float x;
+                float y;
+                float z;
                 fscanf(file, "%f %f %f\n", &x, &y, &z);
                 normals.push_back(OpenGP::Vec3(x, y, z));
             } else if (strcmp(lineHeader, "f") == 0) {
                 // Read faces
-                std::string vertex1;
-                std::string vertex2;
-                std::string vertex3;
                 unsigned int vertex_index[3];
                 unsigned int texture_coordinate_index[3];
                 unsigned int normal_index[3];
@@ -81,15 +82,15 @@ namespace Rendering {
                                      &normal_index[1],
                                      &vertex_index[2],
                                      &normal_index[2]);
-                indices.push_back(vertex_index[0]);
-                indices.push_back(vertex_index[1]);
-                indices.push_back(vertex_index[2]);
-                texture_coordinate_indices.push_back(texture_coordinate_index[0]);
-                texture_coordinate_indices.push_back(texture_coordinate_index[1]);
-                texture_coordinate_indices.push_back(texture_coordinate_index[2]);
-                normal_indices.push_back(normal_index[0]);
-                normal_indices.push_back(normal_index[1]);
-                normal_indices.push_back(normal_index[2]);
+                vertex_indices.push_back(vertex_index[0]);
+                vertex_indices.push_back(vertex_index[1]);
+                vertex_indices.push_back(vertex_index[2]);
+                // texture_coordinate_indices.push_back(texture_coordinate_index[0]);
+                // texture_coordinate_indices.push_back(texture_coordinate_index[1]);
+                // texture_coordinate_indices.push_back(texture_coordinate_index[2]);
+                // normal_indices.push_back(normal_index[0]);
+                // normal_indices.push_back(normal_index[1]);
+                // normal_indices.push_back(normal_index[2]);
             }
         }
     }

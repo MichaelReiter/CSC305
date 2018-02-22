@@ -15,9 +15,10 @@ namespace MeshGenerators {
 
     protected:
         void write_vertices(std::ofstream& file, const std::vector<OpenGP::Vec3>& vertices) const;
-        void write_indices(std::ofstream& file,
-                           const std::vector<OpenGP::Vec3>& faces,
-                           const std::vector<OpenGP::Vec3>& normals) const;
+        void write_vertex_normals(std::ofstream& file, const std::vector<OpenGP::Vec3>& normals) const;
+        void write_faces(std::ofstream& file,
+                         const std::vector<OpenGP::Vec3>& vertex_indices,
+                         const std::vector<OpenGP::Vec3>& normal_indices) const;
         virtual void write_to_file(std::ofstream& file) const = 0;
     };
 }

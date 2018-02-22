@@ -5,6 +5,7 @@ namespace MeshGenerators {
 
     PyramidGenerator::~PyramidGenerator() {}
 
+    // Normals and texture coordinates not implemented
     void PyramidGenerator::write_to_file(std::ofstream& file) const
     {
         file << "# pyramid" << std::endl;
@@ -24,7 +25,7 @@ namespace MeshGenerators {
             {2, 3, 5},
             {3, 4, 5}
         };
-        std::vector<OpenGP::Vec3> normals;        
-        // write_indices(file, faces, normals);
+        std::vector<OpenGP::Vec3> normals;
+        // write_faces(file, faces, normals);
     }
 }

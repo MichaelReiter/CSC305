@@ -13,8 +13,8 @@ namespace MeshGenerators {
         std::vector<OpenGP::Vec3> vertices;
         std::vector<OpenGP::Vec3> faces;
         std::vector<OpenGP::Vec3> normals;
-        // Latitude
         int v = 1;
+        // Latitude
         for (int i = 0; i < m_resolution; i++) {
             float theta1 = ((float)(i) / m_resolution) * M_PI;
             float theta2 = ((float)(i + 1)  / m_resolution) * M_PI;
@@ -40,7 +40,7 @@ namespace MeshGenerators {
             }
         }
         write_vertices(file, vertices);
-        // write_indices(file, faces, normals);
+        // write_faces(file, faces, normals);
     }
 
     OpenGP::Vec3 SphereGenerator::convert_polar_coordinates_to_cartesian(float r, float theta, float phi) const

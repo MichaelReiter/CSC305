@@ -7,6 +7,7 @@ namespace MeshGenerators {
 
     ConeGenerator::~ConeGenerator() {}
 
+    // Normals and texture coordinates not implemented
     void ConeGenerator::write_to_file(std::ofstream& file) const
     {
         file << "# cone" << std::endl;
@@ -30,6 +31,6 @@ namespace MeshGenerators {
             faces.push_back({i, (m_resolution + 2), (i + 1)});
         }
         std::vector<OpenGP::Vec3> normals;        
-        // write_indices(file, faces, normals);
+        // write_faces(file, faces, normals);
     }
 }
