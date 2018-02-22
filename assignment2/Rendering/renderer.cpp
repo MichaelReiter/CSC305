@@ -19,14 +19,6 @@ namespace Rendering {
         m_time += 0.001f;
     }
 
-    std::string Renderer::read_file_to_string(const std::string& filename) const
-    {
-        std::ifstream file(filename);
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-        return buffer.str();
-    }
-
     void Renderer::read_obj_file(const std::string& filename,
                                  std::vector<OpenGP::Vec3>& vertices,
                                  std::vector<unsigned int>& vertex_indices,
@@ -112,7 +104,10 @@ namespace Rendering {
             update();
         });
 
-        OpenGP::Window& window = app.create_window([this, &mesh](const OpenGP::Window& window) {
+        OpenGP::Window& window = app.create_window([this, &mesh](OpenGP::Window& window) {
+            int width;
+            int height;
+            std::tie(width, height) = window.get_size();
             mesh.draw(m_width, m_height, m_time);
         });
         window.set_title("Assignment 2");

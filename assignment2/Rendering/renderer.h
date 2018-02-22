@@ -21,7 +21,6 @@ namespace Rendering {
         std::string m_mesh_path;
 
         void update();
-        std::string read_file_to_string(const std::string& filename) const;
         void read_obj_file(const std::string& filename,
                            std::vector<OpenGP::Vec3>& vertices,
                            std::vector<unsigned int>& indices,

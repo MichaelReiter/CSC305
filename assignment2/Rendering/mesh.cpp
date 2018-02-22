@@ -184,7 +184,7 @@ namespace Rendering {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Render in wireframe mode
-        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         glUseProgram(m_pid);
         glBindVertexArray(m_vao);
@@ -219,10 +219,12 @@ namespace Rendering {
         OpenGP::Mat4x4 MVP = projection * view * model;
         OpenGP::Mat4x4 model_rotation = model.inverse().transpose();
 
+        // Set vertex shader uniforms
         glUniformMatrix4fv(glGetUniformLocation(m_pid, "model"), 1, GL_FALSE, model.data());
         glUniformMatrix4fv(glGetUniformLocation(m_pid, "model_rotation"), 1, GL_FALSE, model_rotation.data());
         glUniformMatrix4fv(glGetUniformLocation(m_pid, "MVP"), 1, GL_FALSE, MVP.data());
 
+        // Lighting properties
         OpenGP::Vec3 light_direction = OpenGP::Vec3(cosf(2 * t), -1, sinf(2 * t)).normalized();
         OpenGP::Vec3 light_color = {1.0f, 1.0f, 1.0f};
         OpenGP::Vec3 ambient_coefficient = {0.25f, 0.25f, 0.25f};
@@ -231,6 +233,7 @@ namespace Rendering {
         OpenGP::Vec3 object_specular = {0.6f, 0.6f, 0.6f};
         float phong_exponent = 32.0f;
  
+        // Set fragment shader uniforms
         glUniform3fv(glGetUniformLocation(m_pid, "camera_position"), 1, camera_position.data());
         glUniform3fv(glGetUniformLocation(m_pid, "light_direction"), 1, light_direction.data());
         glUniform3fv(glGetUniformLocation(m_pid, "light_color"), 1, light_color.data());

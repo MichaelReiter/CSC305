@@ -17,7 +17,7 @@ namespace MeshGenerators {
             {0.5f, 0.0f, -0.5f}
         };
         write_vertices(file, vertices);
-        std::vector<OpenGP::Vec3> faces {
+        std::vector<OpenGP::Vec3> vertex_indices {
             {1, 3, 2},
             {1, 4, 3},
             {1, 5, 4},
@@ -25,7 +25,6 @@ namespace MeshGenerators {
             {2, 3, 5},
             {3, 4, 5}
         };
-        std::vector<OpenGP::Vec3> normals;
-        // write_faces(file, faces, normals);
+        write_faces(file, vertex_indices, vertex_indices);
     }
 }

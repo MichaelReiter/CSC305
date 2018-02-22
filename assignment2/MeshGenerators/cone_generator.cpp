@@ -21,16 +21,15 @@ namespace MeshGenerators {
         vertices.push_back({0.0f, 0.5f, 0.0f});
         vertices.push_back({0.0f, -1.0f, 0.0f});
         write_vertices(file, vertices);
-        std::vector<OpenGP::Vec3> faces;
+        std::vector<OpenGP::Vec3> vertex_indices;
         // Faces on the spike
         for (int i = 1; i < m_resolution; i++) {
-            faces.push_back({i, i + 1, m_resolution + 1});
+            vertex_indices.push_back({i, i + 1, m_resolution + 1});
         }
         // Faces on the circle
         for (int i = 1; i < m_resolution; i++) {
-            faces.push_back({i, (m_resolution + 2), (i + 1)});
+            vertex_indices.push_back({i, (m_resolution + 2), (i + 1)});
         }
-        std::vector<OpenGP::Vec3> normals;        
-        // write_faces(file, faces, normals);
+        write_faces(file, vertex_indices, vertex_indices);
     }
 }
