@@ -29,11 +29,11 @@ namespace MeshGenerators {
         vertices.push_back({0.0f, -1.0f, 0.0f});
         normals.push_back({0.0f, 1.0f, 0.0f});
         normals.push_back({0.0f, -1.0f, 0.0f});
-        write_vertex_normals(file, normals);
         write_vertices(file, vertices);
+        write_vertex_normals(file, normals);
         std::vector<OpenGP::Vec3> vertex_indices;
         // Faces on the rectangle
-        for (int i = 1; i < (2 * m_resolution); i++) {
+        for (int i = 1; i < (2 * m_resolution - 2); i++) {
             vertex_indices.push_back({(i), (i + 1), (i + 2)});
             vertex_indices.push_back({(i + 1), (i + 3), (i + 2)});
         }

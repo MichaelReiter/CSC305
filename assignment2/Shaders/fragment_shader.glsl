@@ -12,7 +12,7 @@ uniform float phong_exponent;
 in vec3 fragment_position;
 in vec3 fragment_normal;
 
-out vec4 fcolor;
+out vec4 fragment_color;
 
 void main() {
     vec3 normal = normalize(fragment_normal);
@@ -22,5 +22,5 @@ void main() {
     vec3 phong_lighting = ambient_coefficient * object_ambient
                         + diffuse_coefficient * light_color * object_diffuse
                         + specular_coefficient * light_color * object_specular;
-    fcolor = vec4(phong_lighting, 1);
+    fragment_color = vec4(phong_lighting, 1);
 }
