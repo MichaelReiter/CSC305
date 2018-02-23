@@ -25,6 +25,6 @@ namespace MeshGenerators {
             {2, 3, 5},
             {3, 4, 5}
         };
-        write_faces(file, vertex_indices, vertex_indices);
+        write_faces(file, vertex_indices, vertex_indices, vertex_indices);
     }
 }

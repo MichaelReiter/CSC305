@@ -8,9 +8,11 @@ uniform vec3 object_ambient;
 uniform vec3 object_diffuse;
 uniform vec3 object_specular;
 uniform float phong_exponent;
+// uniform sampler2D texture_image;
 
 in vec3 fragment_position;
 in vec3 fragment_normal;
+// in vec2 fragment_texture;
 
 out vec4 fragment_color;
 
@@ -23,4 +25,5 @@ void main() {
                         + diffuse_coefficient * light_color * object_diffuse
                         + specular_coefficient * light_color * object_specular;
     fragment_color = vec4(phong_lighting, 1);
+    // fragment_color = texture(texture_image, fragment_texture).rgba;
 }

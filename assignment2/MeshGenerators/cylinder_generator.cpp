@@ -45,6 +45,6 @@ namespace MeshGenerators {
                 vertex_indices.push_back({(i + 2), (2 * m_resolution + 1), i});
             }
         }
-        write_faces(file, vertex_indices, vertex_indices);
+        write_faces(file, vertex_indices, vertex_indices, vertex_indices);
     }
 }

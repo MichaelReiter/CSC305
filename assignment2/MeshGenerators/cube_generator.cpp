@@ -56,6 +56,6 @@ namespace MeshGenerators {
             {6, 6, 6}
         };
         write_vertex_normals(file, normals);
-        write_faces(file, vertex_indices, normal_indices);
+        write_faces(file, vertex_indices, normal_indices, vertex_indices);
     }
 }

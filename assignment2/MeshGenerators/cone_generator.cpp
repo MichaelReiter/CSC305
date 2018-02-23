@@ -30,6 +30,6 @@ namespace MeshGenerators {
         for (int i = 1; i < m_resolution; i++) {
             vertex_indices.push_back({i, (m_resolution + 2), (i + 1)});
         }
-        write_faces(file, vertex_indices, vertex_indices);
+        write_faces(file, vertex_indices, vertex_indices, vertex_indices);
     }
 }

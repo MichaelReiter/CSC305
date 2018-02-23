@@ -13,6 +13,7 @@ namespace MeshGenerators {
         std::vector<OpenGP::Vec3> vertices;
         std::vector<OpenGP::Vec3> normals;
         std::vector<OpenGP::Vec3> vertex_indices;
+        std::vector<OpenGP::Vec2> texture_coordinates;
         OpenGP::Vec3 origin = {0.0f, 0.0f, 0.0f};
         int v = 1;
         // Latitude
@@ -27,30 +28,39 @@ namespace MeshGenerators {
                 OpenGP::Vec3 v2 = convert_polar_coordinates_to_cartesian(1.0f, theta1, phi2);
                 OpenGP::Vec3 v3 = convert_polar_coordinates_to_cartesian(1.0f, theta2, phi2);
                 OpenGP::Vec3 v4 = convert_polar_coordinates_to_cartesian(1.0f, theta2, phi1);
+                OpenGP::Vec3 d1 = (v1 - origin).normalized();
+                OpenGP::Vec3 d2 = (v2 - origin).normalized();
+                OpenGP::Vec3 d3 = (v3 - origin).normalized();
+                OpenGP::Vec3 d4 = (v4 - origin).normalized();
                 vertices.push_back(v1);
                 vertices.push_back(v2);
                 vertices.push_back(v3);
                 vertices.push_back(v4);
-                normals.push_back(v1 - origin);
-                normals.push_back(v2 - origin);
-                normals.push_back(v3 - origin);
-                normals.push_back(v4 - origin);
+                normals.push_back(d1);
+                normals.push_back(d2);
+                normals.push_back(d3);
+                normals.push_back(d4);
+                texture_coordinates.push_back({(atan2(d1[0], d1[2]) / (2 * M_PI) + 0.5), d1[1] * 0.5 + 0.5});
+                texture_coordinates.push_back({(atan2(d2[0], d2[2]) / (2 * M_PI) + 0.5), d2[1] * 0.5 + 0.5});
+                texture_coordinates.push_back({(atan2(d3[0], d3[2]) / (2 * M_PI) + 0.5), d3[1] * 0.5 + 0.5});
+                texture_coordinates.push_back({(atan2(d4[0], d4[2]) / (2 * M_PI) + 0.5), d4[1] * 0.5 + 0.5});
                 if (i == 0) {
                     // North pole
-                    vertex_indices.push_back({v, (v + 3), (v + 2)});
+                    vertex_indices.push_back({v, (v + 2), (v + 3)});
                 } else if (i + 1 == m_resolution) {
                     // South pole
-                    vertex_indices.push_back({(v + 2), (v + 1), v});
+                    vertex_indices.push_back({(v + 2), (v), (v + 1)});
                 } else {
-                    vertex_indices.push_back({v, (v + 3), (v + 1)});
-                    vertex_indices.push_back({(v + 1), (v + 3), (v + 2)});
+                    vertex_indices.push_back({v, (v + 1), (v + 3)});
+                    vertex_indices.push_back({(v + 1), (v + 2), (v + 3)});
                 }
                 v += 4;
             }
         }
         write_vertices(file, vertices);
         write_vertex_normals(file, normals);
-        write_faces(file, vertex_indices, vertex_indices);
+        write_texture_coordinates(file, texture_coordinates);
+        write_faces(file, vertex_indices, vertex_indices, vertex_indices);
     }
 
     OpenGP::Vec3 SphereGenerator::convert_polar_coordinates_to_cartesian(float r, float theta, float phi) const

@@ -8,10 +8,7 @@
 
 namespace Rendering {
     Mesh::Mesh() :
-        m_num_vertices(0),
-        m_has_normals(false),
-        m_has_textures(false),
-        m_has_texture_coordinates(false)
+        m_num_vertices(0)
     {
         // Compile the shaders
         m_pid = OpenGP::load_shaders(
@@ -83,7 +80,6 @@ namespace Rendering {
                               (void*)0); // ZERO_BUFFER_OFFSET
         check_error_gl();
 
-        m_has_normals = true;
         glBindVertexArray(0);
     }
 
@@ -96,7 +92,7 @@ namespace Rendering {
         glGenBuffers(1, &m_texture_coordinates_buffer);
         glBindBuffer(GL_ARRAY_BUFFER, m_texture_coordinates_buffer);
         glBufferData(GL_ARRAY_BUFFER,
-                     texture_coordinates.size() * sizeof(OpenGP::Vec3),
+                     texture_coordinates.size() * sizeof(OpenGP::Vec2),
                      &texture_coordinates[0],
                      GL_STATIC_DRAW);
         glEnableVertexAttribArray(2);
@@ -108,7 +104,6 @@ namespace Rendering {
                               (void*)0); // ZERO_BUFFER_OFFSET
         check_error_gl();
 
-        m_has_texture_coordinates = true;
         glBindVertexArray(0);
     }
 
@@ -140,7 +135,7 @@ namespace Rendering {
 
         glUseProgram(m_pid);
 
-        GLuint texture_id = glGetUniformLocation(m_pid, "texImage");
+        GLuint texture_id = glGetUniformLocation(m_pid, "texture_image");
         check_error_gl();
         glUniform1i(texture_id, 0);
         check_error_gl();
@@ -166,7 +161,6 @@ namespace Rendering {
                      &image[0]);
         check_error_gl();
 
-        m_has_textures = true;
         glUseProgram(0);
         glBindVertexArray(0);
     }
@@ -192,21 +186,8 @@ namespace Rendering {
 
         glBindBuffer(GL_ARRAY_BUFFER, m_vertex_point_buffer);
 
-        // // Use normals when shading
-        // if (m_has_normals) {
-        //     glUniform1i(glGetUniformLocation(m_pid, "m_has_normals"), 1);
-        // } else {
-        //     glUniform1i(glGetUniformLocation(m_pid, "m_has_normals"), 0);
-        // }
-
-        // // Use textures when shading
-        // if (m_has_textures && m_has_texture_coordinates) {
-        //     glActiveTexture(GL_TEXTURE0);
-        //     glBindTexture(GL_TEXTURE_2D, m_texture_buffer);
-        //     glUniform1i(glGetUniformLocation(m_pid, "m_has_textures"), 1);
-        // } else {
-        //     glUniform1i(glGetUniformLocation(m_pid, "m_has_textures"), 0);
-        // }
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_texture_buffer);
 
         // Create model, view and projection matrices
         OpenGP::Mat4x4 model = OpenGP::Mat4x4::Identity();

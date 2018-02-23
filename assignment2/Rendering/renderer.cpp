@@ -22,12 +22,10 @@ namespace Rendering {
     void Renderer::read_obj_file(const std::string& filename,
                                  std::vector<OpenGP::Vec3>& vertices,
                                  std::vector<unsigned int>& vertex_indices,
-                                 std::vector<OpenGP::Vec3>& normals) const
+                                 std::vector<OpenGP::Vec3>& normals,
+                                 std::vector<OpenGP::Vec2>& texture_coordinates) const
     {
         vertices.push_back({0.0f, 0.0f, 0.0f});
-        // std::vector<unsigned int> texture_coordinate_indices;
-        // std::vector<unsigned int> normal_indices;
-        std::vector<OpenGP::Vec2> texture_coordinates;
 
         FILE *file = fopen(filename.c_str(), "r");
         if (file == NULL) {
@@ -67,22 +65,19 @@ namespace Rendering {
                 unsigned int texture_coordinate_index[3];
                 unsigned int normal_index[3];
                 int matches = fscanf(file,
-                                     "%d//%d %d//%d %d//%d\n",
+                                     "%d/%d/%d %d/%d/%d %d/%d/%d\n",
                                      &vertex_index[0],
                                      &normal_index[0],
+                                     &texture_coordinate_index[0],
                                      &vertex_index[1],
                                      &normal_index[1],
+                                     &texture_coordinate_index[1],
                                      &vertex_index[2],
-                                     &normal_index[2]);
+                                     &normal_index[2],
+                                     &texture_coordinate_index[2]);
                 vertex_indices.push_back(vertex_index[0]);
                 vertex_indices.push_back(vertex_index[1]);
                 vertex_indices.push_back(vertex_index[2]);
-                // texture_coordinate_indices.push_back(texture_coordinate_index[0]);
-                // texture_coordinate_indices.push_back(texture_coordinate_index[1]);
-                // texture_coordinate_indices.push_back(texture_coordinate_index[2]);
-                // normal_indices.push_back(normal_index[0]);
-                // normal_indices.push_back(normal_index[1]);
-                // normal_indices.push_back(normal_index[2]);
             }
         }
     }
@@ -94,11 +89,14 @@ namespace Rendering {
 
         // Read vertices and faces from .obj file
         std::vector<OpenGP::Vec3> vertices;
-        std::vector<unsigned int> indices;
+        std::vector<unsigned int> vertex_indices;
         std::vector<OpenGP::Vec3> normals;
-        read_obj_file(m_mesh_path, vertices, indices, normals);
-        mesh.load_vertices(vertices, indices);
+        std::vector<OpenGP::Vec2> texture_coordinates;
+        read_obj_file(m_mesh_path, vertices, vertex_indices, normals, texture_coordinates);
+        mesh.load_vertices(vertices, vertex_indices);
         mesh.load_normals(normals);
+        mesh.load_texture_coordinates(texture_coordinates);
+        mesh.load_textures("/Users/michael/Dropbox/Programming/icg/data/earth.png");
 
         app.add_listener<OpenGP::ApplicationUpdateEvent>([this](const OpenGP::ApplicationUpdateEvent& aue) {
             update();

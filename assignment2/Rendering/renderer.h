@@ -24,7 +24,8 @@ namespace Rendering {
         void read_obj_file(const std::string& filename,
                            std::vector<OpenGP::Vec3>& vertices,
                            std::vector<unsigned int>& indices,
-                           std::vector<OpenGP::Vec3>& normals) const;
+                           std::vector<OpenGP::Vec3>& normals,
+                           std::vector<OpenGP::Vec2>& texture_coordinates) const;
     };
 }
 

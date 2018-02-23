@@ -25,9 +25,6 @@ namespace Rendering {
         GLuint m_vertex_normal_buffer;
         GLuint m_texture_coordinates_buffer;
         unsigned int m_num_vertices;
-        bool m_has_normals;
-        bool m_has_textures;
-        bool m_has_texture_coordinates;
     };
 }
 

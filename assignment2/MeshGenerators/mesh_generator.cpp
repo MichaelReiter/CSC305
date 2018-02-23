@@ -22,14 +22,23 @@ namespace MeshGenerators {
         }
     }
 
+    void MeshGenerator::write_texture_coordinates(std::ofstream& file,
+                                                  const std::vector<OpenGP::Vec2>& texture_coordinates) const
+    {
+        for (const auto& t : texture_coordinates) {
+            file << "vt " << std::fixed << t[0] << " " << t[1] << std::endl;
+        }
+    }
+
     void MeshGenerator::write_faces(std::ofstream& file,
                                     const std::vector<OpenGP::Vec3>& vertex_indices,
-                                    const std::vector<OpenGP::Vec3>& normal_indices) const
+                                    const std::vector<OpenGP::Vec3>& normal_indices,
+                                    const std::vector<OpenGP::Vec3>& texture_indices) const
     {
         for (int i = 0; i < vertex_indices.size(); i++) {
-            file << "f " << (int)vertex_indices[i][0] << "//" << (int)normal_indices[i][0]
-                  << " " << (int)vertex_indices[i][1] << "//" << (int)normal_indices[i][1]
-                  << " " << (int)vertex_indices[i][2] << "//" << (int)normal_indices[i][2]
+            file << "f " << (int)vertex_indices[i][0] << "/" << (int)texture_indices[i][0] << "/" << (int)normal_indices[i][0]
+                  << " " << (int)vertex_indices[i][1] << "/" << (int)texture_indices[i][1] << "/" << (int)normal_indices[i][1]
+                  << " " << (int)vertex_indices[i][2] << "/" << (int)texture_indices[i][2] << "/" << (int)normal_indices[i][2]
                   << std::endl;
         }
     }

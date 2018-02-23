@@ -11,7 +11,7 @@ int main(int argc, char** argv)
     constexpr unsigned int height = 600;
     constexpr unsigned int cone_resolution = 30;    
     constexpr unsigned int cylinder_resolution = 30;
-    constexpr unsigned int sphere_resolution = 300;
+    constexpr unsigned int sphere_resolution = 30;
 
     // Generate .obj mesh files by mathematically approximating shapes
     MeshGenerators::ConeGenerator cone_generator {cone_resolution};
