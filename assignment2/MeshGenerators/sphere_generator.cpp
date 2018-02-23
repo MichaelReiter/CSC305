@@ -46,13 +46,13 @@ namespace MeshGenerators {
                 texture_coordinates.push_back({(atan2(d4[0], d4[2]) / (2 * M_PI) + 0.5), d4[1] * 0.5 + 0.5});
                 if (i == 0) {
                     // North pole
-                    vertex_indices.push_back({v, (v + 2), (v + 3)});
+                    vertex_indices.push_back({v, (v + 3), (v + 2)});
                 } else if (i + 1 == m_resolution) {
                     // South pole
-                    vertex_indices.push_back({(v + 2), (v), (v + 1)});
+                    vertex_indices.push_back({(v + 2), (v + 1), (v)});
                 } else {
-                    vertex_indices.push_back({v, (v + 1), (v + 3)});
-                    vertex_indices.push_back({(v + 1), (v + 2), (v + 3)});
+                    vertex_indices.push_back({v, (v + 3), (v + 1)});
+                    vertex_indices.push_back({(v + 1), (v + 3), (v + 2)});
                 }
                 v += 4;
             }
