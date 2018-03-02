@@ -71,7 +71,6 @@ namespace Rendering {
 
         framebuffer_shader = std::unique_ptr<OpenGP::Shader>(new OpenGP::Shader());
         framebuffer_shader->verbose = true;
-        std::cout << fb_fshader.c_str() << std::endl;
         framebuffer_shader->add_vshader_from_source(fb_vshader.c_str());
         framebuffer_shader->add_fshader_from_source(fb_fshader.c_str());
         framebuffer_shader->link();
