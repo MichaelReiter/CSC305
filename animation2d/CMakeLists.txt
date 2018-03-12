@@ -11,7 +11,3 @@ if(WIN32)
         target_link_libraries(${EXERCISENAME} "legacy_stdio_definitions.lib")
 endif()
 target_link_libraries(${EXERCISENAME} ${COMMON_LIBS})
-
-#--- data need to be copied to run folder
-file(COPY ${PROJECT_SOURCE_DIR}/animation2d/nyancat.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${PROJECT_SOURCE_DIR}/animation2d/background.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
