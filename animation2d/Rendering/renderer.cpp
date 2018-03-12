@@ -7,53 +7,28 @@
 #include <string>
 
 namespace Rendering {
+    typedef Eigen::Transform<float, 3, Eigen::Affine> Transform;
+
     std::unique_ptr<OpenGP::GPUMesh> quad;
     std::unique_ptr<OpenGP::Shader> quad_shader;
     std::unique_ptr<OpenGP::Shader> framebuffer_shader;
     std::unique_ptr<OpenGP::RGBA8Texture> cat;
     std::unique_ptr<OpenGP::RGBA8Texture> stars;
-    std::unique_ptr<OpenGP::Framebuffer> framebuffer;
-    std::unique_ptr<OpenGP::RGBA8Texture> color_buffer_texture;
 
     Renderer::Renderer(unsigned int width, unsigned int height, float speed_factor) :
-        m_width(width),
-        m_height(height),
+        m_width(width * 2),
+        m_height(height * 2),
         m_speed_factor(speed_factor)
     {}
 
     Renderer::~Renderer() {}
 
-    std::string Renderer::load_source(const char* filename) {
-        std::ifstream f(filename);
+    std::string Renderer::load_source(const std::string& filename) const
+    {
+        std::ifstream f(filename.c_str());
         std::stringstream buffer;
         buffer << f.rdbuf();
         return buffer.str();
-    }
-
-    void Renderer::load_texture(std::unique_ptr<OpenGP::RGBA8Texture>& texture,
-                                const std::string& filename)
-    {
-        std::vector<unsigned char> image;
-        unsigned int width;
-        unsigned int height;
-        unsigned error = lodepng::decode(image, width, height, filename.c_str());
-        if (error) {
-            std::cout << "decoder error " << error
-                << ": " << lodepng_error_text(error) << std::endl;
-        }
-        unsigned char* row = new unsigned char[4 * width];
-        for (int i = 0; i < int(height) / 2; i++) {
-            memcpy(row, &image[4 * i * width], 4 * width * sizeof(unsigned char));
-            memcpy(&image[4 * i * width],
-                &image[image.size() - 4 * (i + 1) * width],
-                4 * width * sizeof(unsigned char));
-            memcpy(&image[image.size() - 4 * (i + 1) * width],
-                   row,
-                   4 * width * sizeof(unsigned char));
-        }
-        delete row;
-        texture = std::unique_ptr<OpenGP::RGBA8Texture>(new OpenGP::RGBA8Texture());
-        texture->upload_raw(width, height, &image[0]);
     }
 
     void Renderer::init()
@@ -107,6 +82,32 @@ namespace Rendering {
                      "/Users/michael/Dropbox/Programming/icg/data/background.png");
     }
 
+    void Renderer::load_texture(std::unique_ptr<OpenGP::RGBA8Texture>& texture,
+                                const std::string& filename) const
+    {
+        std::vector<unsigned char> image;
+        unsigned int width;
+        unsigned int height;
+        unsigned error = lodepng::decode(image, width, height, filename.c_str());
+        if (error) {
+            std::cout << "decoder error " << error
+                << ": " << lodepng_error_text(error) << std::endl;
+        }
+        unsigned char* row = new unsigned char[4 * width];
+        for (int i = 0; i < int(height) / 2; i++) {
+            memcpy(row, &image[4 * i * width], 4 * width * sizeof(unsigned char));
+            memcpy(&image[4 * i * width],
+                &image[image.size() - 4 * (i + 1) * width],
+                4 * width * sizeof(unsigned char));
+            memcpy(&image[image.size() - 4 * (i + 1) * width],
+                   row,
+                   4 * width * sizeof(unsigned char));
+        }
+        delete[] row;
+        texture = std::unique_ptr<OpenGP::RGBA8Texture>(new OpenGP::RGBA8Texture());
+        texture->upload_raw(width, height, &image[0]);
+    }
+
     void Renderer::draw_scene()
     {
         glEnable(GL_BLEND);
@@ -156,18 +157,18 @@ namespace Rendering {
         OpenGP::Application app;
         init();
 
-        color_buffer_texture = std::unique_ptr<OpenGP::RGBA8Texture>(new OpenGP::RGBA8Texture());
-        color_buffer_texture->allocate(m_width, m_height);
-        framebuffer = std::unique_ptr<OpenGP::Framebuffer>(new OpenGP::Framebuffer());
-        framebuffer->attach_color_texture(*color_buffer_texture);
+        OpenGP::RGBA8Texture color_buffer_texture;
+        color_buffer_texture.allocate(m_width, m_height);
+        OpenGP::Framebuffer framebuffer;
+        framebuffer.attach_color_texture(color_buffer_texture);
 
-        OpenGP::Window& window = app.create_window([this](OpenGP::Window&) {
+        OpenGP::Window& window = app.create_window([&](OpenGP::Window& window) {
             glViewport(0, 0, m_width, m_height);
 
-            framebuffer->bind();
+            framebuffer.bind();
             glClear(GL_COLOR_BUFFER_BIT);
             draw_scene();
-            framebuffer->unbind();
+            framebuffer.unbind();
 
             glViewport(0, 0, m_width, m_height);
             glClear(GL_COLOR_BUFFER_BIT);
@@ -175,14 +176,14 @@ namespace Rendering {
 
             // Bind texture and set uniforms
             glActiveTexture(GL_TEXTURE0);
-            color_buffer_texture->bind();
+            color_buffer_texture.bind();
             framebuffer_shader->set_uniform("tex", 0);
             framebuffer_shader->set_uniform("tex_width", float(m_width));
             framebuffer_shader->set_uniform("tex_height", float(m_height));
 
             quad->set_attributes(*framebuffer_shader);
             quad->draw();
-            color_buffer_texture->unbind();
+            color_buffer_texture.unbind();
             framebuffer_shader->unbind();
         });
         window.set_title("Framebuffer Animation");

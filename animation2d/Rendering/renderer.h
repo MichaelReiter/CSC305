@@ -5,8 +5,6 @@
 #include <string>
 
 namespace Rendering {
-    typedef Eigen::Transform<float, 3, Eigen::Affine> Transform;
-
     class Renderer {
     public:
         Renderer(unsigned int width, unsigned int height, float speed_factor);
@@ -20,9 +18,10 @@ namespace Rendering {
         unsigned int m_height;
         float m_speed_factor;
 
-        std::string load_source(const char* filename);
-        void load_texture(std::unique_ptr<OpenGP::RGBA8Texture>& texture, const std::string& filename);
+        std::string load_source(const std::string& filename) const;
         void init();
+        void load_texture(std::unique_ptr<OpenGP::RGBA8Texture>& texture,
+                          const std::string& filename) const;
         void draw_scene();
     };
 }
