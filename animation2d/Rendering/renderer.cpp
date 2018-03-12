@@ -10,18 +10,17 @@ namespace Rendering {
     typedef Eigen::Transform<float, 3, Eigen::Affine> Transform;
 
     // Textures
-    // std::unique_ptr<OpenGP::GPUMesh> quad;
-    // std::unique_ptr<OpenGP::Shader> quad_shader;
-    // std::unique_ptr<OpenGP::Shader> framebuffer_shader;
-    // std::unique_ptr<OpenGP::RGBA8Texture> cat;
-    // std::unique_ptr<OpenGP::RGBA8Texture> stars;
+    std::unique_ptr<OpenGP::GPUMesh> quad;
+    std::unique_ptr<OpenGP::Shader> quad_shader;
+    std::unique_ptr<OpenGP::Shader> framebuffer_shader;
+    std::unique_ptr<OpenGP::RGBA8Texture> cat;
+    std::unique_ptr<OpenGP::RGBA8Texture> stars;
 
     // Selection
     std::unique_ptr<OpenGP::GPUMesh> line;
     std::unique_ptr<OpenGP::Shader> line_shader;
     std::vector<OpenGP::Vec2> control_points;
     std::unique_ptr<OpenGP::Shader> selection_shader;
-    std::unique_ptr<OpenGP::Framebuffer> selection_framebuffer;
     std::unique_ptr<OpenGP::RGBA8Texture> selection_color;
     std::unique_ptr<OpenGP::D16Texture> selection_depth;
 
@@ -47,8 +46,9 @@ namespace Rendering {
 
     void Renderer::init()
     {
-        glClearColor(1,1,1,1);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
+        // Load OpenGL shaders
         std::string fb_vshader = load_source(
             "/Users/michael/Dropbox/Programming/icg/animation2d/Shaders/fb_vshader.glsl");
         std::string fb_fshader = load_source(
@@ -73,6 +73,7 @@ namespace Rendering {
         line_shader->add_fshader_from_source(line_fshader.c_str());
         line_shader->link();
 
+        // Bezier control points
         control_points = std::vector<OpenGP::Vec2>();
         control_points.push_back({-0.7f, -0.2f});
         control_points.push_back({-0.3f, 0.2f});
@@ -91,40 +92,40 @@ namespace Rendering {
         selection_shader->add_fshader_from_source(selection_fshader.c_str());
         selection_shader->link();
 
-        // framebuffer_shader = std::unique_ptr<OpenGP::Shader>(new OpenGP::Shader());
-        // framebuffer_shader->verbose = true;
-        // framebuffer_shader->add_vshader_from_source(fb_vshader.c_str());
-        // framebuffer_shader->add_fshader_from_source(fb_fshader.c_str());
-        // framebuffer_shader->link();
+        framebuffer_shader = std::unique_ptr<OpenGP::Shader>(new OpenGP::Shader());
+        framebuffer_shader->verbose = true;
+        framebuffer_shader->add_vshader_from_source(fb_vshader.c_str());
+        framebuffer_shader->add_fshader_from_source(fb_fshader.c_str());
+        framebuffer_shader->link();
 
-        // quad_shader = std::unique_ptr<OpenGP::Shader>(new OpenGP::Shader());
-        // quad_shader->verbose = true;
-        // quad_shader->add_vshader_from_source(quad_vshader.c_str());
-        // quad_shader->add_fshader_from_source(quad_fshader.c_str());
-        // quad_shader->link();
+        quad_shader = std::unique_ptr<OpenGP::Shader>(new OpenGP::Shader());
+        quad_shader->verbose = true;
+        quad_shader->add_vshader_from_source(quad_vshader.c_str());
+        quad_shader->add_fshader_from_source(quad_fshader.c_str());
+        quad_shader->link();
 
-        // quad = std::unique_ptr<OpenGP::GPUMesh>(new OpenGP::GPUMesh());
-        // std::vector<OpenGP::Vec3> quad_vposition {
-        //     {-1, -1, 0},
-        //     {-1, 1, 0},
-        //     {1, -1, 0},
-        //     {1, 1, 0}
-        // };
-        // quad->set_vbo<OpenGP::Vec3>("vposition", quad_vposition);
-        // std::vector<unsigned int> quad_triangle_indices {0, 2, 1, 1, 2, 3};
-        // quad->set_triangles(quad_triangle_indices);
-        // std::vector<OpenGP::Vec2> quad_vtexcoord {
-        //     {0, 0},
-        //     {0, 1},
-        //     {1, 0},
-        //     {1, 1}
-        // };
-        // quad->set_vtexcoord(quad_vtexcoord);
+        quad = std::unique_ptr<OpenGP::GPUMesh>(new OpenGP::GPUMesh());
+        std::vector<OpenGP::Vec3> quad_vposition {
+            {-1, -1, 0},
+            {-1, 1, 0},
+            {1, -1, 0},
+            {1, 1, 0}
+        };
+        quad->set_vbo<OpenGP::Vec3>("vposition", quad_vposition);
+        std::vector<unsigned int> quad_triangle_indices {0, 2, 1, 1, 2, 3};
+        quad->set_triangles(quad_triangle_indices);
+        std::vector<OpenGP::Vec2> quad_vtexcoord {
+            {0, 0},
+            {0, 1},
+            {1, 0},
+            {1, 1}
+        };
+        quad->set_vtexcoord(quad_vtexcoord);
 
-        // load_texture(cat,
-        //              "/Users/michael/Dropbox/Programming/icg/data/nyancat.png");
-        // load_texture(stars,
-        //              "/Users/michael/Dropbox/Programming/icg/data/background.png");
+        load_texture(cat,
+                     "/Users/michael/Dropbox/Programming/icg/data/nyancat.png");
+        load_texture(stars,
+                     "/Users/michael/Dropbox/Programming/icg/data/background.png");
     }
 
     void Renderer::load_texture(std::unique_ptr<OpenGP::RGBA8Texture>& texture,
@@ -155,46 +156,46 @@ namespace Rendering {
 
     void Renderer::draw_scene()
     {
-        // glEnable(GL_BLEND);
-        // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        // float t = glfwGetTime() * m_speed_factor;
-        // Transform transform = Transform::Identity();
-        // // background.draw(transform.matrix());
-        // quad_shader->bind();
-        // quad_shader->set_uniform("M", transform.matrix());
-        // // Make texture unit 0 active
-        // glActiveTexture(GL_TEXTURE0);
-        // // Bind the texture to the active unit for drawing
-        // stars->bind();
-        // // Set the shader's texture uniform to the index of the texture unit we have
-        // // bound the texture to
-        // quad_shader->set_uniform("tex", 0);
-        // quad->set_attributes(*quad_shader);
-        // quad->draw();
-        // stars->unbind();
+        float t = glfwGetTime() * m_speed_factor;
+        Transform transform = Transform::Identity();
+        // background.draw(transform.matrix());
+        quad_shader->bind();
+        quad_shader->set_uniform("M", transform.matrix());
+        // Make texture unit 0 active
+        glActiveTexture(GL_TEXTURE0);
+        // Bind the texture to the active unit for drawing
+        stars->bind();
+        // Set the shader's texture uniform to the index of the texture unit we have
+        // bound the texture to
+        quad_shader->set_uniform("tex", 0);
+        quad->set_attributes(*quad_shader);
+        quad->draw();
+        stars->unbind();
 
-        // float x_coordinate = 0.7f * std::cos(t);
-        // float y_coordinate = 0.7f * std::sin(t);
-        // transform *= Eigen::Translation3f(x_coordinate, y_coordinate, 0.0f);
-        // transform *= Eigen::AngleAxisf(t + M_PI / 2, Eigen::Vector3f::UnitZ());
-        // transform *= Eigen::AlignedScaling3f(0.2f, 0.2f, 1.0f);
+        float x_coordinate = 0.7f * std::cos(t);
+        float y_coordinate = 0.7f * std::sin(t);
+        transform *= Eigen::Translation3f(x_coordinate, y_coordinate, 0.0f);
+        transform *= Eigen::AngleAxisf(t + M_PI / 2, Eigen::Vector3f::UnitZ());
+        transform *= Eigen::AlignedScaling3f(0.2f, 0.2f, 1.0f);
 
-        // quad_shader->bind();
-        // quad_shader->set_uniform("M", transform.matrix());
-        // // Make texture unit 0 active
-        // glActiveTexture(GL_TEXTURE0);
-        // // Bind the texture to the active unit for drawing
-        // cat->bind();
-        // // Set the shader's texture uniform to the index
-        // // of the texture unit we have bound the texture to
-        // quad_shader->set_uniform("tex", 0);
-        // quad->set_attributes(*quad_shader);
-        // quad->draw();
-        // cat->unbind();
-        // quad_shader->unbind();
+        quad_shader->bind();
+        quad_shader->set_uniform("M", transform.matrix());
+        // Make texture unit 0 active
+        glActiveTexture(GL_TEXTURE0);
+        // Bind the texture to the active unit for drawing
+        cat->bind();
+        // Set the shader's texture uniform to the index
+        // of the texture unit we have bound the texture to
+        quad_shader->set_uniform("tex", 0);
+        quad->set_attributes(*quad_shader);
+        quad->draw();
+        cat->unbind();
+        quad_shader->unbind();
 
-        // glDisable(GL_BLEND);
+        glDisable(GL_BLEND);
     }
 
     int Renderer::create_application()
@@ -203,13 +204,13 @@ namespace Rendering {
         init();
 
         // Framebuffer for selection shader
-        selection_framebuffer = std::unique_ptr<OpenGP::Framebuffer>(new OpenGP::Framebuffer());
+        OpenGP::Framebuffer selection_framebuffer;
         selection_color = std::unique_ptr<OpenGP::RGBA8Texture>(new OpenGP::RGBA8Texture());
         selection_color->allocate(m_width, m_height);
         selection_depth = std::unique_ptr<OpenGP::D16Texture>(new OpenGP::D16Texture());
         selection_depth->allocate(m_width, m_height);
-        selection_framebuffer->attach_color_texture(*selection_color);
-        selection_framebuffer->attach_depth_texture(*selection_depth);
+        selection_framebuffer.attach_color_texture(*selection_color);
+        selection_framebuffer.attach_depth_texture(*selection_depth);
 
         // Mouse position and selected point
         OpenGP::Vec2 pixel_position {0, 0};
@@ -217,20 +218,37 @@ namespace Rendering {
         OpenGP::Vec2 *selection = nullptr;
         int offset_id = 0;
 
-        // OpenGP::RGBA8Texture color_buffer_texture;
-        // color_buffer_texture.allocate(m_width, m_height);
-        // OpenGP::Framebuffer framebuffer;
-        // framebuffer.attach_color_texture(color_buffer_texture);
+        OpenGP::RGBA8Texture color_buffer_texture;
+        color_buffer_texture.allocate(m_width * 2, m_height * 2);
+        OpenGP::Framebuffer framebuffer;
+        framebuffer.attach_color_texture(color_buffer_texture);
 
         OpenGP::Window& window = app.create_window([&](OpenGP::Window& window) {
             glViewport(0, 0, m_width * 2, m_height * 2);
-            // glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
             glClear(GL_COLOR_BUFFER_BIT);
             glPointSize(m_point_size);
 
-            line_shader->bind();
+            framebuffer.bind();
+            // glClear(GL_COLOR_BUFFER_BIT);
+            draw_scene();
+            framebuffer.unbind();
+
+            glClear(GL_COLOR_BUFFER_BIT);
+            framebuffer_shader->bind();
+            // Bind texture and set uniforms
+            glActiveTexture(GL_TEXTURE0);
+            color_buffer_texture.bind();
+            framebuffer_shader->set_uniform("tex", 0);
+            framebuffer_shader->set_uniform("tex_width", float(m_width));
+            framebuffer_shader->set_uniform("tex_height", float(m_height));
+            quad->set_attributes(*framebuffer_shader);
+            quad->draw();
+            color_buffer_texture.unbind();
+            framebuffer_shader->unbind();
 
             // Draw line between selection points
+            line_shader->bind();
             line_shader->set_uniform("selection", -1);
             line->set_attributes(*line_shader);
             line->set_mode(GL_LINE_STRIP);
@@ -242,29 +260,7 @@ namespace Rendering {
             }
             line->set_mode(GL_POINTS);
             line->draw();
-
             line_shader->unbind();
-
-            // framebuffer.bind();
-            // glClear(GL_COLOR_BUFFER_BIT);
-            // draw_scene();
-            // framebuffer.unbind();
-
-            // glViewport(0, 0, m_width, m_height);
-            // glClear(GL_COLOR_BUFFER_BIT);
-            // framebuffer_shader->bind();
-
-            // // Bind texture and set uniforms
-            // glActiveTexture(GL_TEXTURE0);
-            // color_buffer_texture.bind();
-            // framebuffer_shader->set_uniform("tex", 0);
-            // framebuffer_shader->set_uniform("tex_width", float(m_width));
-            // framebuffer_shader->set_uniform("tex_height", float(m_height));
-
-            // quad->set_attributes(*framebuffer_shader);
-            // quad->draw();
-            // color_buffer_texture.unbind();
-            // framebuffer_shader->unbind();
         });
         window.set_title("Framebuffer Animation");
         window.set_size(m_width, m_height);
@@ -288,7 +284,7 @@ namespace Rendering {
             // Mouse selection case
             if (e.button == GLFW_MOUSE_BUTTON_LEFT && !e.released) {
                 // Draw element ids to framebuffer
-                selection_framebuffer->bind();
+                selection_framebuffer.bind();
                 glViewport(0, 0, m_width * 2, m_height * 2);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
                 glPointSize(m_point_size);

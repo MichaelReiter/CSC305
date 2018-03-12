@@ -27,6 +27,7 @@ namespace Rendering {
         void load_texture(std::unique_ptr<OpenGP::RGBA8Texture>& texture,
                           const std::string& filename) const;
         void draw_scene();
+        void draw_path(OpenGP::Vec2* selection);
     };
 }
 
