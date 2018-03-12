@@ -7,7 +7,10 @@
 namespace Rendering {
     class Renderer {
     public:
-        Renderer(unsigned int width, unsigned int height, float speed_factor);
+        Renderer(unsigned int width,
+                 unsigned int height,
+                 float speed_factor,
+                 float point_size);
 
         ~Renderer();
 
@@ -17,6 +20,7 @@ namespace Rendering {
         unsigned int m_width;
         unsigned int m_height;
         float m_speed_factor;
+        float m_point_size;
 
         std::string load_source(const std::string& filename) const;
         void init();
