@@ -2,9 +2,10 @@
 
 #include <OpenGP/GL/Application.h>
 #include <OpenGP/external/LodePNG/lodepng.cpp>
+#include <cmath>
 #include <fstream>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace Rendering {
     typedef Eigen::Transform<float, 3, Eigen::Affine> Transform;
@@ -15,6 +16,8 @@ namespace Rendering {
     std::unique_ptr<OpenGP::Shader> framebuffer_shader;
     std::unique_ptr<OpenGP::RGBA8Texture> cat;
     std::unique_ptr<OpenGP::RGBA8Texture> background;
+    std::unique_ptr<OpenGP::Framebuffer> framebuffer;
+    std::unique_ptr<OpenGP::RGBA8Texture> color_buffer_texture;
 
     // Selection
     std::unique_ptr<OpenGP::GPUMesh> line;
@@ -53,6 +56,7 @@ namespace Rendering {
     {
         std::vector<unsigned int> bezier_indices;
         bezier_points = std::vector<OpenGP::Vec2>();
+        // The Bezier curve is defined by lines connection m_bezier_resolution points
         for (int i = 0; i < m_bezier_resolution + 1; i++) {
             float t = (float)i / m_bezier_resolution;
             OpenGP::Vec2 b = std::pow((1 - t), 3) * control_points[0]
@@ -89,6 +93,11 @@ namespace Rendering {
             "/Users/michael/Dropbox/Programming/icg/animation2d/Shaders/selection_fshader.glsl");
 
         // Framebuffer for selection shader
+        color_buffer_texture = std::unique_ptr<OpenGP::RGBA8Texture>(new OpenGP::RGBA8Texture());
+        color_buffer_texture->allocate(m_width * 2, m_height * 2);
+        framebuffer = std::unique_ptr<OpenGP::Framebuffer>(new OpenGP::Framebuffer());
+        framebuffer->attach_color_texture(*color_buffer_texture);
+        
         OpenGP::Framebuffer selection_framebuffer;
         selection_color = std::unique_ptr<OpenGP::RGBA8Texture>(new OpenGP::RGBA8Texture());
         selection_color->allocate(m_width, m_height);
@@ -111,6 +120,7 @@ namespace Rendering {
         control_points.push_back({0.75f, -0.75f});
         control_points.push_back({0.75f, 0.75f});
 
+        // Line between control points
         line = std::unique_ptr<OpenGP::GPUMesh>(new OpenGP::GPUMesh());
         line->set_vbo<OpenGP::Vec2>("vposition", control_points);
         std::vector<unsigned int> line_indices {0, 1, 2, 3};
@@ -127,12 +137,14 @@ namespace Rendering {
         selection_shader->add_fshader_from_source(selection_fshader.c_str());
         selection_shader->link();
 
+        // Framebuffer shader
         framebuffer_shader = std::unique_ptr<OpenGP::Shader>(new OpenGP::Shader());
         framebuffer_shader->verbose = true;
         framebuffer_shader->add_vshader_from_source(fb_vshader.c_str());
         framebuffer_shader->add_fshader_from_source(fb_fshader.c_str());
         framebuffer_shader->link();
 
+        // Quad shader
         quad_shader = std::unique_ptr<OpenGP::Shader>(new OpenGP::Shader());
         quad_shader->verbose = true;
         quad_shader->add_vshader_from_source(quad_vshader.c_str());
@@ -157,6 +169,7 @@ namespace Rendering {
         };
         quad->set_vtexcoord(quad_vtexcoord);
 
+        // Load textures to GPU
         load_texture(cat,
                      "/Users/michael/Dropbox/Programming/icg/data/nyancat.png");
         load_texture(background,
@@ -178,8 +191,8 @@ namespace Rendering {
         for (int i = 0; i < int(height) / 2; i++) {
             memcpy(row, &image[4 * i * width], 4 * width * sizeof(unsigned char));
             memcpy(&image[4 * i * width],
-                &image[image.size() - 4 * (i + 1) * width],
-                4 * width * sizeof(unsigned char));
+                   &image[image.size() - 4 * (i + 1) * width],
+                   4 * width * sizeof(unsigned char));
             memcpy(&image[image.size() - 4 * (i + 1) * width],
                    row,
                    4 * width * sizeof(unsigned char));
@@ -200,6 +213,7 @@ namespace Rendering {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        // Draw background
         Transform transform = Transform::Identity();
         quad_shader->bind();
         quad_shader->set_uniform("M", transform.matrix());
@@ -210,6 +224,7 @@ namespace Rendering {
         quad->draw();
         background->unbind();
 
+        // Cat Transformations
         float t = m_time * m_speed_factor;
         int index = (int)t % m_bezier_resolution;
         transform *= Eigen::Translation3f(bezier_points[index].x(), bezier_points[index].y(), 0.0f);
@@ -217,6 +232,7 @@ namespace Rendering {
         float scale = clamp(std::sinf(t / 10), 0.05f, 0.2f);
         transform *= Eigen::AlignedScaling3f(scale, scale, 1.0f);
 
+        // Draw cat
         quad_shader->bind();
         quad_shader->set_uniform("M", transform.matrix());
         glActiveTexture(GL_TEXTURE0);
@@ -239,14 +255,10 @@ namespace Rendering {
     {
         OpenGP::Application app;
         init();
+
         // Mouse position and selected point
         OpenGP::Vec2 position {0, 0};
         OpenGP::Vec2* selection = nullptr;
-
-        OpenGP::RGBA8Texture color_buffer_texture;
-        color_buffer_texture.allocate(m_width * 2, m_height * 2);
-        OpenGP::Framebuffer framebuffer;
-        framebuffer.attach_color_texture(color_buffer_texture);
 
         app.add_listener<OpenGP::ApplicationUpdateEvent>(
             [this](const OpenGP::ApplicationUpdateEvent& aue) {
@@ -260,21 +272,21 @@ namespace Rendering {
             glClear(GL_COLOR_BUFFER_BIT);
             glPointSize(m_point_size);
 
-            framebuffer.bind();
+            framebuffer->bind();
             draw_textures();
-            framebuffer.unbind();
+            framebuffer->unbind();
 
             glClear(GL_COLOR_BUFFER_BIT);
             framebuffer_shader->bind();
             // Bind texture and set uniforms
             glActiveTexture(GL_TEXTURE0);
-            color_buffer_texture.bind();
+            color_buffer_texture->bind();
             framebuffer_shader->set_uniform("tex", 0);
             framebuffer_shader->set_uniform("tex_width", float(m_width));
             framebuffer_shader->set_uniform("tex_height", float(m_height));
             quad->set_attributes(*framebuffer_shader);
             quad->draw();
-            color_buffer_texture.unbind();
+            color_buffer_texture->unbind();
             framebuffer_shader->unbind();
 
             line_shader->bind();
@@ -315,7 +327,7 @@ namespace Rendering {
 
         // Mouse click callback
         window.add_listener<OpenGP::MouseButtonEvent>([&](const OpenGP::MouseButtonEvent& e) {
-            // Mouse selection case
+            // Mouse down
             if (e.button == GLFW_MOUSE_BUTTON_LEFT && !e.released) {
                 selection = nullptr;
                 for (auto&& v : control_points) {
@@ -325,7 +337,7 @@ namespace Rendering {
                     }
                 }
             }
-            // Mouse release case
+            // Mouse up
             if (e.button == GLFW_MOUSE_BUTTON_LEFT && e.released) {
                 if (selection) {
                     selection->x() = position.x();
