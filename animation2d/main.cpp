@@ -4,8 +4,8 @@ int main(int argc, char** argv)
 {
     constexpr int width = 720;
     constexpr int height = 720;
-    constexpr float speed_factor = 1.0f;
-    constexpr float bezier_resolution = 100.0f;    
+    constexpr float speed_factor = 150.0f;
+    constexpr int bezier_resolution = 150.0f;    
     constexpr float point_size = 10.0f;
 
     // Render a 2D animation using OpenGL

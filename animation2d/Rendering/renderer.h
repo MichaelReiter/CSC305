@@ -10,7 +10,7 @@ namespace Rendering {
         Renderer(unsigned int width,
                  unsigned int height,
                  float speed_factor,
-                 float bezier_resolution,
+                 int bezier_resolution,
                  float point_size);
 
         ~Renderer();
@@ -21,7 +21,7 @@ namespace Rendering {
         unsigned int m_width;
         unsigned int m_height;
         float m_speed_factor;
-        float m_bezier_resolution;
+        int m_bezier_resolution;
         float m_point_size;
         float m_time;
 

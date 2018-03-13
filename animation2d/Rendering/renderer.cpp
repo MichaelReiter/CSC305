@@ -14,7 +14,7 @@ namespace Rendering {
     std::unique_ptr<OpenGP::Shader> quad_shader;
     std::unique_ptr<OpenGP::Shader> framebuffer_shader;
     std::unique_ptr<OpenGP::RGBA8Texture> cat;
-    std::unique_ptr<OpenGP::RGBA8Texture> stars;
+    std::unique_ptr<OpenGP::RGBA8Texture> background;
 
     // Selection
     std::unique_ptr<OpenGP::GPUMesh> line;
@@ -29,7 +29,7 @@ namespace Rendering {
     Renderer::Renderer(unsigned int width,
                        unsigned int height,
                        float speed_factor,
-                       float bezier_resolution,
+                       int bezier_resolution,
                        float point_size) :
         m_width(width),
         m_height(height),
@@ -159,7 +159,7 @@ namespace Rendering {
 
         load_texture(cat,
                      "/Users/michael/Dropbox/Programming/icg/data/nyancat.png");
-        load_texture(stars,
+        load_texture(background,
                      "/Users/michael/Dropbox/Programming/icg/data/background.png");
     }
 
@@ -189,28 +189,33 @@ namespace Rendering {
         texture->upload_raw(width, height, &image[0]);
     }
 
+    template <typename T>
+    inline T clamp(const T& value, const T& low, const T& high)
+    {
+        return std::max(low, std::min(value, high));
+    }
+
     void Renderer::draw_textures()
     {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        float t = m_time * m_speed_factor;
         Transform transform = Transform::Identity();
         quad_shader->bind();
         quad_shader->set_uniform("M", transform.matrix());
         glActiveTexture(GL_TEXTURE0);
-        stars->bind();
+        background->bind();
         quad_shader->set_uniform("tex", 0);
         quad->set_attributes(*quad_shader);
         quad->draw();
-        stars->unbind();
+        background->unbind();
 
-        float x_coordinate = t;
-        float y_coordinate = t;
-
-        transform *= Eigen::Translation3f(x_coordinate, y_coordinate, 0.0f);
+        float t = m_time * m_speed_factor;
+        int index = (int)t % m_bezier_resolution;
+        transform *= Eigen::Translation3f(bezier_points[index].x(), bezier_points[index].y(), 0.0f);
         // transform *= Eigen::AngleAxisf(t + M_PI / 2, Eigen::Vector3f::UnitZ());
-        transform *= Eigen::AlignedScaling3f(0.2f, 0.2f, 1.0f);
+        float scale = clamp(std::sinf(t / 10), 0.05f, 0.2f);
+        transform *= Eigen::AlignedScaling3f(scale, scale, 1.0f);
 
         quad_shader->bind();
         quad_shader->set_uniform("M", transform.matrix());
@@ -272,14 +277,13 @@ namespace Rendering {
             color_buffer_texture.unbind();
             framebuffer_shader->unbind();
 
-            // Draw line between selection points
             line_shader->bind();
-            // Draw lines between Bezier points
+            // Draw Bezier curve
             line_shader->set_uniform("selection", -1);
             bezier_curve->set_attributes(*line_shader);
             bezier_curve->set_mode(GL_LINE_STRIP);
             bezier_curve->draw();
-            // Draw lines between points
+            // Draw lines between selection points
             line_shader->set_uniform("selection", -1);
             line->set_attributes(*line_shader);
             line->set_mode(GL_LINE_STRIP);
