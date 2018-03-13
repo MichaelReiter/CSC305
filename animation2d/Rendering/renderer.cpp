@@ -18,8 +18,10 @@ namespace Rendering {
 
     // Selection
     std::unique_ptr<OpenGP::GPUMesh> line;
+    std::unique_ptr<OpenGP::GPUMesh> bezier_curve;
     std::unique_ptr<OpenGP::Shader> line_shader;
     std::vector<OpenGP::Vec2> control_points;
+    std::vector<OpenGP::Vec2> bezier_points;
     std::unique_ptr<OpenGP::Shader> selection_shader;
     std::unique_ptr<OpenGP::RGBA8Texture> selection_color;
     std::unique_ptr<OpenGP::D16Texture> selection_depth;
@@ -27,11 +29,14 @@ namespace Rendering {
     Renderer::Renderer(unsigned int width,
                        unsigned int height,
                        float speed_factor,
+                       float bezier_resolution,
                        float point_size) :
         m_width(width),
         m_height(height),
         m_speed_factor(speed_factor),
-        m_point_size(point_size)
+        m_bezier_resolution(bezier_resolution),
+        m_point_size(point_size),
+        m_time(0.0f)
     {}
 
     Renderer::~Renderer() {}
@@ -42,6 +47,23 @@ namespace Rendering {
         std::stringstream buffer;
         buffer << f.rdbuf();
         return buffer.str();
+    }
+
+    void Renderer::compute_and_load_bezier_points()
+    {
+        std::vector<unsigned int> bezier_indices;
+        bezier_points = std::vector<OpenGP::Vec2>();
+        for (int i = 0; i < m_bezier_resolution + 1; i++) {
+            float t = (float)i / m_bezier_resolution;
+            OpenGP::Vec2 b = std::pow((1 - t), 3) * control_points[0]
+                           + std::pow((1 - t), 2) * control_points[1] * 3 * t
+                           + (1 - t) * control_points[2] * std::pow(t, 2)
+                           + std::pow(t, 3) * control_points[3];
+            bezier_points.push_back(b);
+            bezier_indices.push_back(i);
+        }
+        bezier_curve->set_vbo<OpenGP::Vec2>("vposition", bezier_points);
+        bezier_curve->set_triangles(bezier_indices);
     }
 
     void Renderer::init()
@@ -66,6 +88,15 @@ namespace Rendering {
         std::string selection_fshader = load_source(
             "/Users/michael/Dropbox/Programming/icg/animation2d/Shaders/selection_fshader.glsl");
 
+        // Framebuffer for selection shader
+        OpenGP::Framebuffer selection_framebuffer;
+        selection_color = std::unique_ptr<OpenGP::RGBA8Texture>(new OpenGP::RGBA8Texture());
+        selection_color->allocate(m_width, m_height);
+        selection_depth = std::unique_ptr<OpenGP::D16Texture>(new OpenGP::D16Texture());
+        selection_depth->allocate(m_width, m_height);
+        selection_framebuffer.attach_color_texture(*selection_color);
+        selection_framebuffer.attach_depth_texture(*selection_depth);
+
         // Line shader
         line_shader = std::unique_ptr<OpenGP::Shader>(new OpenGP::Shader());
         line_shader->verbose = true;
@@ -75,15 +106,19 @@ namespace Rendering {
 
         // Bezier control points
         control_points = std::vector<OpenGP::Vec2>();
-        control_points.push_back({-0.7f, -0.2f});
-        control_points.push_back({-0.3f, 0.2f});
-        control_points.push_back({0.3f, 0.5f});
-        control_points.push_back({0.7f, 0.0f});
+        control_points.push_back({-0.75f, -0.75f});
+        control_points.push_back({-0.75f, 0.75f});
+        control_points.push_back({0.75f, -0.75f});
+        control_points.push_back({0.75f, 0.75f});
 
         line = std::unique_ptr<OpenGP::GPUMesh>(new OpenGP::GPUMesh());
         line->set_vbo<OpenGP::Vec2>("vposition", control_points);
-        std::vector<unsigned int> indices {0, 1, 2, 3};
-        line->set_triangles(indices);
+        std::vector<unsigned int> line_indices {0, 1, 2, 3};
+        line->set_triangles(line_indices);
+
+        // Bezier points
+        bezier_curve = std::unique_ptr<OpenGP::GPUMesh>(new OpenGP::GPUMesh());
+        compute_and_load_bezier_points();
 
         // Selection shader
         selection_shader = std::unique_ptr<OpenGP::Shader>(new OpenGP::Shader());
@@ -154,41 +189,33 @@ namespace Rendering {
         texture->upload_raw(width, height, &image[0]);
     }
 
-    void Renderer::draw_scene()
+    void Renderer::draw_textures()
     {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        float t = glfwGetTime() * m_speed_factor;
+        float t = m_time * m_speed_factor;
         Transform transform = Transform::Identity();
-        // background.draw(transform.matrix());
         quad_shader->bind();
         quad_shader->set_uniform("M", transform.matrix());
-        // Make texture unit 0 active
         glActiveTexture(GL_TEXTURE0);
-        // Bind the texture to the active unit for drawing
         stars->bind();
-        // Set the shader's texture uniform to the index of the texture unit we have
-        // bound the texture to
         quad_shader->set_uniform("tex", 0);
         quad->set_attributes(*quad_shader);
         quad->draw();
         stars->unbind();
 
-        float x_coordinate = 0.7f * std::cos(t);
-        float y_coordinate = 0.7f * std::sin(t);
+        float x_coordinate = t;
+        float y_coordinate = t;
+
         transform *= Eigen::Translation3f(x_coordinate, y_coordinate, 0.0f);
-        transform *= Eigen::AngleAxisf(t + M_PI / 2, Eigen::Vector3f::UnitZ());
+        // transform *= Eigen::AngleAxisf(t + M_PI / 2, Eigen::Vector3f::UnitZ());
         transform *= Eigen::AlignedScaling3f(0.2f, 0.2f, 1.0f);
 
         quad_shader->bind();
         quad_shader->set_uniform("M", transform.matrix());
-        // Make texture unit 0 active
         glActiveTexture(GL_TEXTURE0);
-        // Bind the texture to the active unit for drawing
         cat->bind();
-        // Set the shader's texture uniform to the index
-        // of the texture unit we have bound the texture to
         quad_shader->set_uniform("tex", 0);
         quad->set_attributes(*quad_shader);
         quad->draw();
@@ -198,30 +225,29 @@ namespace Rendering {
         glDisable(GL_BLEND);
     }
 
+    void Renderer::update()
+    {
+        m_time += 0.001f;
+    }
+
     int Renderer::create_application()
     {
         OpenGP::Application app;
         init();
-
-        // Framebuffer for selection shader
-        OpenGP::Framebuffer selection_framebuffer;
-        selection_color = std::unique_ptr<OpenGP::RGBA8Texture>(new OpenGP::RGBA8Texture());
-        selection_color->allocate(m_width, m_height);
-        selection_depth = std::unique_ptr<OpenGP::D16Texture>(new OpenGP::D16Texture());
-        selection_depth->allocate(m_width, m_height);
-        selection_framebuffer.attach_color_texture(*selection_color);
-        selection_framebuffer.attach_depth_texture(*selection_depth);
-
         // Mouse position and selected point
-        OpenGP::Vec2 pixel_position {0, 0};
         OpenGP::Vec2 position {0, 0};
-        OpenGP::Vec2 *selection = nullptr;
-        int offset_id = 0;
+        OpenGP::Vec2* selection = nullptr;
 
         OpenGP::RGBA8Texture color_buffer_texture;
         color_buffer_texture.allocate(m_width * 2, m_height * 2);
         OpenGP::Framebuffer framebuffer;
         framebuffer.attach_color_texture(color_buffer_texture);
+
+        app.add_listener<OpenGP::ApplicationUpdateEvent>(
+            [this](const OpenGP::ApplicationUpdateEvent& aue) {
+                update();
+            }
+        );
 
         OpenGP::Window& window = app.create_window([&](OpenGP::Window& window) {
             glViewport(0, 0, m_width * 2, m_height * 2);
@@ -230,8 +256,7 @@ namespace Rendering {
             glPointSize(m_point_size);
 
             framebuffer.bind();
-            // glClear(GL_COLOR_BUFFER_BIT);
-            draw_scene();
+            draw_textures();
             framebuffer.unbind();
 
             glClear(GL_COLOR_BUFFER_BIT);
@@ -249,11 +274,16 @@ namespace Rendering {
 
             // Draw line between selection points
             line_shader->bind();
+            // Draw lines between Bezier points
+            line_shader->set_uniform("selection", -1);
+            bezier_curve->set_attributes(*line_shader);
+            bezier_curve->set_mode(GL_LINE_STRIP);
+            bezier_curve->draw();
+            // Draw lines between points
             line_shader->set_uniform("selection", -1);
             line->set_attributes(*line_shader);
             line->set_mode(GL_LINE_STRIP);
             line->draw();
-
             // Draw selection points
             if (selection != nullptr) {
                 line_shader->set_uniform("selection", int(selection - &control_points[0]));
@@ -262,41 +292,27 @@ namespace Rendering {
             line->draw();
             line_shader->unbind();
         });
-        window.set_title("Framebuffer Animation");
+        window.set_title("Animation");
         window.set_size(m_width, m_height);
 
         // Mouse movement callback
-        window.add_listener<OpenGP::MouseMoveEvent>([&](const OpenGP::MouseMoveEvent &m) {
+        window.add_listener<OpenGP::MouseMoveEvent>([&](const OpenGP::MouseMoveEvent& m) {
             // Mouse position in clip coordinates
-            pixel_position = m.position;
             OpenGP::Vec2 centre = {m.position.x() / m_width, -m.position.y() / m_height};
             OpenGP::Vec2 p = 2.0f * (centre - OpenGP::Vec2(0.5f, -0.5f));
             if (selection && (p - position).norm() > 0.0f) {
                 selection->x() = position.x();
                 selection->y() = position.y();
+                compute_and_load_bezier_points();
                 line->set_vbo<OpenGP::Vec2>("vposition", control_points);
             }
             position = p;
         });
 
         // Mouse click callback
-        window.add_listener<OpenGP::MouseButtonEvent>([&](const OpenGP::MouseButtonEvent &e) {
+        window.add_listener<OpenGP::MouseButtonEvent>([&](const OpenGP::MouseButtonEvent& e) {
             // Mouse selection case
             if (e.button == GLFW_MOUSE_BUTTON_LEFT && !e.released) {
-                // Draw element ids to framebuffer
-                selection_framebuffer.bind();
-                glViewport(0, 0, m_width * 2, m_height * 2);
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
-                glPointSize(m_point_size);
-                selection_shader->bind();
-                selection_shader->set_uniform("offset_id", offset_id);
-                line->set_attributes(*selection_shader);
-                line->set_mode(GL_POINTS);
-                line->draw();
-                selection_shader->unbind();
-                glFlush();
-                glFinish();
-
                 selection = nullptr;
                 for (auto&& v : control_points) {
                     if ((v - position).norm() < m_point_size / std::min(m_width, m_height)) {
