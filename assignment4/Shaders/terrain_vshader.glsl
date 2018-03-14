@@ -1,4 +1,3 @@
-R"(
 #version 330 core
 uniform sampler2D noiseTex;
 
@@ -14,10 +13,9 @@ out vec3 fragPos;
 
 void main() {
     /// TODO: Get height h at uv
-    float h = 0.0;
+    float h = 0.0f;
 
     uv = vtexcoord;
-    fragPos = vposition.xyz + vec3(0,0,h);
-    gl_Position = P*V*M*vec4(vposition.x, vposition.y, vposition.z + h, 1.0);
+    fragPos = vposition.xyz + vec3(0, 0, h);
+    gl_Position = P * V * M * vec4(vposition.x, vposition.y, vposition.z + h, 1.0f);
 }
-)"

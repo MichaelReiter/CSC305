@@ -1,4 +1,3 @@
-R"(
 #version 330 core
 in vec3 vposition;
 
@@ -10,6 +9,5 @@ uniform mat4 P;
 void main() {
     // Cubemaps follow a LHS coordinate system
     uvw = vec3(vposition.x, -vposition.z, -vposition.y);
-    gl_Position = P*V*vec4(10.0*vposition, 1.0);
+    gl_Position = P * V * vec4(10.0f * vposition, 1.0f);
 }
-)"
