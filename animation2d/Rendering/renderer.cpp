@@ -16,6 +16,7 @@ namespace Rendering {
     std::unique_ptr<OpenGP::Shader> framebuffer_shader;
     std::unique_ptr<OpenGP::RGBA8Texture> cat;
     std::unique_ptr<OpenGP::RGBA8Texture> background;
+    std::unique_ptr<OpenGP::RGBA8Texture> moon;
     std::unique_ptr<OpenGP::Framebuffer> framebuffer;
     std::unique_ptr<OpenGP::RGBA8Texture> color_buffer_texture;
 
@@ -44,7 +45,7 @@ namespace Rendering {
 
     Renderer::~Renderer() {}
 
-    std::string Renderer::load_source(const std::string& filename) const
+    std::string Renderer::load_shader(const std::string& filename) const
     {
         std::ifstream f(filename.c_str());
         std::stringstream buffer;
@@ -75,21 +76,21 @@ namespace Rendering {
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         // Load OpenGL shaders
-        std::string fb_vshader = load_source(
+        std::string fb_vshader = load_shader(
             "/Users/michael/Dropbox/Programming/icg/animation2d/Shaders/fb_vshader.glsl");
-        std::string fb_fshader = load_source(
+        std::string fb_fshader = load_shader(
             "/Users/michael/Dropbox/Programming/icg/animation2d/Shaders/fb_fshader.glsl");
-        std::string quad_vshader = load_source(
+        std::string quad_vshader = load_shader(
             "/Users/michael/Dropbox/Programming/icg/animation2d/Shaders/quad_vshader.glsl");
-        std::string quad_fshader = load_source(
+        std::string quad_fshader = load_shader(
             "/Users/michael/Dropbox/Programming/icg/animation2d/Shaders/quad_fshader.glsl");
-        std::string line_vshader = load_source(
+        std::string line_vshader = load_shader(
             "/Users/michael/Dropbox/Programming/icg/animation2d/Shaders/line_vshader.glsl");
-        std::string line_fshader = load_source(
+        std::string line_fshader = load_shader(
             "/Users/michael/Dropbox/Programming/icg/animation2d/Shaders/line_fshader.glsl");
-        std::string selection_vshader = load_source(
+        std::string selection_vshader = load_shader(
             "/Users/michael/Dropbox/Programming/icg/animation2d/Shaders/selection_vshader.glsl");
-        std::string selection_fshader = load_source(
+        std::string selection_fshader = load_shader(
             "/Users/michael/Dropbox/Programming/icg/animation2d/Shaders/selection_fshader.glsl");
 
         // Framebuffer for selection shader
@@ -174,6 +175,8 @@ namespace Rendering {
                      "/Users/michael/Dropbox/Programming/icg/data/nyancat.png");
         load_texture(background,
                      "/Users/michael/Dropbox/Programming/icg/data/background.png");
+        load_texture(moon,
+                     "/Users/michael/Dropbox/Programming/icg/data/moon.png");
     }
 
     void Renderer::load_texture(std::unique_ptr<OpenGP::RGBA8Texture>& texture,
@@ -208,9 +211,8 @@ namespace Rendering {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // Draw background
-        Transform transform = Transform::Identity();
         quad_shader->bind();
-        quad_shader->set_uniform("M", transform.matrix());
+        quad_shader->set_uniform("M", Transform::Identity().matrix());
         glActiveTexture(GL_TEXTURE0);
         background->bind();
         quad_shader->set_uniform("tex", 0);
@@ -218,24 +220,48 @@ namespace Rendering {
         quad->draw();
         background->unbind();
 
-        // Cat Transformations
+        // Cat transformations
+        Transform cat_model = Transform::Identity();
         float t = M_PI * m_time * m_speed_factor;
         int index = (int)t % m_bezier_resolution;
-        transform *= Eigen::Translation3f(bezier_points[index].x(), bezier_points[index].y(), 0.0f);
-        // transform *= Eigen::AngleAxisf(t + M_PI / 2, Eigen::Vector3f::UnitZ());
-        // float scale = clamp(std::sinf(t / 10), 0.05f, 0.2f);
+        cat_model *= Eigen::Translation3f(bezier_points[index].x(), bezier_points[index].y(), 0.0f);
         float scale = 0.01f * std::sinf(t) + 0.2f;
-        transform *= Eigen::AlignedScaling3f(scale, scale, 1.0f);
+        // Pulsate cat size
+        cat_model *= Eigen::AlignedScaling3f(scale, scale, 1.0f);
 
         // Draw cat
         quad_shader->bind();
-        quad_shader->set_uniform("M", transform.matrix());
+        quad_shader->set_uniform("M", cat_model.matrix());
         glActiveTexture(GL_TEXTURE0);
         cat->bind();
         quad_shader->set_uniform("tex", 0);
         quad->set_attributes(*quad_shader);
         quad->draw();
         cat->unbind();
+        quad_shader->unbind();
+
+        // Moon transformations
+        Transform moon_model = cat_model;
+        constexpr int moon_rotaion_period = 25;
+        constexpr float moon_orbital_distance = 1.0f;
+        constexpr float moon_scale = 0.20f;
+        // Translate moon by orbital distance
+        moon_model *= Eigen::AngleAxisf(t / moon_rotaion_period, Eigen::Vector3f::UnitZ());
+        moon_model *= Eigen::Translation3f(moon_orbital_distance, 0.0f, 0.0f);
+        // Make the moon spin
+        moon_model *= Eigen::AngleAxisf(-t / moon_rotaion_period, -Eigen::Vector3f::UnitZ());
+        // Scale the moon
+        moon_model *= Eigen::AlignedScaling3f(moon_scale, moon_scale, 1.0f);
+
+        // Draw moon
+        quad_shader->bind();
+        quad_shader->set_uniform("M", moon_model.matrix());
+        glActiveTexture(GL_TEXTURE0);
+        moon->bind();
+        quad_shader->set_uniform("tex", 0);
+        quad->set_attributes(*quad_shader);
+        quad->draw();
+        moon->unbind();
         quad_shader->unbind();
 
         glDisable(GL_BLEND);

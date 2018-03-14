@@ -25,7 +25,7 @@ namespace Rendering {
         float m_point_size;
         float m_time;
 
-        std::string load_source(const std::string& filename) const;
+        std::string load_shader(const std::string& filename) const;
         void compute_and_load_bezier_points();
         void init();
         void load_texture(std::unique_ptr<OpenGP::RGBA8Texture>& texture,
