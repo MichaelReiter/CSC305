@@ -8,7 +8,9 @@ The program compiles and implements the follow functionality (80%)
 
 ## Advanced Functionality
 I also implemented the following advanced functionality
-- the textures have transparency and are rendered using OpenGL alpha blending (+2%)
+- the textures have transparency and are rendered using OpenGL alpha blending (+4%)
+- record the animation using screen recording software and save as .mov (+1%)
+- the tail animation uses different textures as alternating frames
 
 ## Extras
 On top of that
