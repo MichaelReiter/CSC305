@@ -16,7 +16,7 @@ namespace Rendering {
     std::unique_ptr<OpenGP::Shader> framebuffer_shader;
     std::unique_ptr<OpenGP::RGBA8Texture> cat;
     std::unique_ptr<OpenGP::RGBA8Texture> background;
-    std::unique_ptr<OpenGP::RGBA8Texture> moon;
+    std::unique_ptr<OpenGP::RGBA8Texture> tail;
     std::unique_ptr<OpenGP::Framebuffer> framebuffer;
     std::unique_ptr<OpenGP::RGBA8Texture> color_buffer_texture;
 
@@ -172,11 +172,11 @@ namespace Rendering {
 
         // Load textures to GPU
         load_texture(cat,
-                     "/Users/michael/Dropbox/Programming/icg/data/nyancat.png");
+                     "/Users/michael/Dropbox/Programming/icg/data/nyancat_no_tail.png");
         load_texture(background,
                      "/Users/michael/Dropbox/Programming/icg/data/background.png");
-        load_texture(moon,
-                     "/Users/michael/Dropbox/Programming/icg/data/moon.png");
+        load_texture(tail,
+                     "/Users/michael/Dropbox/Programming/icg/data/rainbow_tail.png");
     }
 
     void Renderer::load_texture(std::unique_ptr<OpenGP::RGBA8Texture>& texture,
@@ -207,6 +207,7 @@ namespace Rendering {
 
     void Renderer::draw_textures()
     {
+        // Enable alpha blending for texture transparency
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -224,11 +225,32 @@ namespace Rendering {
         Transform cat_model = Transform::Identity();
         float t = M_PI * m_time * m_speed_factor;
         int index = (int)t % m_bezier_resolution;
+        constexpr float cat_scale = 0.15f;
+        // Translate cat along bezier curve
         cat_model *= Eigen::Translation3f(bezier_points[index].x(), bezier_points[index].y(), 0.0f);
-        float scale = 0.01f * std::sinf(t) + 0.2f;
-        // Pulsate cat size
-        cat_model *= Eigen::AlignedScaling3f(scale, scale, 1.0f);
+        // Scale cat
+        cat_model *= Eigen::AlignedScaling3f(cat_scale, cat_scale, 1.0f);
 
+        // Tail transformations
+        Transform tail_model = cat_model;
+        // Translate tail to the right (behind cat)
+        tail_model *= Eigen::Translation3f(0.5f, 0.0f, 0.0f);
+        // Scale the tail
+        float tail_scale_y = 0.1f * std::sinf(t) + 1.0f;
+        float tail_scale_x = tail_scale_y * 2;
+        tail_model *= Eigen::AlignedScaling3f(tail_scale_x, tail_scale_y, 1.0f);
+
+        // Draw tail
+        quad_shader->bind();
+        quad_shader->set_uniform("M", tail_model.matrix());
+        glActiveTexture(GL_TEXTURE0);
+        tail->bind();
+        quad_shader->set_uniform("tex", 0);
+        quad->set_attributes(*quad_shader);
+        quad->draw();
+        tail->unbind();
+        quad_shader->unbind();
+        
         // Draw cat
         quad_shader->bind();
         quad_shader->set_uniform("M", cat_model.matrix());
@@ -238,30 +260,6 @@ namespace Rendering {
         quad->set_attributes(*quad_shader);
         quad->draw();
         cat->unbind();
-        quad_shader->unbind();
-
-        // Moon transformations
-        Transform moon_model = cat_model;
-        constexpr int moon_rotaion_period = 25;
-        constexpr float moon_orbital_distance = 1.0f;
-        constexpr float moon_scale = 0.20f;
-        // Translate moon by orbital distance
-        moon_model *= Eigen::AngleAxisf(t / moon_rotaion_period, Eigen::Vector3f::UnitZ());
-        moon_model *= Eigen::Translation3f(moon_orbital_distance, 0.0f, 0.0f);
-        // Make the moon spin
-        moon_model *= Eigen::AngleAxisf(-t / moon_rotaion_period, -Eigen::Vector3f::UnitZ());
-        // Scale the moon
-        moon_model *= Eigen::AlignedScaling3f(moon_scale, moon_scale, 1.0f);
-
-        // Draw moon
-        quad_shader->bind();
-        quad_shader->set_uniform("M", moon_model.matrix());
-        glActiveTexture(GL_TEXTURE0);
-        moon->bind();
-        quad_shader->set_uniform("tex", 0);
-        quad->set_attributes(*quad_shader);
-        quad->draw();
-        moon->unbind();
         quad_shader->unbind();
 
         glDisable(GL_BLEND);
