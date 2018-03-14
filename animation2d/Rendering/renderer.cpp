@@ -202,12 +202,6 @@ namespace Rendering {
         texture->upload_raw(width, height, &image[0]);
     }
 
-    template <typename T>
-    inline T clamp(const T& value, const T& low, const T& high)
-    {
-        return std::max(low, std::min(value, high));
-    }
-
     void Renderer::draw_textures()
     {
         glEnable(GL_BLEND);
@@ -225,11 +219,12 @@ namespace Rendering {
         background->unbind();
 
         // Cat Transformations
-        float t = m_time * m_speed_factor;
+        float t = M_PI * m_time * m_speed_factor;
         int index = (int)t % m_bezier_resolution;
         transform *= Eigen::Translation3f(bezier_points[index].x(), bezier_points[index].y(), 0.0f);
         // transform *= Eigen::AngleAxisf(t + M_PI / 2, Eigen::Vector3f::UnitZ());
-        float scale = clamp(std::sinf(t / 10), 0.05f, 0.2f);
+        // float scale = clamp(std::sinf(t / 10), 0.05f, 0.2f);
+        float scale = 0.01f * std::sinf(t) + 0.2f;
         transform *= Eigen::AlignedScaling3f(scale, scale, 1.0f);
 
         // Draw cat
