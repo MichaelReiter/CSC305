@@ -14,4 +14,5 @@ include(common/GLFW.cmake)
 #--- Subprojects
 # add_subdirectory(raytrace)
 # add_subdirectory(assignment2)
-add_subdirectory(animation2d)
+# add_subdirectory(animation2d)
+add_subdirectory(assignment4)
