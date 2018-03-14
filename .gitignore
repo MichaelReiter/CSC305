@@ -105,7 +105,6 @@ src/raytrace/output.png
 
 /build
 /common
-/data
 /external
 /slides
 *.bmp
