@@ -16,7 +16,8 @@ namespace Rendering {
     std::unique_ptr<OpenGP::Shader> framebuffer_shader;
     std::unique_ptr<OpenGP::RGBA8Texture> cat;
     std::unique_ptr<OpenGP::RGBA8Texture> background;
-    std::unique_ptr<OpenGP::RGBA8Texture> tail;
+    std::unique_ptr<OpenGP::RGBA8Texture> tail_up;
+    std::unique_ptr<OpenGP::RGBA8Texture> tail_down;
     std::unique_ptr<OpenGP::Framebuffer> framebuffer;
     std::unique_ptr<OpenGP::RGBA8Texture> color_buffer_texture;
 
@@ -175,8 +176,10 @@ namespace Rendering {
                      "/Users/michael/Dropbox/Programming/icg/data/nyancat_no_tail.png");
         load_texture(background,
                      "/Users/michael/Dropbox/Programming/icg/data/background.png");
-        load_texture(tail,
-                     "/Users/michael/Dropbox/Programming/icg/data/rainbow_tail.png");
+        load_texture(tail_up,
+                     "/Users/michael/Dropbox/Programming/icg/data/rainbow_tail_up.png");
+        load_texture(tail_down,
+                     "/Users/michael/Dropbox/Programming/icg/data/rainbow_tail_down.png");
     }
 
     void Renderer::load_texture(std::unique_ptr<OpenGP::RGBA8Texture>& texture,
@@ -244,11 +247,19 @@ namespace Rendering {
         quad_shader->bind();
         quad_shader->set_uniform("M", tail_model.matrix());
         glActiveTexture(GL_TEXTURE0);
-        tail->bind();
+        if ((int)(m_time * 100) % 2 == 0) {
+            tail_up->bind();
+        } else {
+            tail_down->bind();
+        }
         quad_shader->set_uniform("tex", 0);
         quad->set_attributes(*quad_shader);
         quad->draw();
-        tail->unbind();
+        if ((int)(m_time * 100) % 2 == 0) {
+            tail_up->unbind();
+        } else {
+            tail_down->unbind();
+        }
         quad_shader->unbind();
         
         // Draw cat
