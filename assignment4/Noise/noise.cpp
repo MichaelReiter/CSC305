@@ -36,9 +36,9 @@ namespace Noise {
 
         // Initialize to 0s
         float* noise_data = new float[width * height];
-        for (int i = 0; i < width; ++ i) {
-            for (int j = 0; j < height; ++ j) {
-                noise_data[i+j*height] = 0;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                noise_data[i + j * height] = 0;
             }
         }
 
@@ -54,7 +54,7 @@ namespace Noise {
             for (int j = 0; j < height; j++) {
                 int I = i;
                 int J = j;
-                for(int k = 0; k < octaves; k++) {
+                for (int k = 0; k < octaves; k++) {
                     // TODO: Get perlin noise at I, J
                     // add offset, multiply by proper term and add to noise_data
                     noise_data[i + j * height] += 0;

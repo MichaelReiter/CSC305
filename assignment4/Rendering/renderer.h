@@ -9,7 +9,7 @@ namespace Rendering {
     public:
         Renderer(unsigned int width,
                  unsigned int height,
-                 unsigned int res_prim);
+                 unsigned int restart_primitive);
 
         ~Renderer();
 
@@ -18,7 +18,7 @@ namespace Rendering {
     private:
         unsigned int m_width;
         unsigned int m_height;
-        unsigned int m_res_prim;
+        unsigned int m_restart_primitive;
         OpenGP::Vec3 m_camera_position;
         OpenGP::Vec3 m_camera_front;
         OpenGP::Vec3 m_camera_up;

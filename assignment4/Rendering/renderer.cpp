@@ -20,10 +20,10 @@ namespace Rendering {
 
     Renderer::Renderer(unsigned int width,
                        unsigned int height,
-                       unsigned int res_prim) :
+                       unsigned int restart_primitive) :
         m_width(width),
         m_height(height),
-        m_res_prim(res_prim),
+        m_restart_primitive(restart_primitive),
         m_camera_position({0.0f, 0.0f, 3.0f}),
         m_camera_front({0.0f, -1.0f, 0.0f}),
         m_camera_up({0.0f, 0.0f, 1.0f}),
@@ -125,7 +125,7 @@ namespace Rendering {
         float f_width = 5.0f;
         float f_height = 5.0f;
 
-        // Vertex positions, tex coords
+        // Vertex positions, texture coords
         std::vector<OpenGP::Vec3> points;
         std::vector<OpenGP::Vec2> texture_coordinates;
         for (int j = 0; j < n_height; j++) {
@@ -145,12 +145,12 @@ namespace Rendering {
             indices.push_back((j + 1) * n_width);
             for (int i = 1; i < n_width; i++) {
                 // TODO: push_back next two vertices
-                // HINT: Each one will generate a new triangler
+                // HINT: Each one will generate a new triangle
                 indices.push_back(0);
                 indices.push_back(0);
             }
             // A new strip will begin when this index is reached
-            indices.push_back(m_res_prim);
+            indices.push_back(m_restart_primitive);
         }
 
         terrain_mesh->set_vbo<OpenGP::Vec3>("vposition", points);
@@ -234,7 +234,7 @@ namespace Rendering {
         terrain_mesh->set_attributes(*terrain_shader);
         terrain_mesh->set_mode(GL_TRIANGLE_STRIP);
         glEnable(GL_PRIMITIVE_RESTART);
-        glPrimitiveRestartIndex(m_res_prim);
+        glPrimitiveRestartIndex(m_restart_primitive);
         // TODO: Uncomment line below once this function is implemented
         // terrain_mesh->draw();
 

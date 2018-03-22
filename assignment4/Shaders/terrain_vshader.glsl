@@ -12,10 +12,11 @@ out vec2 uv;
 out vec3 fragPos;
 
 void main() {
-    /// TODO: Get height h at uv
+    // TODO: Get height h at uv
+    // sample height from texture (unlike in lab where we used sin and cos)
     float h = 0.0f;
 
     uv = vtexcoord;
-    fragPos = vposition.xyz + vec3(0, 0, h);
+    fragPos = vposition.xyz + vec3(0.0f, 0.0f, h);
     gl_Position = P * V * M * vec4(vposition.x, vposition.y, vposition.z + h, 1.0f);
 }
