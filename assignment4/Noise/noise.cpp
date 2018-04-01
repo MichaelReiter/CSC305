@@ -6,8 +6,7 @@
 namespace Noise {
     inline float lerp(float x, float y, float t)
     {
-        // TODO: Implement linear interpolation between x and y
-        return 0.0f;
+        return x + t * (y - x);
     }
 
     inline float fade(float t)
