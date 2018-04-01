@@ -1,24 +1,23 @@
 #version 330 core
 uniform sampler2D noiseTex;
 
+// The camera position
+uniform vec3 viewPos;
 uniform sampler2D grass;
 uniform sampler2D rock;
 uniform sampler2D sand;
 uniform sampler2D snow;
 uniform sampler2D water;
 
-// The camera position
-uniform vec3 viewPos;
-
-in vec2 uv;
 // Fragment position in world space coordinates
 in vec3 fragPos;
+in vec2 uv;
 
 out vec4 color;
 
 void main() {
     // Directional light source
-    vec3 lightDir = normalize(vec3(1.0f, 1.0f, 1.0f));
+    vec3 light_direction = normalize(vec3(1.0f, 1.0f, 1.0f));
 
     // Texture size in pixels
     ivec2 size = textureSize(noiseTex, 0);
@@ -38,5 +37,5 @@ void main() {
     // TODO: Calculate ambient, diffuse, and specular lighting
     // HINT: max(,) dot(,) reflect(,) normalize()
 
-    color = vec4(0,0,0,1);
+    color = vec4(0, 0, 0, 1);
 }

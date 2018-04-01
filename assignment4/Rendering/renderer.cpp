@@ -72,11 +72,17 @@ namespace Rendering {
 
         // Load terrain and cubemap textures
         std::string asset_directory = "/Users/michael/Dropbox/Programming/icg/assignment4/assets/";
-        const std::vector<std::string> list {"grass", "rock", "sand", "snow", "water"};
-        for (int i = 0 ; i < 5 ; i++) {
-            Texture::load_texture(terrain_textures[list[i]],
-                                  (asset_directory + list[i] + ".png").c_str());
-            terrain_textures[list[i]]->bind();
+        const std::vector<std::string> material_list {
+            "grass",
+            "rock",
+            "sand",
+            "snow",
+            "water"
+        };
+        for (const std::string& material : material_list) {
+            Texture::load_texture(terrain_textures[material],
+                                  (asset_directory + material + ".png").c_str());
+            terrain_textures[material]->bind();
             glGenerateMipmap(GL_TEXTURE_2D);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -84,6 +90,7 @@ namespace Rendering {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         }
 
+        // Load sky textures
         const std::vector<std::string> sky_list {
             "miramar_ft",
             "miramar_bk",
@@ -94,7 +101,7 @@ namespace Rendering {
         };
         glGenTextures(1, &skybox_texture);
         glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_texture);
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < sky_list.size(); i++) {
             std::vector<unsigned char> image;
             Texture::load_texture(image, (asset_directory + sky_list[i] + ".png").c_str());
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -289,7 +296,6 @@ namespace Rendering {
 
         window.add_listener<OpenGP::KeyEvent>([&](const OpenGP::KeyEvent& k) {
             // TODO: Implement WASD keys HINT: compare k.key to GLFW_KEY_W
-
         });
 
         return app.run();
