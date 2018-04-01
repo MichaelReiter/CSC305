@@ -9,7 +9,8 @@ namespace Rendering {
     public:
         Renderer(unsigned int width,
                  unsigned int height,
-                 unsigned int restart_primitive);
+                 unsigned int restart_primitive,
+                 float field_of_view);
 
         ~Renderer();
 
@@ -19,6 +20,7 @@ namespace Rendering {
         unsigned int m_width;
         unsigned int m_height;
         unsigned int m_restart_primitive;
+        float m_field_of_view;
         OpenGP::Vec3 m_camera_position;
         OpenGP::Vec3 m_camera_front;
         OpenGP::Vec3 m_camera_up;
@@ -28,7 +30,7 @@ namespace Rendering {
 
         std::string load_shader(const std::string& filename) const;
         void init();
-        void generate_terrain_mesh();
+        void generate_terrain_mesh(int resolution, float side_length);
         void generate_cube_mesh();
         void draw_skybox();
         void draw_terrain();

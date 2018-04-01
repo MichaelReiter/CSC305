@@ -20,10 +20,12 @@ namespace Rendering {
 
     Renderer::Renderer(unsigned int width,
                        unsigned int height,
-                       unsigned int restart_primitive) :
+                       unsigned int restart_primitive,
+                       float field_of_view) :
         m_width(width),
         m_height(height),
         m_restart_primitive(restart_primitive),
+        m_field_of_view(field_of_view),
         m_camera_position({0.0f, 0.0f, 3.0f}),
         m_camera_front({0.0f, -1.0f, 0.0f}),
         m_camera_up({0.0f, 0.0f, 1.0f}),
@@ -121,42 +123,35 @@ namespace Rendering {
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     }
 
-    void Renderer::generate_terrain_mesh()
+    void Renderer::generate_terrain_mesh(int resolution, float side_length)
     {
-        // Create a flat (z=0) mesh for the terrain with given dimensions, using triangle strips
+        // Create a flat mesh for the terrain with given dimensions, using triangle strips
         terrain_mesh = std::unique_ptr<OpenGP::GPUMesh>(new OpenGP::GPUMesh());
-        // Grid resolution
-        int n_width = 256;
-        int n_height = 256;
-        // Grid width, centered at (0, 0)
-        float f_width = 5.0f;
-        float f_height = 5.0f;
 
-        // Vertex positions, texture coords
+        // Vertex positions and texture coords
         std::vector<OpenGP::Vec3> points;
         std::vector<OpenGP::Vec2> texture_coordinates;
-        for (int j = 0; j < n_height; j++) {
-            for (int i = 0; i < n_width; i++) {
-                // TODO: calculate vertex positions, texture indices done for you
-                OpenGP::Vec2 coordinate {i / (float)(n_width - 1), j / (float)(n_height - 1)};
-                points.push_back({0.0f, 0.0f, 0.0f});
-                texture_coordinates.push_back(coordinate);
+        for (int j = 0; j < resolution; j++) {
+            for (int i = 0; i < resolution; i++) {
+                points.push_back({-side_length / 2 + j / (float)resolution * side_length,
+                                  -side_length / 2 + i / (float)resolution * side_length,
+                                  0.0f});
+                texture_coordinates.push_back({i / (float)(resolution - 1),
+                                               j / (float)(resolution - 1)});
             }
         }
 
         // Element indices using triangle strips
         std::vector<unsigned int> indices;
-        for (int j = 0; j < n_height - 1; j++) {
+        for (int j = 0; j < resolution - 1; j++) {
             // The two vertices at the base of each strip
-            indices.push_back(j * n_width);
-            indices.push_back((j + 1) * n_width);
-            for (int i = 1; i < n_width; i++) {
-                // TODO: push_back next two vertices
-                // HINT: Each one will generate a new triangle
-                indices.push_back(0);
-                indices.push_back(0);
+            indices.push_back(j * resolution);
+            indices.push_back((j + 1) * resolution);
+            for (int i = 1; i < resolution; i++) {
+                indices.push_back(i + j * resolution);
+                indices.push_back(i + (j + 1) * resolution);
             }
-            // A new strip will begin when this index is reached
+            // A new strip begins when this index is reached
             indices.push_back(m_restart_primitive);
         }
 
@@ -191,7 +186,7 @@ namespace Rendering {
         OpenGP::Vec3 look = m_camera_front + m_camera_position;
         OpenGP::Mat4x4 view = OpenGP::lookAt(m_camera_position, look, m_camera_up);
         skybox_shader->set_uniform("V", view);
-        OpenGP::Mat4x4 projection = OpenGP::perspective(80.0f,
+        OpenGP::Mat4x4 projection = OpenGP::perspective(m_field_of_view,
                                                         m_width / (float)m_height,
                                                         0.1f,
                                                         60.0f);
@@ -210,15 +205,18 @@ namespace Rendering {
     {
         terrain_shader->bind();
 
-        // TODO: Create transformation matrices HINT: use lookAt and perspective
-        OpenGP::Mat4x4 model = OpenGP::Mat4x4::Identity(); // Identity should be fine
+        // Create transformation matrices
+        OpenGP::Mat4x4 model = OpenGP::Mat4x4::Identity();
         terrain_shader->set_uniform("M", model);
 
         OpenGP::Vec3 look = m_camera_front + m_camera_position;
-        OpenGP::Mat4x4 view = OpenGP::Mat4x4::Identity(); // here
+        OpenGP::Mat4x4 view = OpenGP::lookAt(m_camera_position, look, m_camera_up);
         terrain_shader->set_uniform("V", view);
 
-        OpenGP::Mat4x4 projection = OpenGP::Mat4x4::Identity(); // and here
+        OpenGP::Mat4x4 projection = OpenGP::perspective(m_field_of_view,
+                                                        m_width / (float)m_height,
+                                                        0.1f,
+                                                        60.0f);
         terrain_shader->set_uniform("P", projection);
 
         terrain_shader->set_uniform("viewPos", m_camera_position);
@@ -233,7 +231,11 @@ namespace Rendering {
             terrain_shader->set_uniform(it->first.c_str(), i + 1);
             i++;
         }
-        // TODO: Bind height texture to GL_TEXTURE0 and set uniform noiseTex
+        // Bind height texture to GL_TEXTURE0 and set uniform noiseTex
+        glActiveTexture(GL_TEXTURE0);
+        height_texture->bind();
+        terrain_shader->set_uniform("noiseTex", 0);
+        height_texture->unbind();
 
         // Draw terrain using triangle strips
         glEnable(GL_DEPTH_TEST);
@@ -242,8 +244,7 @@ namespace Rendering {
         terrain_mesh->set_mode(GL_TRIANGLE_STRIP);
         glEnable(GL_PRIMITIVE_RESTART);
         glPrimitiveRestartIndex(m_restart_primitive);
-        // TODO: Uncomment line below once this function is implemented
-        // terrain_mesh->draw();
+        terrain_mesh->draw();
 
         terrain_shader->unbind();
     }
@@ -254,7 +255,7 @@ namespace Rendering {
         init();
 
         generate_cube_mesh();
-        generate_terrain_mesh();
+        generate_terrain_mesh(16, 5.0f);
 
         // Display callback
         OpenGP::Window& window = app.create_window([&](OpenGP::Window& window) {
