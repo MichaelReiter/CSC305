@@ -106,35 +106,34 @@ namespace Noise {
                 int top = (j / period) * period;
                 int bottom = (top + period) % height;
 
-                // local coordinates [0,1] within each block
+                // local coordinates [0, 1] within each block
                 float dx = (i - left) * frequency;
                 float dy = (j - top) * frequency;
 
                 // Fetch random vectors at corners
-                OpenGP::Vec2 topleft = sample_gradient(left, top);
-                OpenGP::Vec2 topright = sample_gradient(right, top);
-                OpenGP::Vec2 bottomleft = sample_gradient(left, bottom);
-                OpenGP::Vec2 bottomright = sample_gradient(right, bottom);
+                OpenGP::Vec2 top_left = sample_gradient(left, top);
+                OpenGP::Vec2 top_right = sample_gradient(right, top);
+                OpenGP::Vec2 bottom_left = sample_gradient(left, bottom);
+                OpenGP::Vec2 bottom_right = sample_gradient(right, bottom);
 
                 // Vector from each corner to pixel center
-                OpenGP::Vec2 a(dx, -dy); // topleft
-                OpenGP::Vec2 b(dx - 1, -dy); // topright
-                OpenGP::Vec2 c(dx, 1 - dy); // bottomleft
-                OpenGP::Vec2 d(dx - 1, 1 - dy); // bottomright
+                OpenGP::Vec2 a(dx, -dy); // top_left
+                OpenGP::Vec2 b(dx - 1, -dy); // top_right
+                OpenGP::Vec2 c(dx, 1 - dy); // bottom_left
+                OpenGP::Vec2 d(dx - 1, 1 - dy); // bottom_right
 
-                // TODO: Get scalars at corners
-                // HINT: take dot product of gradient and corresponding direction
-                float s = 0;
-                float t = 0;
-                float u = 0;
-                float v = 0;
+                // Get scalars at corners
+                float s = a.dot(top_left);
+                float t = b.dot(top_right);
+                float u = c.dot(bottom_left);
+                float v = d.dot(bottom_right);
 
-                // TODO: Interpolate along "x" HINT: use fade(dx) as t
-                float st = 0;
-                float uv = 0;
+                // Interpolate along x
+                float st = lerp(s, t, fade(dx));
+                float uv = lerp(u, v, fade(dx));
 
-                // TODO: Interpolate along "y"
-                float noise = 0;
+                // Interpolate along y
+                float noise = lerp(st, uv, fade(dy));
 
                 perlin_data[i + j * height] = noise;
             }
