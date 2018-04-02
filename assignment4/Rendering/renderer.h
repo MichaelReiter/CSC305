@@ -9,8 +9,8 @@ namespace Rendering {
     public:
         Renderer(unsigned int width,
                  unsigned int height,
-                 unsigned int restart_primitive,
-                 float field_of_view);
+                 float field_of_view,
+                 float movement_speed);
 
         ~Renderer();
 
@@ -21,6 +21,7 @@ namespace Rendering {
         unsigned int m_height;
         unsigned int m_restart_primitive;
         float m_field_of_view;
+        float m_movement_speed;
         OpenGP::Vec3 m_camera_position;
         OpenGP::Vec3 m_camera_front;
         OpenGP::Vec3 m_camera_up;

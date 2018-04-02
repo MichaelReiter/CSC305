@@ -20,11 +20,12 @@ namespace Rendering {
 
     Renderer::Renderer(unsigned int width,
                        unsigned int height,
-                       unsigned int restart_primitive,
-                       float field_of_view) :
+                       float field_of_view,
+                       float movement_speed) :
         m_width(width),
         m_height(height),
-        m_restart_primitive(restart_primitive),
+        m_restart_primitive(999999),
+        m_movement_speed(movement_speed),
         m_field_of_view(field_of_view),
         m_camera_position({0.0f, 0.0f, 3.0f}),
         m_camera_front({0.0f, -1.0f, 0.0f}),
@@ -296,7 +297,18 @@ namespace Rendering {
         });
 
         window.add_listener<OpenGP::KeyEvent>([&](const OpenGP::KeyEvent& k) {
-            // TODO: Implement WASD keys HINT: compare k.key to GLFW_KEY_W
+            if (k.key == GLFW_KEY_W) {
+                m_camera_position = m_camera_position + m_movement_speed * m_camera_front.normalized();
+            }
+            if (k.key == GLFW_KEY_A) {
+                m_camera_position = m_camera_position - m_movement_speed * m_camera_front.normalized().cross(m_camera_up);
+            }
+            if (k.key == GLFW_KEY_S) {
+                m_camera_position = m_camera_position - m_movement_speed * m_camera_front.normalized();
+            }
+            if (k.key == GLFW_KEY_D) {
+                m_camera_position = m_camera_position + m_movement_speed * m_camera_front.normalized().cross(m_camera_up);
+            }
         });
 
         return app.run();
