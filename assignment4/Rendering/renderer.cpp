@@ -236,7 +236,6 @@ namespace Rendering {
         glActiveTexture(GL_TEXTURE0);
         height_texture->bind();
         terrain_shader->set_uniform("noiseTex", 0);
-        height_texture->unbind();
 
         // Draw terrain using triangle strips
         glEnable(GL_DEPTH_TEST);
@@ -247,6 +246,7 @@ namespace Rendering {
         glPrimitiveRestartIndex(m_restart_primitive);
         terrain_mesh->draw();
 
+        height_texture->unbind();
         terrain_shader->unbind();
     }
 
@@ -256,7 +256,7 @@ namespace Rendering {
         init();
 
         generate_cube_mesh();
-        generate_terrain_mesh(16, 5.0f);
+        generate_terrain_mesh(256, 20.0f);
 
         // Display callback
         OpenGP::Window& window = app.create_window([&](OpenGP::Window& window) {
@@ -296,6 +296,7 @@ namespace Rendering {
             mouse = m.position;
         });
 
+        // WASD camera controls
         window.add_listener<OpenGP::KeyEvent>([&](const OpenGP::KeyEvent& k) {
             if (k.key == GLFW_KEY_W) {
                 m_camera_position = m_camera_position + m_movement_speed * m_camera_front.normalized();
