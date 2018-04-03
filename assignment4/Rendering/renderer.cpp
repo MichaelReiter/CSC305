@@ -231,12 +231,10 @@ namespace Rendering {
 
         // Bind textures
         int i = 0;
-        std::map<std::string, std::unique_ptr<OpenGP::RGBA8Texture>>::iterator it
-            = terrain_textures.begin();
-        for (; it != terrain_textures.end(); it++) {
+        for (const auto& texture : terrain_textures) {
             glActiveTexture(GL_TEXTURE1 + i);
-            (it->second)->bind();
-            terrain_shader->set_uniform(it->first.c_str(), i + 1);
+            (texture.second)->bind();
+            terrain_shader->set_uniform(texture.first.c_str(), i + 1);
             i++;
         }
         // Bind height texture to GL_TEXTURE0 and set uniform noiseTex
@@ -274,7 +272,7 @@ namespace Rendering {
             glClear(GL_DEPTH_BUFFER_BIT);
             draw_terrain();
         });
-        window.set_title("Assignment 4");
+        window.set_title("Procedurally Generated Mountainous Terrain");
         window.set_size(m_width, m_height);
 
         OpenGP::Vec2 mouse(0, 0);

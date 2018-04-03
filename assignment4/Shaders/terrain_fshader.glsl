@@ -66,12 +66,12 @@ void main() {
     vec3 light_direction = normalize(light_position - fragPos);
     float ambient = 0.05f;
     float diffuse_coefficient = 0.3f;
-    float diffuse = diffuse_coefficient * max(0, -dot(normal, light_direction));
+    float diffuse = diffuse_coefficient * max(0.0f, -dot(normal, light_direction));
     float specular_coefficient = 0.2f;
     float phong_exponent = 64.0f;
     vec3 view_direction = viewPos - fragPos;
     vec3 halfway = normalize(light_direction + view_direction);
-    float specular = specular_coefficient * max(0, pow(dot(normal, halfway), phong_exponent));
+    float specular = specular_coefficient * max(0.0f, pow(dot(normal, halfway), phong_exponent));
 
     c += (ambient + diffuse + specular);
 
