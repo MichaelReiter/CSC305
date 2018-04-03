@@ -30,23 +30,35 @@ void main() {
     vec3 D = vec3(uv.x, uv.y - 1.0f / size.y, textureOffset(noiseTex, uv, ivec2(0, -1)));
     vec3 normal = normalize(cross(normalize(A - B), normalize(C - D)));
 
-    float sand_level = water_level + 0.05f;
-    float grass_level = sand_level + 0.1f;
-    float snow_level = 0.7;
+    float denominator = 1.0f / size.x;
+    float slope = 0.0f;
+    slope = max(slope, (A.y - fragPos.y) / denominator);
+    slope = max(slope, (B.y - fragPos.y) / denominator);
+    slope = max(slope, (C.y - fragPos.y) / denominator);
+    slope = max(slope, (D.y - fragPos.y) / denominator);
+
+    float sand_level = water_level + 0.03f;
+    float grass_level = sand_level + 0.07f;
+    float snow_level = 0.7f;
+    float sand_slope = 0.7f;
+    float snow_slope = 0.85f;
 
     // Texture according to height and slope
     float height = (texture(noiseTex, uv).r + 1.0f) / 2.0f;
-    vec4 c = texture(rock, uv);
+    vec4 c = texture(sand, uv);
     if (height < water_level) {
         c = texture(water, uv);
     }
-    if (height > water_level && height < sand_level) {
+    if (height > water_level && height < sand_level && slope < sand_slope) {
         c = texture(sand, uv);
     }
     if (height > sand_level && height < grass_level) {
         c = texture(grass, uv);
     }
-    if (height > snow_level) {
+    if (height > grass_level) {
+        c = texture(rock, uv);
+    }
+    if (height > snow_level && slope < snow_slope) {
         c = texture(snow, uv);
     }
 
