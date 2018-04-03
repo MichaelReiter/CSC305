@@ -11,7 +11,7 @@ namespace Noise {
 
     inline float fade(float t)
     {
-        return t * t * t * (t * (t * 6 - 15) + 10);
+        return t * t * t * (t * (t * 6.0f - 15.0f) + 10.0f);
     }
 
     inline float rand01()
@@ -30,8 +30,8 @@ namespace Noise {
         // fBm parameters
         float H = 0.8f;
         float lacunarity = 2.0f;
-        float offset = 0.1f;
-        const int octaves = 4;
+        float offset = 0.05f;
+        const int octaves = 3;
 
         // Initialize to 0s
         float* noise_data = new float[width * height];
@@ -43,10 +43,11 @@ namespace Noise {
 
         // Precompute exponent array
         float* exponent_array = new float[octaves];
-        float f = 1.0f;
+        float frequency = 1.0f;
         for (int i = 0; i < octaves; i++) {
-            // TODO: Implement this step according to Musgraves paper on fBM
-
+            // Implemented according to Musgrave's paper on fBM
+            exponent_array[i] = std::pow(frequency, -H);
+            frequency *= lacunarity;
         }
 
         for (int i = 0; i < width; i++) {
@@ -54,10 +55,9 @@ namespace Noise {
                 int I = i;
                 int J = j;
                 for (int k = 0; k < octaves; k++) {
-                    // TODO: Get perlin noise at I, J
-                    // add offset, multiply by proper term and add to noise_data
-                    noise_data[i + j * height] += 0;
-
+                    // Add offset, multiply by proper term and add to noise_data
+                    float perlin_value = perlin_data[(I % width) + (J % height) * width];
+                    noise_data[i + j * height] += (offset + perlin_value * exponent_array[k]);
                     // Point to sample at next octave
                     I *= (int)lacunarity;
                     J *= (int)lacunarity;
@@ -65,14 +65,14 @@ namespace Noise {
             }
         }
 
-        OpenGP::R32FTexture* _tex = new OpenGP::R32FTexture();
-        _tex->upload_raw(width, height, noise_data);
+        OpenGP::R32FTexture* texture = new OpenGP::R32FTexture();
+        texture->upload_raw(width, height, noise_data);
 
         delete perlin_data;
         delete[] noise_data;
         delete[] exponent_array;
 
-        return _tex;
+        return texture;
     }
 
     float* perlin2D(const int width, const int height, const int period)
@@ -99,14 +99,13 @@ namespace Noise {
         float* perlin_data = new float[width * height];
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-
                 // Integer coordinates of corners
                 int left = (i / period) * period;
                 int right = (left + period) % width;
                 int top = (j / period) * period;
                 int bottom = (top + period) % height;
 
-                // local coordinates [0, 1] within each block
+                // Local coordinates [0, 1] within each block
                 float dx = (i - left) * frequency;
                 float dy = (j - top) * frequency;
 
