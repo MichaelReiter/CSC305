@@ -10,13 +10,18 @@ uniform mat4 P;
 
 out vec2 uv;
 out vec3 fragPos;
+out float water_level;
 
 void main() {
-    // TODO: Get height h at uv
-    // sample height from texture (unlike in lab where we used sin and cos)
-    float h = 0.0f;
-
     uv = vtexcoord;
-    fragPos = vposition.xyz + vec3(0.0f, 0.0f, h);
-    gl_Position = P * V * M * vec4(vposition.x, vposition.y, vposition.z + h, 1.0f);
+
+    float water_z = 0.5f;
+
+    // Sample height from texture at uv
+    float height = (texture(noiseTex, uv).r + 1.0f) / 2.0f;
+    height = max(height, water_z);
+
+    fragPos = vposition.xyz + vec3(0.0f, 0.0f, height);
+    gl_Position = P * V * M * vec4(vposition.x, vposition.y, vposition.z + 4 * height, 1.0f);
+    water_level = water_z;
 }
