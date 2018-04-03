@@ -15,13 +15,13 @@ out float water_level;
 void main() {
     uv = vtexcoord;
 
-    float water_z = 0.5f;
+    float water_z = 0.45f;
 
     // Sample height from texture at uv
     float height = (texture(noiseTex, uv).r + 1.0f) / 2.0f;
     height = max(height, water_z);
 
     fragPos = vposition.xyz + vec3(0.0f, 0.0f, height);
-    gl_Position = P * V * M * vec4(vposition.x, vposition.y, vposition.z + 4 * height, 1.0f);
+    gl_Position = P * V * M * vec4(vposition.x, vposition.y, vposition.z + 10 * height, 1.0f);
     water_level = water_z;
 }

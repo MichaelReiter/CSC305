@@ -27,7 +27,7 @@ namespace Rendering {
         m_restart_primitive(999999),
         m_movement_speed(movement_speed),
         m_field_of_view(field_of_view),
-        m_camera_position({0.0f, 0.0f, 3.0f}),
+        m_camera_position({0.0f, 0.0f, 10.0f}),
         m_camera_front({0.0f, -1.0f, 0.0f}),
         m_camera_up({0.0f, 0.0f, 1.0f}),
         m_yaw(0.0f),
@@ -256,7 +256,7 @@ namespace Rendering {
         init();
 
         generate_cube_mesh();
-        generate_terrain_mesh(256, 20.0f);
+        generate_terrain_mesh(128, 50.0f);
 
         // Display callback
         OpenGP::Window& window = app.create_window([&](OpenGP::Window& window) {

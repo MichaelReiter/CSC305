@@ -28,7 +28,7 @@ namespace Noise {
         float* perlin_data = perlin2D(width, height, 128);
 
         // fBm parameters
-        float H = 0.8f;
+        float H = 1.0f;
         float lacunarity = 2.0f;
         float offset = 0.05f;
         const int octaves = 3;

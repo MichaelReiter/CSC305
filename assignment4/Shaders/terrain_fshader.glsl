@@ -18,7 +18,7 @@ out vec4 color;
 
 void main() {
     // Directional light source
-    vec3 light_position = normalize(vec3(1.0f, 1.0f, 1.0f));
+    vec3 light_position = vec3(1.0f, 1.0f, 10.0f);
 
     // Texture size in pixels
     ivec2 size = textureSize(noiseTex, 0);
@@ -30,17 +30,30 @@ void main() {
     vec3 D = vec3(uv.x, uv.y - 1.0f / size.y, textureOffset(noiseTex, uv, ivec2(0, -1)));
     vec3 normal = normalize(cross(normalize(A - B), normalize(C - D)));
 
+    float sand_level = water_level + 0.05f;
+    float grass_level = sand_level + 0.1f;
+    float snow_level = 0.7;
+
     // Texture according to height and slope
     float height = (texture(noiseTex, uv).r + 1.0f) / 2.0f;
     vec4 c = texture(rock, uv);
     if (height < water_level) {
         c = texture(water, uv);
     }
+    if (height > water_level && height < sand_level) {
+        c = texture(sand, uv);
+    }
+    if (height > sand_level && height < grass_level) {
+        c = texture(grass, uv);
+    }
+    if (height > snow_level) {
+        c = texture(snow, uv);
+    }
 
     // Calculate ambient, diffuse, and specular shading
     vec3 light_direction = normalize(light_position - fragPos);
-    float ambient = 0.15f;
-    float diffuse_coefficient = 0.3f;
+    float ambient = 0.05f;
+    float diffuse_coefficient = 0.25f;
     float diffuse = diffuse_coefficient * max(0, -dot(normal, light_direction));
     float specular_coefficient = 0.15f;
     float phong_exponent = 32.0f;
