@@ -163,18 +163,18 @@ namespace Rendering {
 
     void Renderer::generate_cube_mesh()
     {
-        // Generate a cube mesh for skybox, already done
+        // Generate a cube mesh for skybox
         skybox_mesh = std::unique_ptr<OpenGP::GPUMesh>(new OpenGP::GPUMesh());
         std::vector<OpenGP::Vec3> points;
-        points.push_back({ 1, 1, 1}); // 0
-        points.push_back({-1, 1, 1}); // 1
-        points.push_back({ 1, 1,-1}); // 2
-        points.push_back({-1, 1,-1}); // 3
-        points.push_back({ 1,-1, 1}); // 4
-        points.push_back({-1,-1, 1}); // 5
-        points.push_back({-1,-1,-1}); // 6
-        points.push_back({ 1,-1,-1}); // 7
-        std::vector<unsigned int> indices { 3, 2, 6, 7, 4, 2, 0, 3, 1, 6, 5, 4, 1, 0 };
+        points.push_back({ 2, 2, 2}); // 0
+        points.push_back({-2, 2, 2}); // 1
+        points.push_back({ 2, 2,-2}); // 2
+        points.push_back({-2, 2,-2}); // 3
+        points.push_back({ 2,-2, 2}); // 4
+        points.push_back({-2,-2, 2}); // 5
+        points.push_back({-2,-2,-2}); // 6
+        points.push_back({ 2,-2,-2}); // 7
+        std::vector<unsigned int> indices {3, 2, 6, 7, 4, 2, 0, 3, 1, 6, 5, 4, 1, 0};
         skybox_mesh->set_vbo<OpenGP::Vec3>("vposition", points);
         skybox_mesh->set_triangles(indices);
     }
@@ -190,14 +190,21 @@ namespace Rendering {
         OpenGP::Mat4x4 projection = OpenGP::perspective(m_field_of_view,
                                                         m_width / (float)m_height,
                                                         0.1f,
-                                                        60.0f);
+                                                        100.0f);
         skybox_shader->set_uniform("P", projection);
 
-        // TODO: Bind Textures and set uniform
-        // HINT: Use GL_TEXTURE0, and texture type GL_TEXTURE_CUBE_MAP
+        // Bind skybox texture
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_texture);
+        skybox_shader->set_uniform("noiseTex", 0);
 
-        // TODO: Set atrributes, draw cube using GL_TRIANGLE_STRIP mode
+        // Set atrributes and draw cube using GL_TRIANGLE_STRIP mode
         glEnable(GL_DEPTH_TEST);
+        skybox_mesh->set_attributes(*skybox_shader);
+        skybox_mesh->set_mode(GL_TRIANGLE_STRIP);
+        glEnable(GL_PRIMITIVE_RESTART);
+        glPrimitiveRestartIndex(m_restart_primitive);
+        skybox_mesh->draw();
 
         skybox_shader->unbind();
     }
@@ -217,7 +224,7 @@ namespace Rendering {
         OpenGP::Mat4x4 projection = OpenGP::perspective(m_field_of_view,
                                                         m_width / (float)m_height,
                                                         0.1f,
-                                                        60.0f);
+                                                        100.0f);
         terrain_shader->set_uniform("P", projection);
 
         terrain_shader->set_uniform("viewPos", m_camera_position);
@@ -256,7 +263,7 @@ namespace Rendering {
         init();
 
         generate_cube_mesh();
-        generate_terrain_mesh(128, 50.0f);
+        generate_terrain_mesh(64, 40.0f);
 
         // Display callback
         OpenGP::Window& window = app.create_window([&](OpenGP::Window& window) {
