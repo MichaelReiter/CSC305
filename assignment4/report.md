@@ -19,7 +19,7 @@ The program compiles and implements the follow functionality (80%)
 
 ## Advanced Functionality
 I also implemented the following advanced functionality
-- Textured lakes (flat mesh) using water.png
+- Use normal mapping to represent waves that translate over time (+5%)
 
 ## Extras
 On top of that
