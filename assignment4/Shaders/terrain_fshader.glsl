@@ -7,7 +7,9 @@ uniform sampler2D rock;
 uniform sampler2D sand;
 uniform sampler2D snow;
 uniform sampler2D water;
+uniform sampler2D water2;
 uniform sampler2D noiseTex;
+uniform float wave_motion;
 
 // Fragment position in world space coordinates
 in vec3 fragPos;
@@ -22,6 +24,9 @@ void main() {
 
     // Texture size in pixels
     ivec2 size = textureSize(noiseTex, 0);
+
+    vec2 distorted_texture_coordinates = texture(water, vec2(uv.x + wave_motion, uv.y)).rg * 0.1f;
+	distorted_texture_coordinates = uv + vec2(distorted_texture_coordinates.x, distorted_texture_coordinates.y + wave_motion);
 
     // Calculate surface normal
     vec3 A = vec3(uv.x + 1.0f / size.x, uv.y, textureOffset(noiseTex, uv, ivec2(1, 0)));
@@ -47,7 +52,7 @@ void main() {
     float height = (texture(noiseTex, uv).r + 1.0f) / 2.0f;
     vec4 c = texture(sand, uv);
     if (height < water_level) {
-        c = texture(water, uv);
+        c = texture(water2, distorted_texture_coordinates);
     }
     if (height > water_level && height < sand_level && slope < sand_slope) {
         c = texture(sand, uv);

@@ -28,6 +28,7 @@ namespace Rendering {
         float m_halflife;
         float m_yaw;
         float m_pitch;
+        float m_wave_motion_factor;
 
         std::string load_shader(const std::string& filename) const;
         void init();

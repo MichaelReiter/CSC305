@@ -31,7 +31,8 @@ namespace Rendering {
         m_camera_front({0.0f, -1.0f, 0.0f}),
         m_camera_up({0.0f, 0.0f, 1.0f}),
         m_yaw(0.0f),
-        m_pitch(0.0f)
+        m_pitch(0.0f),
+        m_wave_motion_factor(0.0f)
     {}
 
     Renderer::~Renderer() {}
@@ -80,7 +81,8 @@ namespace Rendering {
             "rock",
             "sand",
             "snow",
-            "water"
+            "water",
+            "water2"
         };
         for (const std::string& material : material_list) {
             Texture::load_texture(terrain_textures[material],
@@ -251,6 +253,12 @@ namespace Rendering {
         glPrimitiveRestartIndex(m_restart_primitive);
         terrain_mesh->draw();
 
+        terrain_shader->set_uniform("wave_motion", m_wave_motion_factor);
+        m_wave_motion_factor += 0.0001f;
+        if (m_wave_motion_factor > 1.0f) {
+            m_wave_motion_factor = 0.0f;
+        }
+
         height_texture->unbind();
         terrain_shader->unbind();
     }
@@ -265,7 +273,7 @@ namespace Rendering {
 
         // Display callback
         OpenGP::Window& window = app.create_window([&](OpenGP::Window& window) {
-            glViewport(0, 0, m_width, m_height);
+            glViewport(0, 0, m_width * 2, m_height * 2);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             draw_skybox();
@@ -276,7 +284,7 @@ namespace Rendering {
         window.set_size(m_width, m_height);
 
         OpenGP::Vec2 mouse(0, 0);
-        window.add_listener<OpenGP::MouseMoveEvent>([&](const OpenGP::MouseMoveEvent &m) {
+        window.add_listener<OpenGP::MouseMoveEvent>([&](const OpenGP::MouseMoveEvent &m) {           
             // Camera control
             OpenGP::Vec2 delta = m.position - mouse;
             delta[1] = -delta[1];
